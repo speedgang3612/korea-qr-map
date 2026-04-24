@@ -40,6 +40,12 @@
     .retry-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.78rem;font-family:inherit;padding:6px 10px;cursor:pointer;transition:all .2s;white-space:nowrap}
     .retry-btn:hover{border-color:var(--accent);color:var(--accent)}
 
+    /* language selector */
+    .lang-bar{width:100%;display:flex;gap:8px;margin-bottom:28px}
+    .lang-btn{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:.78rem;font-family:inherit;padding:9px 6px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.3}
+    .lang-btn:hover{border-color:rgba(79,142,247,.4);color:var(--text)}
+    .lang-btn.active{background:rgba(79,142,247,.15);border-color:var(--accent);color:var(--accent);font-weight:600}
+
     /* category grid */
     .grid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 16px 20px;text-align:center;cursor:pointer;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;-webkit-tap-highlight-color:transparent;user-select:none;display:flex;flex-direction:column;align-items:center;gap:10px}
@@ -160,6 +166,12 @@
     <button class="retry-btn" id="retryBtn" onclick="initLocation()" style="display:none">Retry</button>
   </div>
 
+  <div class="lang-bar" id="langBar">
+    <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">🇺🇸 English</button>
+    <button class="lang-btn"        id="lang-ja" onclick="setLang('JA')">🇯🇵 日本語</button>
+    <button class="lang-btn"        id="lang-zh" onclick="setLang('ZH-HANS')">🇨🇳 中文</button>
+  </div>
+
   <main class="grid">
     <div class="card card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
       <span class="card-icon">🚇</span>
@@ -260,7 +272,42 @@ const CATS = {
 };
 
 // ── State ───────────────────────────────────────────────
-let userLat = null, userLng = null, locationReady = false, userDistrict = '';
+let userLat = null, userLng = null, locationReady = false, userDistrict = '', currentLang = 'EN';
+let lastItems = [];   // 재번역용 한국어 원본 보관
+
+// ── Language ────────────────────────────────────────────
+function setLang(lang){
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lang-' + lang.toLowerCase().replace('-hans',''))
+          .classList.add('active');
+  if(document.getElementById('rp').classList.contains('open')){
+    retranslate();
+  }
+}
+
+async function retranslate(){
+  if(!lastItems.length) return;
+  document.getElementById('rpBody').innerHTML=`
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Translating…</p>
+    </div>`;
+  try{
+    const toTranslate = lastItems.flatMap(it => [it.nameKo, it.addrKo]);
+    let translated = toTranslate;
+    try{ translated = await deepLTranslate(toTranslate); }
+    catch(e){ console.warn('DeepL failed, showing Korean:', e); }
+    const results = lastItems.map((it, i) => ({
+      ...it,
+      nameEn: translated[i*2]   || it.nameKo,
+      addrEn: translated[i*2+1] || it.addrKo,
+    }));
+    renderResults(results);
+  } catch(e){
+    console.error(e);
+  }
+}
 
 // ── Helpers ─────────────────────────────────────────────
 function stripHtml(s){ return s.replace(/<[^>]*>/g,''); }
@@ -320,7 +367,7 @@ async function deepLTranslate(texts){
       'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`,
       'Content-Type':  'application/json'
     },
-    body: JSON.stringify({ text: texts, target_lang: 'EN' })
+    body: JSON.stringify({ text: texts, target_lang: currentLang })
   });
   if(!res.ok) throw new Error(`DeepL API ${res.status}`);
   const d=await res.json();
@@ -441,6 +488,7 @@ async function searchNearby(type){
       dist:   haversine(parseFloat(userLat),parseFloat(userLng),
                         (parseInt(it.mapy)||0)/1e7,(parseInt(it.mapx)||0)/1e7)
     })).sort((a,b)=>a.dist-b.dist).slice(0,8);
+    lastItems = items;   // 재번역용 원본 보관
 
     // 3. Batch translate (names + addresses)
     const toTranslate=items.flatMap(it=>[it.nameKo,it.addrKo]);
