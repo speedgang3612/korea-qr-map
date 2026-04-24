@@ -1,359 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="description" content="Korea Travel Guide – Find nearby subway stations, bus stops, restaurants, and convenience stores using GPS on Naver Map." />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="description" content="Korea Travel Guide – Find nearby places in English using GPS."/>
   <title>Korea Travel Guide 🇰🇷</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0d0f14;--surface:#161a24;--card:#1e2333;--border:rgba(255,255,255,.07);
+      --text:#f0f2f8;--muted:#8891a8;--accent:#4f8ef7;--success:#22c55e;--error:#ef4444;
+      --c1:#4f8ef7;--c2:#22c55e;--c3:#f97316;--c4:#a78bfa;
+      --radius:20px;--radius-sm:12px;
     }
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(79,142,247,.18) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(167,139,250,.10) 0%,transparent 50%);pointer-events:none;z-index:0}
 
-    :root {
-      --bg:        #0d0f14;
-      --surface:   #161a24;
-      --card:      #1e2333;
-      --border:    rgba(255,255,255,0.07);
-      --text:      #f0f2f8;
-      --muted:     #8891a8;
-      --accent:    #4f8ef7;
-      --success:   #22c55e;
-      --warning:   #f59e0b;
-      --error:     #ef4444;
+    /* ── Main page ── */
+    .page{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:28px 20px 48px;max-width:480px;margin:0 auto}
+    .header{width:100%;text-align:center;margin-bottom:28px}
+    .flag{font-size:2.4rem;line-height:1;margin-bottom:8px;display:block;animation:floatEmoji 3s ease-in-out infinite}
+    @keyframes floatEmoji{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .header h1{font-size:1.65rem;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#fff 30%,#a0b4d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+    .header p{font-size:.88rem;color:var(--muted);line-height:1.5}
 
-      --c1: #4f8ef7;   /* subway – blue */
-      --c2: #22c55e;   /* bus    – green */
-      --c3: #f97316;   /* food   – orange */
-      --c4: #a78bfa;   /* store  – purple */
+    /* location bar */
+    .location-bar{width:100%;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:28px;transition:border-color .3s}
+    .location-bar.success{border-color:rgba(34,197,94,.4)}.location-bar.error{border-color:rgba(239,68,68,.4)}.location-bar.loading{border-color:rgba(79,142,247,.4)}
+    .loc-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
+    .location-bar.success .loc-dot{background:var(--success);box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+    .location-bar.error .loc-dot{background:var(--error);box-shadow:0 0 0 3px rgba(239,68,68,.2)}
+    .location-bar.loading .loc-dot{background:var(--accent);animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,142,247,.5)}50%{box-shadow:0 0 0 8px rgba(79,142,247,0)}}
+    .loc-text{flex:1;font-size:.82rem;color:var(--muted);line-height:1.35}
+    .loc-text strong{display:block;font-size:.88rem;font-weight:600;color:var(--text)}
+    .retry-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.78rem;font-family:inherit;padding:6px 10px;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .retry-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-      --radius: 20px;
-      --radius-sm: 12px;
-    }
+    /* category grid */
+    .grid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 16px 20px;text-align:center;cursor:pointer;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;-webkit-tap-highlight-color:transparent;user-select:none;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .card-1:hover{box-shadow:0 8px 32px rgba(79,142,247,.25);border-color:rgba(79,142,247,.5)}
+    .card-2:hover{box-shadow:0 8px 32px rgba(34,197,94,.25);border-color:rgba(34,197,94,.5)}
+    .card-3:hover{box-shadow:0 8px 32px rgba(249,115,22,.25);border-color:rgba(249,115,22,.5)}
+    .card-4:hover{box-shadow:0 8px 32px rgba(167,139,250,.25);border-color:rgba(167,139,250,.5)}
+    .card:active{transform:scale(.95)}
+    .card::before{content:'';position:absolute;top:0;left:0;width:60px;height:60px;border-radius:0 0 60px 0;opacity:.12}
+    .card-1::before{background:var(--c1)}.card-2::before{background:var(--c2)}.card-3::before{background:var(--c3)}.card-4::before{background:var(--c4)}
+    .card-icon{font-size:2.6rem;line-height:1;display:block}
+    .card-label{font-size:.82rem;font-weight:700;letter-spacing:.3px;color:var(--text);line-height:1.3}
+    .card-pill{margin-top:4px;padding:3px 12px;border-radius:20px;font-size:.65rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+    .card-1 .card-pill{background:rgba(79,142,247,.15);color:var(--c1)}
+    .card-2 .card-pill{background:rgba(34,197,94,.15);color:var(--c2)}
+    .card-3 .card-pill{background:rgba(249,115,22,.15);color:var(--c3)}
+    .card-4 .card-pill{background:rgba(167,139,250,.15);color:var(--c4)}
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
+    .tip{margin-top:28px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;gap:10px;align-items:flex-start}
+    .tip-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+    .tip p{font-size:.78rem;color:var(--muted);line-height:1.55}
+    .tip p strong{color:var(--text);font-weight:600}
+    .footer{margin-top:24px;text-align:center;font-size:.72rem;color:var(--muted);opacity:.6}
 
-    /* ── Background decoration ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79,142,247,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(167,139,250,0.10) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
-    }
+    /* ── Results Panel ── */
+    .rp{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
+    .rp.open{transform:translateX(0)}
+    body::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;opacity:0;pointer-events:none;transition:opacity .35s}
+    body.rp-open::after{opacity:1}
 
-    .page {
-      position: relative;
-      z-index: 1;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 28px 20px 48px;
-      max-width: 480px;
-      margin: 0 auto;
-    }
+    .rp-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+    .rp-back{background:none;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-family:inherit;padding:8px 14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+    .rp-back:hover{border-color:var(--accent);color:var(--accent)}
+    .rp-title-wrap{flex:1;display:flex;align-items:center;gap:8px}
+    .rp-cat-icon{font-size:1.4rem;line-height:1}
+    .rp-title{font-size:1rem;font-weight:700;color:var(--text)}
+    .rp-count{font-size:.75rem;color:var(--muted);margin-left:auto;white-space:nowrap}
 
-    /* ── Header ── */
-    .header {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 28px;
-    }
+    .rp-body{flex:1;overflow-y:auto;padding:16px 20px;-webkit-overflow-scrolling:touch}
 
-    .flag {
-      font-size: 2.4rem;
-      line-height: 1;
-      margin-bottom: 8px;
-      display: block;
-      animation: floatEmoji 3s ease-in-out infinite;
-    }
+    /* loading */
+    .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px}
+    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-state p{font-size:.9rem;color:var(--muted);text-align:center}
 
-    @keyframes floatEmoji {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-6px); }
-    }
+    /* error / empty */
+    .msg-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;text-align:center}
+    .msg-state .msg-icon{font-size:2.5rem}
+    .msg-state h3{font-size:1rem;font-weight:700;color:var(--text)}
+    .msg-state p{font-size:.82rem;color:var(--muted);line-height:1.55;max-width:280px}
+    .msg-btn{margin-top:8px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.85rem;font-weight:600;padding:10px 20px;cursor:pointer;transition:opacity .2s}
+    .msg-btn:hover{opacity:.85}
 
-    .header h1 {
-      font-size: 1.65rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ffffff 30%, #a0b4d8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 6px;
-    }
+    /* result cards */
+    .result-list{display:flex;flex-direction:column;gap:12px}
+    .result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
+    .result-card:hover{border-color:rgba(255,255,255,.15)}
+    .rc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .rc-name{font-size:.95rem;font-weight:700;color:var(--text);line-height:1.3;flex:1}
+    .rc-dist{font-size:.75rem;font-weight:600;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:var(--accent);flex-shrink:0}
+    .rc-addr{font-size:.78rem;color:var(--muted);line-height:1.45;display:flex;align-items:flex-start;gap:5px}
+    .rc-addr-icon{flex-shrink:0;margin-top:1px}
+    .rc-link{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--accent);text-decoration:none;padding:6px 12px;border:1px solid rgba(79,142,247,.3);border-radius:8px;transition:all .2s;align-self:flex-start;margin-top:2px}
+    .rc-link:hover{background:rgba(79,142,247,.1);border-color:var(--accent)}
 
-    .header p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
+    /* toast */
+    .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:30px;padding:12px 20px;font-size:.82rem;color:var(--text);white-space:nowrap;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;opacity:0;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
-    /* ── Location status bar ── */
-    .location-bar {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      margin-bottom: 28px;
-      transition: border-color 0.3s;
-    }
-
-    .location-bar.success { border-color: rgba(34,197,94,0.4); }
-    .location-bar.error   { border-color: rgba(239,68,68,0.4); }
-    .location-bar.loading { border-color: rgba(79,142,247,0.4); }
-
-    .loc-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      transition: background 0.3s;
-    }
-
-    .location-bar.success .loc-dot { background: var(--success); box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
-    .location-bar.error   .loc-dot { background: var(--error);   box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
-    .location-bar.loading .loc-dot {
-      background: var(--accent);
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(79,142,247,0.5); }
-      50%       { box-shadow: 0 0 0 8px rgba(79,142,247,0); }
-    }
-
-    .loc-text {
-      flex: 1;
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.35;
-    }
-
-    .loc-text strong {
-      display: block;
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .retry-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-family: inherit;
-      padding: 6px 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .retry-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* ── Grid of action cards ── */
-    .grid {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .card {
-      position: relative;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 16px 20px;
-      text-align: center;
-      cursor: pointer;
-      overflow: hidden;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Glow hover by card color */
-    .card-1:hover { box-shadow: 0 8px 32px rgba(79,142,247,0.25);  border-color: rgba(79,142,247,0.5); }
-    .card-2:hover { box-shadow: 0 8px 32px rgba(34,197,94,0.25);   border-color: rgba(34,197,94,0.5); }
-    .card-3:hover { box-shadow: 0 8px 32px rgba(249,115,22,0.25);  border-color: rgba(249,115,22,0.5); }
-    .card-4:hover { box-shadow: 0 8px 32px rgba(167,139,250,0.25); border-color: rgba(167,139,250,0.5); }
-
-    .card:active { transform: scale(0.95); }
-
-    /* Top-left accent corner */
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 60px; height: 60px;
-      border-radius: 0 0 60px 0;
-      opacity: 0.12;
-    }
-
-    .card-1::before { background: var(--c1); }
-    .card-2::before { background: var(--c2); }
-    .card-3::before { background: var(--c3); }
-    .card-4::before { background: var(--c4); }
-
-    .card-icon {
-      font-size: 2.6rem;
-      line-height: 1;
-      display: block;
-    }
-
-    .card-label {
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    .card-sub {
-      font-size: 0.70rem;
-      color: var(--muted);
-      font-weight: 400;
-    }
-
-    /* Color pill at bottom */
-    .card-pill {
-      margin-top: 4px;
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .card-1 .card-pill { background: rgba(79,142,247,0.15);  color: var(--c1); }
-    .card-2 .card-pill { background: rgba(34,197,94,0.15);   color: var(--c2); }
-    .card-3 .card-pill { background: rgba(249,115,22,0.15);  color: var(--c3); }
-    .card-4 .card-pill { background: rgba(167,139,250,0.15); color: var(--c4); }
-
-    /* ── Tip section ── */
-    .tip {
-      margin-top: 28px;
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 14px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .tip-icon {
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .tip p {
-      font-size: 0.78rem;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .tip p strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    /* ── Footer ── */
-    .footer {
-      margin-top: 24px;
-      text-align: center;
-      font-size: 0.72rem;
-      color: var(--muted);
-      opacity: 0.6;
-    }
-
-    /* ── Toast notification ── */
-    .toast {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 12px 20px;
-      font-size: 0.82rem;
-      color: var(--text);
-      white-space: nowrap;
-      z-index: 999;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    /* ── Responsive tweak ── */
-    @media (max-width: 360px) {
-      .header h1  { font-size: 1.4rem; }
-      .card-icon  { font-size: 2.2rem; }
-      .card-label { font-size: 0.76rem; }
-    }
-
-    @media (min-width: 481px) {
-      .page { padding-top: 48px; }
-    }
+    @media(max-width:360px){.header h1{font-size:1.4rem}.card-icon{font-size:2.2rem}.card-label{font-size:.76rem}}
+    @media(min-width:481px){.page{padding-top:48px}.rp{max-width:480px;left:50%;transform:translateX(calc(-50% + 100%))}.rp.open{transform:translateX(-50%)}}
   </style>
 </head>
 <body>
 
+<!-- ── Main Page ── -->
 <div class="page">
-
-  <!-- Header -->
   <header class="header">
     <span class="flag">🇰🇷</span>
     <h1>Korea Travel Guide</h1>
-    <p>Tap any button to find nearby places<br>using your current location</p>
+    <p>Tap a category to find nearby places<br>in English — no app needed</p>
   </header>
 
-  <!-- Location Status -->
   <div class="location-bar loading" id="locationBar">
-    <div class="loc-dot" id="locDot"></div>
+    <div class="loc-dot"></div>
     <div class="loc-text">
       <strong id="locStatus">Detecting your location…</strong>
       <span id="locDetail">Please allow location access</span>
@@ -361,169 +133,268 @@
     <button class="retry-btn" id="retryBtn" onclick="initLocation()" style="display:none">Retry</button>
   </div>
 
-  <!-- Action Cards -->
-  <main class="grid" id="cardGrid">
-
-    <div class="card card-1" id="btn-subway" onclick="openMap('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
+  <main class="grid">
+    <div class="card card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
       <span class="card-icon">🚇</span>
       <span class="card-label">Find Subway<br>Station</span>
-      <span class="card-pill">Naver Map</span>
+      <span class="card-pill">Nearby</span>
     </div>
-
-    <div class="card card-2" id="btn-bus" onclick="openMap('bus')" role="button" tabindex="0" aria-label="Find Bus Stop">
+    <div class="card card-2" id="btn-bus" onclick="searchNearby('bus')" role="button" tabindex="0" aria-label="Find Bus Stop">
       <span class="card-icon">🚌</span>
       <span class="card-label">Find Bus<br>Stop</span>
-      <span class="card-pill">Naver Map</span>
+      <span class="card-pill">Nearby</span>
     </div>
-
-    <div class="card card-3" id="btn-food" onclick="openMap('restaurant')" role="button" tabindex="0" aria-label="Find Restaurant">
+    <div class="card card-3" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0" aria-label="Find Restaurant">
       <span class="card-icon">🍜</span>
       <span class="card-label">Find<br>Restaurant</span>
-      <span class="card-pill">Naver Map</span>
+      <span class="card-pill">Nearby</span>
     </div>
-
-    <div class="card card-4" id="btn-store" onclick="openMap('convenience')" role="button" tabindex="0" aria-label="Find Convenience Store">
+    <div class="card card-4" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0" aria-label="Find Convenience Store">
       <span class="card-icon">🏪</span>
       <span class="card-label">Find Convenience<br>Store</span>
-      <span class="card-pill">Naver Map</span>
+      <span class="card-pill">Nearby</span>
     </div>
-
   </main>
 
-  <!-- Tip -->
   <aside class="tip">
     <span class="tip-icon">💡</span>
-    <p>
-      <strong>How it works:</strong> Each button opens Naver Map (Korea's most popular navigation app) with your current GPS location to find nearby places. <strong>No app download needed</strong> — works directly in your browser.
-    </p>
+    <p><strong>How it works:</strong> Tap any button to search nearby places using your GPS. Results are translated to English automatically. <strong>No app download needed.</strong></p>
   </aside>
-
-  <footer class="footer">
-    Powered by Naver Map · GPS required · Works on any smartphone
-  </footer>
-
+  <footer class="footer">GPS required · Results via Naver · Translated by DeepL</footer>
 </div>
 
-<!-- Toast -->
+<!-- ── Results Panel ── -->
+<div class="rp" id="rp" role="dialog" aria-modal="true" aria-label="Search results">
+  <div class="rp-header">
+    <button class="rp-back" onclick="closeResults()" aria-label="Go back">← Back</button>
+    <div class="rp-title-wrap">
+      <span class="rp-cat-icon" id="rpIcon"></span>
+      <span class="rp-title" id="rpTitle">Nearby Places</span>
+    </div>
+    <span class="rp-count" id="rpCount"></span>
+  </div>
+  <div class="rp-body" id="rpBody"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── State ──────────────────────────────────────────────
-  let userLat = null;
-  let userLng = null;
-  let locationReady = false;
+// ── Config ──────────────────────────────────────────────
+const NAVER_CLIENT_ID     = 'dzy8A8DveVa1HLrkLGhA';
+const NAVER_CLIENT_SECRET = ''; // ⚠️ Add your Naver Client Secret here
+const DEEPL_API_KEY       = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
+const CORS_PROXY          = 'https://corsproxy.io/?url=';
 
-  // ── Naver Map URL builder ──────────────────────────────
-  // Query keywords per category (English, pre-encoded)
-  const QUERIES = {
-    subway:      'subway%20station',
-    bus:         'bus%20stop',
-    restaurant:  'restaurant',
-    convenience: 'convenience%20store'
-  };
+const CATS = {
+  subway:      { query:'지하철역',   label:'Subway Stations',    icon:'🚇' },
+  bus:         { query:'버스정류장', label:'Bus Stops',           icon:'🚌' },
+  restaurant:  { query:'맛집',      label:'Restaurants',         icon:'🍜' },
+  convenience: { query:'편의점',    label:'Convenience Stores',  icon:'🏪' },
+};
 
-  function buildNaverUrl(type, lat, lng) {
-    const query = QUERIES[type]; // already URL-encoded, skip encodeURIComponent
-    // Naver Map mobile search: search around the given coordinates
-    // Uses mobile web URL with coordinates embedded in the query string
-    return `https://m.map.naver.com/search2/search.nhn?query=${query}&type=all&queryRank=0&where=m&lng=${lng}&lat=${lat}&dlng=${lng}&dlat=${lat}&level=12&lang=en`;
-  }
+// ── State ───────────────────────────────────────────────
+let userLat = null, userLng = null, locationReady = false;
 
-  // ── Open map ──────────────────────────────────────────
-  function openMap(type) {
-    if (!locationReady || userLat === null) {
-      showToast('⏳ Still getting your location… please wait');
-      return;
-    }
-    const url = buildNaverUrl(type, userLat, userLng);
-    window.open(url, '_blank');
-  }
+// ── Helpers ─────────────────────────────────────────────
+function stripHtml(s){ return s.replace(/<[^>]*>/g,''); }
 
-  // ── Keyboard support for cards ────────────────────────
-  document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
-      }
-    });
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371000, toR=Math.PI/180;
+  const f1=lat1*toR, f2=lat2*toR, df=(lat2-lat1)*toR, dl=(lng2-lng1)*toR;
+  const a=Math.sin(df/2)**2+Math.cos(f1)*Math.cos(f2)*Math.sin(dl/2)**2;
+  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
+}
+
+function fmtDist(m){ return m<1000?`${m}m`:`${(m/1000).toFixed(1)}km`; }
+
+function naverMapUrl(name,mapx,mapy){
+  const lat=mapy/1e7, lng=mapx/1e7;
+  return `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(name)}&lat=${lat}&lng=${lng}&lang=en`;
+}
+
+// ── Naver Local Search ───────────────────────────────────
+async function naverSearch(query){
+  if(!NAVER_CLIENT_SECRET) throw new Error('NAVER_CLIENT_SECRET is not set');
+  const target=`https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=10&start=1&sort=random`;
+  const res=await fetch(CORS_PROXY+encodeURIComponent(target),{
+    headers:{'X-Naver-Client-Id':NAVER_CLIENT_ID,'X-Naver-Client-Secret':NAVER_CLIENT_SECRET}
   });
+  if(!res.ok) throw new Error(`Naver API ${res.status}`);
+  const d=await res.json();
+  return d.items||[];
+}
 
-  // ── Location bar helpers ───────────────────────────────
-  function setBar(state, strong, detail) {
-    const bar = document.getElementById('locationBar');
-    const status = document.getElementById('locStatus');
-    const det = document.getElementById('locDetail');
-    const retry = document.getElementById('retryBtn');
+// ── DeepL Translation ────────────────────────────────────
+async function deepLTranslate(texts){
+  if(!texts.length) return [];
+  const params=new URLSearchParams();
+  params.append('auth_key',DEEPL_API_KEY);
+  params.append('target_lang','EN');
+  texts.forEach(t=>params.append('text',t));
+  const target='https://api-free.deepl.com/v2/translate';
+  const res=await fetch(CORS_PROXY+encodeURIComponent(target),{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:params.toString()
+  });
+  if(!res.ok) throw new Error(`DeepL API ${res.status}`);
+  const d=await res.json();
+  return d.translations.map(t=>t.text);
+}
 
-    bar.className = 'location-bar ' + state;
-    status.textContent = strong;
-    det.textContent = detail;
-    retry.style.display = state === 'error' ? 'block' : 'none';
+// ── Results Panel ────────────────────────────────────────
+function openPanel(cat){
+  document.getElementById('rpIcon').textContent=cat.icon;
+  document.getElementById('rpTitle').textContent=cat.label;
+  document.getElementById('rpCount').textContent='';
+  document.getElementById('rp').classList.add('open');
+  document.body.classList.add('rp-open');
+}
+
+function closeResults(){
+  document.getElementById('rp').classList.remove('open');
+  document.body.classList.remove('rp-open');
+}
+
+function showLoading(){
+  document.getElementById('rpBody').innerHTML=`
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Searching nearby places<br>and translating to English…</p>
+    </div>`;
+}
+
+function showError(msg, fallbackUrl){
+  document.getElementById('rpBody').innerHTML=`
+    <div class="msg-state">
+      <div class="msg-icon">⚠️</div>
+      <h3>Something went wrong</h3>
+      <p>${msg}</p>
+      ${fallbackUrl?`<a class="msg-btn" href="${fallbackUrl}" target="_blank">Open Naver Map instead</a>`:''}
+    </div>`;
+}
+
+function showEmpty(){
+  document.getElementById('rpBody').innerHTML=`
+    <div class="msg-state">
+      <div class="msg-icon">🔍</div>
+      <h3>No results found</h3>
+      <p>Try again in a different area or check your location settings.</p>
+    </div>`;
+}
+
+function renderResults(items){
+  document.getElementById('rpCount').textContent=`${items.length} found`;
+  const html=items.map(it=>`
+    <div class="result-card">
+      <div class="rc-top">
+        <span class="rc-name">${it.nameEn}</span>
+        <span class="rc-dist">${fmtDist(it.dist)}</span>
+      </div>
+      <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
+      <a class="rc-link" href="${naverMapUrl(it.nameKo,it.mapx,it.mapy)}" target="_blank" rel="noopener">
+        View on Naver Map ↗
+      </a>
+    </div>`).join('');
+  document.getElementById('rpBody').innerHTML=`<div class="result-list">${html}</div>`;
+}
+
+// ── Main Search Flow ─────────────────────────────────────
+async function searchNearby(type){
+  if(!locationReady||userLat===null){
+    showToast('⏳ Still getting your location… please wait');
+    return;
   }
+  const cat=CATS[type];
+  openPanel(cat);
+  showLoading();
 
-  // ── Geolocation ────────────────────────────────────────
-  function initLocation() {
-    setBar('loading', 'Detecting your location…', 'Please allow location access');
+  const fallbackUrl=`https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(cat.query)}&lat=${userLat}&lng=${userLng}&lang=en`;
 
-    if (!navigator.geolocation) {
-      setBar('error', 'GPS not supported', 'Please use a modern browser');
-      return;
-    }
+  try {
+    // 1. Naver search
+    const raw=await naverSearch(cat.query);
+    if(!raw.length){ showEmpty(); return; }
 
-    navigator.geolocation.getCurrentPosition(
-      onLocationSuccess,
-      onLocationError,
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
-    );
+    // 2. Distance & sort
+    const items=raw.map(it=>({
+      nameKo: stripHtml(it.title),
+      addrKo: it.roadAddress||it.address||'',
+      mapx:   parseInt(it.mapx)||0,
+      mapy:   parseInt(it.mapy)||0,
+      dist:   haversine(parseFloat(userLat),parseFloat(userLng),
+                        (parseInt(it.mapy)||0)/1e7,(parseInt(it.mapx)||0)/1e7)
+    })).sort((a,b)=>a.dist-b.dist).slice(0,8);
+
+    // 3. Batch translate (names + addresses)
+    const toTranslate=items.flatMap(it=>[it.nameKo,it.addrKo]);
+    let translated=toTranslate; // fallback: show Korean
+    try{ translated=await deepLTranslate(toTranslate); }
+    catch(e){ console.warn('DeepL failed, showing Korean:',e); }
+
+    // 4. Merge translations
+    const results=items.map((it,i)=>({
+      ...it,
+      nameEn: translated[i*2]   ||it.nameKo,
+      addrEn: translated[i*2+1] ||it.addrKo,
+    }));
+
+    renderResults(results);
+  } catch(e){
+    console.error(e);
+    showError(e.message||'API error. Please try again.', fallbackUrl);
   }
+}
 
-  function onLocationSuccess(pos) {
-    userLat = pos.coords.latitude.toFixed(6);
-    userLng = pos.coords.longitude.toFixed(6);
-    locationReady = true;
+// ── Location ─────────────────────────────────────────────
+function setBar(state,strong,detail){
+  const bar=document.getElementById('locationBar');
+  bar.className='location-bar '+state;
+  document.getElementById('locStatus').textContent=strong;
+  document.getElementById('locDetail').textContent=detail;
+  document.getElementById('retryBtn').style.display=state==='error'?'block':'none';
+}
 
-    const acc = Math.round(pos.coords.accuracy);
-    setBar(
-      'success',
-      '📍 Location found!',
-      `Lat ${userLat}, Lng ${userLng}  ±${acc}m`
-    );
-    showToast('✅ Location ready — tap a button below!');
-  }
+function initLocation(){
+  setBar('loading','Detecting your location…','Please allow location access');
+  if(!navigator.geolocation){ setBar('error','GPS not supported','Please use a modern browser'); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      userLat=pos.coords.latitude.toFixed(6);
+      userLng=pos.coords.longitude.toFixed(6);
+      locationReady=true;
+      setBar('success','📍 Location found!',`Lat ${userLat}, Lng ${userLng}  ±${Math.round(pos.coords.accuracy)}m`);
+      showToast('✅ Location ready — tap a category!');
+    },
+    err=>{
+      locationReady=false;
+      const msgs={1:['Location access denied','Enable location in browser settings, then retry.'],
+                   2:['Location unavailable','Move to an open area and tap Retry.'],
+                   3:['Location timed out','GPS is slow. Try outside.']};
+      const [m,d]=msgs[err.code]||['Location error','Tap Retry.'];
+      setBar('error',m,d);
+    },
+    {enableHighAccuracy:true,timeout:12000,maximumAge:30000}
+  );
+}
 
-  function onLocationError(err) {
-    locationReady = false;
-    let msg = 'Unable to get location.';
-    let detail = 'Tap Retry to try again.';
+// ── Toast ─────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
 
-    if (err.code === 1) {
-      msg = 'Location access denied';
-      detail = 'Please enable location in browser settings, then retry.';
-    } else if (err.code === 2) {
-      msg = 'Location unavailable';
-      detail = 'Move to an open area and tap Retry.';
-    } else if (err.code === 3) {
-      msg = 'Location timed out';
-      detail = 'GPS is slow. Tap Retry or move outside.';
-    }
+// ── Keyboard ─────────────────────────────────────────────
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); c.click(); }
+}));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeResults(); });
 
-    setBar('error', msg, detail);
-    showToast('❌ ' + msg);
-  }
-
-  // ── Toast ──────────────────────────────────────────────
-  let toastTimer;
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
-  }
-
-  // ── Init ───────────────────────────────────────────────
-  initLocation();
+// ── Init ─────────────────────────────────────────────────
+initLocation();
 </script>
 </body>
 </html>
