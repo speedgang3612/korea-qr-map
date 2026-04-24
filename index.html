@@ -103,8 +103,11 @@
     .rc-dist{font-size:.75rem;font-weight:600;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:var(--accent);flex-shrink:0}
     .rc-addr{font-size:.78rem;color:var(--muted);line-height:1.45;display:flex;align-items:flex-start;gap:5px}
     .rc-addr-icon{flex-shrink:0;margin-top:1px}
-    .rc-link{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--accent);text-decoration:none;padding:6px 12px;border:1px solid rgba(79,142,247,.3);border-radius:8px;transition:all .2s;align-self:flex-start;margin-top:2px}
+    .rc-btns{display:flex;gap:8px;margin-top:2px;flex-wrap:wrap}
+    .rc-link{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--accent);text-decoration:none;padding:8px 10px;border:1px solid rgba(79,142,247,.3);border-radius:8px;transition:all .2s;white-space:nowrap;background:none;font-family:inherit;cursor:pointer}
     .rc-link:hover{background:rgba(79,142,247,.1);border-color:var(--accent)}
+    .rc-link.google{color:#34a853;border-color:rgba(52,168,83,.3)}
+    .rc-link.google:hover{background:rgba(52,168,83,.1);border-color:#34a853}
 
     /* toast */
     .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:30px;padding:12px 20px;font-size:.82rem;color:var(--text);white-space:nowrap;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;opacity:0;pointer-events:none}
@@ -264,6 +267,12 @@ function naverMapUrl(name,mapx,mapy){
   return `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(name)}&lat=${lat}&lng=${lng}&lang=en`;
 }
 
+function googleMapUrl(nameEn,mapx,mapy){
+  const lat=mapy/1e7, lng=mapx/1e7;
+  return `https://www.google.com/maps/search/?api=1` +
+         `&query=${encodeURIComponent(nameEn)}&center=${lat},${lng}`;
+}
+
 // ── Naver Local Search ───────────────────────────────────
 async function naverSearch(query){
   if(!NAVER_CLIENT_SECRET) throw new Error('NAVER_CLIENT_SECRET is not set');
@@ -356,9 +365,16 @@ function renderResults(items){
         <span class="rc-dist">${fmtDist(it.dist)}</span>
       </div>
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
-      <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
-        View on Naver Map ↗
-      </button>
+      <div class="rc-btns">
+        <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
+          📱 Naver Map
+        </button>
+        <a class="rc-link google"
+           href="${googleMapUrl(it.nameEn,it.mapx,it.mapy)}"
+           target="_blank" rel="noopener">
+          🗺️ Google Maps
+        </a>
+      </div>
     </div>`).join('');
   document.getElementById('rpBody').innerHTML=`<div class="result-list">${html}</div>`;
 }
