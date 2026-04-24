@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Korea Travel Guide – Find nearby subway stations, bus stops, restaurants, and convenience stores using GPS on Naver Map." />
+  <title>Korea Travel Guide 🇰🇷</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161a24;
+      --card:      #1e2333;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #f0f2f8;
+      --muted:     #8891a8;
+      --accent:    #4f8ef7;
+      --success:   #22c55e;
+      --warning:   #f59e0b;
+      --error:     #ef4444;
+
+      --c1: #4f8ef7;   /* subway – blue */
+      --c2: #22c55e;   /* bus    – green */
+      --c3: #f97316;   /* food   – orange */
+      --c4: #a78bfa;   /* store  – purple */
+
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Background decoration ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79,142,247,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(167,139,250,0.10) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 20px 48px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .flag {
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-bottom: 8px;
+      display: block;
+      animation: floatEmoji 3s ease-in-out infinite;
+    }
+
+    @keyframes floatEmoji {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    .header h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #a0b4d8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── Location status bar ── */
+    .location-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 28px;
+      transition: border-color 0.3s;
+    }
+
+    .location-bar.success { border-color: rgba(34,197,94,0.4); }
+    .location-bar.error   { border-color: rgba(239,68,68,0.4); }
+    .location-bar.loading { border-color: rgba(79,142,247,0.4); }
+
+    .loc-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .location-bar.success .loc-dot { background: var(--success); box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+    .location-bar.error   .loc-dot { background: var(--error);   box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+    .location-bar.loading .loc-dot {
+      background: var(--accent);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(79,142,247,0.5); }
+      50%       { box-shadow: 0 0 0 8px rgba(79,142,247,0); }
+    }
+
+    .loc-text {
+      flex: 1;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .loc-text strong {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .retry-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-family: inherit;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .retry-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Grid of action cards ── */
+    .grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 16px 20px;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Glow hover by card color */
+    .card-1:hover { box-shadow: 0 8px 32px rgba(79,142,247,0.25);  border-color: rgba(79,142,247,0.5); }
+    .card-2:hover { box-shadow: 0 8px 32px rgba(34,197,94,0.25);   border-color: rgba(34,197,94,0.5); }
+    .card-3:hover { box-shadow: 0 8px 32px rgba(249,115,22,0.25);  border-color: rgba(249,115,22,0.5); }
+    .card-4:hover { box-shadow: 0 8px 32px rgba(167,139,250,0.25); border-color: rgba(167,139,250,0.5); }
+
+    .card:active { transform: scale(0.95); }
+
+    /* Top-left accent corner */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 60px; height: 60px;
+      border-radius: 0 0 60px 0;
+      opacity: 0.12;
+    }
+
+    .card-1::before { background: var(--c1); }
+    .card-2::before { background: var(--c2); }
+    .card-3::before { background: var(--c3); }
+    .card-4::before { background: var(--c4); }
+
+    .card-icon {
+      font-size: 2.6rem;
+      line-height: 1;
+      display: block;
+    }
+
+    .card-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .card-sub {
+      font-size: 0.70rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* Color pill at bottom */
+    .card-pill {
+      margin-top: 4px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .card-1 .card-pill { background: rgba(79,142,247,0.15);  color: var(--c1); }
+    .card-2 .card-pill { background: rgba(34,197,94,0.15);   color: var(--c2); }
+    .card-3 .card-pill { background: rgba(249,115,22,0.15);  color: var(--c3); }
+    .card-4 .card-pill { background: rgba(167,139,250,0.15); color: var(--c4); }
+
+    /* ── Tip section ── */
+    .tip {
+      margin-top: 28px;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .tip-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .tip p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .tip p strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 12px 20px;
+      font-size: 0.82rem;
+      color: var(--text);
+      white-space: nowrap;
+      z-index: 999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ── Responsive tweak ── */
+    @media (max-width: 360px) {
+      .header h1  { font-size: 1.4rem; }
+      .card-icon  { font-size: 2.2rem; }
+      .card-label { font-size: 0.76rem; }
+    }
+
+    @media (min-width: 481px) {
+      .page { padding-top: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <span class="flag">🇰🇷</span>
+    <h1>Korea Travel Guide</h1>
+    <p>Tap any button to find nearby places<br>using your current location</p>
+  </header>
+
+  <!-- Location Status -->
+  <div class="location-bar loading" id="locationBar">
+    <div class="loc-dot" id="locDot"></div>
+    <div class="loc-text">
+      <strong id="locStatus">Detecting your location…</strong>
+      <span id="locDetail">Please allow location access</span>
+    </div>
+    <button class="retry-btn" id="retryBtn" onclick="initLocation()" style="display:none">Retry</button>
+  </div>
+
+  <!-- Action Cards -->
+  <main class="grid" id="cardGrid">
+
+    <div class="card card-1" id="btn-subway" onclick="openMap('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
+      <span class="card-icon">🚇</span>
+      <span class="card-label">Find Subway<br>Station</span>
+      <span class="card-sub">지하철역 찾기</span>
+      <span class="card-pill">Naver Map</span>
+    </div>
+
+    <div class="card card-2" id="btn-bus" onclick="openMap('bus')" role="button" tabindex="0" aria-label="Find Bus Stop">
+      <span class="card-icon">🚌</span>
+      <span class="card-label">Find Bus<br>Stop</span>
+      <span class="card-sub">버스 정류장 찾기</span>
+      <span class="card-pill">Naver Map</span>
+    </div>
+
+    <div class="card card-3" id="btn-food" onclick="openMap('restaurant')" role="button" tabindex="0" aria-label="Find Restaurant">
+      <span class="card-icon">🍜</span>
+      <span class="card-label">Find<br>Restaurant</span>
+      <span class="card-sub">맛집 찾기</span>
+      <span class="card-pill">Naver Map</span>
+    </div>
+
+    <div class="card card-4" id="btn-store" onclick="openMap('convenience')" role="button" tabindex="0" aria-label="Find Convenience Store">
+      <span class="card-icon">🏪</span>
+      <span class="card-label">Find Convenience<br>Store</span>
+      <span class="card-sub">편의점 찾기</span>
+      <span class="card-pill">Naver Map</span>
+    </div>
+
+  </main>
+
+  <!-- Tip -->
+  <aside class="tip">
+    <span class="tip-icon">💡</span>
+    <p>
+      <strong>How it works:</strong> Each button opens Naver Map (Korea's most popular navigation app) with your current GPS location to find nearby places. <strong>No app download needed</strong> — works directly in your browser.
+    </p>
+  </aside>
+
+  <footer class="footer">
+    Powered by Naver Map · GPS required · Works on any smartphone
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── State ──────────────────────────────────────────────
+  let userLat = null;
+  let userLng = null;
+  let locationReady = false;
+
+  // ── Naver Map URL builder ──────────────────────────────
+  // Query keywords per category (Korean for better Naver results)
+  const QUERIES = {
+    subway:      '지하철역',
+    bus:         '버스정류장',
+    restaurant:  '맛집',
+    convenience: '편의점'
+  };
+
+  function buildNaverUrl(type, lat, lng) {
+    const query = encodeURIComponent(QUERIES[type]);
+    // Naver Map mobile search: search around the given coordinates
+    // Uses mobile web URL with coordinates embedded in the query string
+    return `https://m.map.naver.com/search2/search.nhn?query=${query}&type=all&queryRank=0&where=m&lng=${lng}&lat=${lat}&dlng=${lng}&dlat=${lat}&level=12`;
+  }
+
+  // ── Open map ──────────────────────────────────────────
+  function openMap(type) {
+    if (!locationReady || userLat === null) {
+      showToast('⏳ Still getting your location… please wait');
+      return;
+    }
+    const url = buildNaverUrl(type, userLat, userLng);
+    window.open(url, '_blank');
+  }
+
+  // ── Keyboard support for cards ────────────────────────
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  // ── Location bar helpers ───────────────────────────────
+  function setBar(state, strong, detail) {
+    const bar = document.getElementById('locationBar');
+    const status = document.getElementById('locStatus');
+    const det = document.getElementById('locDetail');
+    const retry = document.getElementById('retryBtn');
+
+    bar.className = 'location-bar ' + state;
+    status.textContent = strong;
+    det.textContent = detail;
+    retry.style.display = state === 'error' ? 'block' : 'none';
+  }
+
+  // ── Geolocation ────────────────────────────────────────
+  function initLocation() {
+    setBar('loading', 'Detecting your location…', 'Please allow location access');
+
+    if (!navigator.geolocation) {
+      setBar('error', 'GPS not supported', 'Please use a modern browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      onLocationSuccess,
+      onLocationError,
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
+    );
+  }
+
+  function onLocationSuccess(pos) {
+    userLat = pos.coords.latitude.toFixed(6);
+    userLng = pos.coords.longitude.toFixed(6);
+    locationReady = true;
+
+    const acc = Math.round(pos.coords.accuracy);
+    setBar(
+      'success',
+      '📍 Location found!',
+      `Lat ${userLat}, Lng ${userLng}  ±${acc}m`
+    );
+    showToast('✅ Location ready — tap a button below!');
+  }
+
+  function onLocationError(err) {
+    locationReady = false;
+    let msg = 'Unable to get location.';
+    let detail = 'Tap Retry to try again.';
+
+    if (err.code === 1) {
+      msg = 'Location access denied';
+      detail = 'Please enable location in browser settings, then retry.';
+    } else if (err.code === 2) {
+      msg = 'Location unavailable';
+      detail = 'Move to an open area and tap Retry.';
+    } else if (err.code === 3) {
+      msg = 'Location timed out';
+      detail = 'GPS is slow. Tap Retry or move outside.';
+    }
+
+    setBar('error', msg, detail);
+    showToast('❌ ' + msg);
+  }
+
+  // ── Toast ──────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  // ── Init ───────────────────────────────────────────────
+  initLocation();
+</script>
+</body>
+</html>
