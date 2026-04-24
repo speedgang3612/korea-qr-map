@@ -103,7 +103,9 @@
     .rc-dist{font-size:.75rem;font-weight:600;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:var(--accent);flex-shrink:0}
     .rc-addr{font-size:.78rem;color:var(--muted);line-height:1.45;display:flex;align-items:flex-start;gap:5px}
     .rc-addr-icon{flex-shrink:0;margin-top:1px}
-    .rc-btns{display:flex;gap:8px;margin-top:2px;flex-wrap:wrap}
+    .rc-btns{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+    .rc-btn-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+    .rc-btn-sub{font-size:.63rem;color:var(--muted);text-align:center;line-height:1.5;word-break:keep-all}
     .rc-link{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--accent);text-decoration:none;padding:8px 10px;border:1px solid rgba(79,142,247,.3);border-radius:8px;transition:all .2s;white-space:nowrap;background:none;font-family:inherit;cursor:pointer}
     .rc-link:hover{background:rgba(79,142,247,.1);border-color:var(--accent)}
     .rc-link.google{color:#34a853;border-color:rgba(52,168,83,.3)}
@@ -366,14 +368,20 @@ function renderResults(items){
       </div>
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
       <div class="rc-btns">
-        <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
-          📱 Naver Map
-        </button>
-        <a class="rc-link google"
-           href="${googleMapUrl(it.nameEn,it.mapx,it.mapy)}"
-           target="_blank" rel="noopener">
-          🗺️ Google Maps
-        </a>
+        <div class="rc-btn-wrap">
+          <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
+            📱 Naver Map
+          </button>
+          <span class="rc-btn-sub">More detailed<br>⚙️ Set app to English in Settings</span>
+        </div>
+        <div class="rc-btn-wrap">
+          <a class="rc-link google"
+             href="${googleMapUrl(it.nameEn,it.mapx,it.mapy)}"
+             target="_blank" rel="noopener">
+            🗺️ Google Maps
+          </a>
+          <span class="rc-btn-sub">Faster · English</span>
+        </div>
       </div>
     </div>`).join('');
   document.getElementById('rpBody').innerHTML=`<div class="result-list">${html}</div>`;
