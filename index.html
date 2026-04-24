@@ -215,8 +215,6 @@
 const NAVER_CLIENT_ID     = 'dzy8A8DveVa1HLrkLGhA';
 const NAVER_CLIENT_SECRET = 'npl0Jjjv5r';
 const DEEPL_API_KEY          = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
-const NAVER_CLOUD_ID         = 'h6lriwqixr';
-const NAVER_CLOUD_SECRET     = 'QKkuZ0deQUO71QuERj2E6q1ttozINZMgmsbVbs9d';
 const CORS_PROXY             = 'https://corsproxy.io/?';
 
 const CATS = {
@@ -279,28 +277,26 @@ function dbSet(id, val, ok){
   });
 }
 
-// ── Naver Cloud Reverse Geocoding ───────────────────────
+// ── BigDataCloud Reverse Geocoding (browser-native, no proxy, no API key) ──
 async function reverseGeocode(lat, lng){
   dbSet('dbRgcStatus', '⏳ calling…');
-  const target =
-    `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc` +
-    `?coords=${lng},${lat}&output=json&orders=admcode`;
-  const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
-    headers:{
-      'X-NCP-APIGW-API-KEY-ID': NAVER_CLOUD_ID,
-      'X-NCP-APIGW-API-KEY':    NAVER_CLOUD_SECRET
-    }
-  });
+  // 브라우저 전용 엔드포인트 — CORS 허용, API키 불필요
+  const url = `https://api.bigdatacloud.net/data/reverse-geocode-client` +
+              `?latitude=${lat}&longitude=${lng}&localityLanguage=ko`;
+  const res = await fetch(url);  // 프록시 없이 직접 호출
   dbSet('dbRgcHttp', res.status, res.ok);
   if(!res.ok){
     dbSet('dbRgcStatus', '❌ HTTP error', false);
     throw new Error(`RGC ${res.status}`);
   }
   const d = await res.json();
-  const area2 = d.results?.[0]?.region?.area2?.name || '';
-  dbSet('dbArea2',    area2 || '(empty)', !!area2);
-  dbSet('dbRgcStatus', area2 ? '✅ success' : '⚠️ area2 empty', !!area2);
-  return area2;
+  // adminLevel 6 = 구(區) 단위 (실제 API 응답 확인됨)
+  // locality 필드는 동(洞) 단위라 사용 불가
+  const admins = d.localityInfo?.administrative || [];
+  const district = admins.find(a => a.adminLevel === 6)?.name || '';
+  dbSet('dbArea2',     district || '(empty)', !!district);
+  dbSet('dbRgcStatus', district ? '✅ success' : '⚠️ no adminLevel 6', !!district);
+  return district;
 }
 
 // ── DeepL Translation ────────────────────────────────────
