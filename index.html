@@ -112,6 +112,23 @@
 
     @media(max-width:360px){.header h1{font-size:1.4rem}.card-icon{font-size:2.2rem}.card-label{font-size:.76rem}}
     @media(min-width:481px){.page{padding-top:48px}.rp{max-width:480px;left:50%;transform:translateX(calc(-50% + 100%))}.rp.open{transform:translateX(-50%)}}
+
+    /* ── Naver Map Modal ── */
+    .nm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:400;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+    .nm-overlay.show{opacity:1;pointer-events:auto}
+    .nm-modal{background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border);width:100%;max-width:480px;padding:28px 22px 40px;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.56,.64,1)}
+    .nm-overlay.show .nm-modal{transform:translateY(0)}
+    .nm-modal h2{font-size:1.05rem;font-weight:700;margin-bottom:8px;line-height:1.4}
+    .nm-desc{font-size:.84rem;color:var(--text-muted);line-height:1.65;margin-bottom:20px}
+    .nm-dl-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+    .nm-dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;font-size:.9rem;font-weight:600;text-decoration:none;color:#fff;background:var(--accent);transition:opacity .15s}
+    .nm-dl-btn.android{background:#2d9e5f}
+    .nm-dl-btn:active{opacity:.8}
+    .nm-steps{background:#0d1f3a;border-radius:12px;padding:14px 16px;font-size:.78rem;line-height:1.85;color:var(--text-muted);margin-bottom:18px}
+    .nm-steps strong{color:var(--text);display:block;margin-bottom:2px;font-size:.8rem}
+    .nm-bottom{display:flex;gap:10px}
+    .nm-web-btn{flex:1;padding:12px;border-radius:12px;text-align:center;font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--border);color:var(--text-muted)}
+    .nm-close-btn{flex:1;padding:12px;border-radius:12px;text-align:center;font-size:.82rem;font-weight:600;background:var(--border);color:var(--text);cursor:pointer;border:none}
   </style>
 </head>
 <body>
@@ -177,6 +194,41 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ── Naver Map Modal ── -->
+<div class="nm-overlay" id="nmOverlay" onclick="closeNaverModal(event)">
+  <div class="nm-modal">
+    <h2>📱 Get Naver Map for English Navigation</h2>
+    <p class="nm-desc">
+      Naver Map is Korea’s most accurate navigation app.<br>
+      Download it free — no account needed for basic use!
+    </p>
+    <div class="nm-dl-btns">
+      <a class="nm-dl-btn" id="nmIosBtn"
+         href="https://apps.apple.com/us/app/naver-maps-navigation/id311867728"
+         target="_blank" rel="noopener">
+        🍎 Download for iPhone →
+      </a>
+      <a class="nm-dl-btn android" id="nmAndroidBtn"
+         href="https://play.google.com/store/apps/details?id=com.nhn.android.nmap"
+         target="_blank" rel="noopener">
+        🤖 Download for Android →
+      </a>
+    </div>
+    <div class="nm-steps">
+      <strong>How to switch to English:</strong>
+      1. Open Naver Map → tap ☰ (top left)<br>
+      2. Tap ⚙️ Settings<br>
+      3. Tap Language → Select English ✓
+    </div>
+    <div class="nm-bottom">
+      <a class="nm-web-btn" id="nmWebLink" href="#" target="_blank" rel="noopener">
+        Open in browser (Korean)
+      </a>
+      <button class="nm-close-btn" onclick="closeNaverModal()">Close</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── Config ──────────────────────────────────────────────
@@ -304,11 +356,22 @@ function renderResults(items){
         <span class="rc-dist">${fmtDist(it.dist)}</span>
       </div>
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
-      <a class="rc-link" href="${naverMapUrl(it.nameKo,it.mapx,it.mapy)}" target="_blank" rel="noopener">
+      <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
         View on Naver Map ↗
-      </a>
+      </button>
     </div>`).join('');
   document.getElementById('rpBody').innerHTML=`<div class="result-list">${html}</div>`;
+}
+
+// ── Naver Map Modal ─────────────────────────────────────
+function openNaverModal(url){
+  document.getElementById('nmWebLink').href = url;
+  document.getElementById('nmOverlay').classList.add('show');
+}
+function closeNaverModal(e){
+  // overlay 배경 클릭 시에만 닫힘 (모달 내부 클릭은 무시)
+  if(e && e.target !== document.getElementById('nmOverlay')) return;
+  document.getElementById('nmOverlay').classList.remove('show');
 }
 
 // ── Main Search Flow ─────────────────────────────────────
