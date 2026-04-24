@@ -112,6 +112,15 @@
 
     @media(max-width:360px){.header h1{font-size:1.4rem}.card-icon{font-size:2.2rem}.card-label{font-size:.76rem}}
     @media(min-width:481px){.page{padding-top:48px}.rp{max-width:480px;left:50%;transform:translateX(calc(-50% + 100%))}.rp.open{transform:translateX(-50%)}}
+
+    /* ── Debug Box ── */
+    .debug-box{width:100%;background:#0a1628;border:1px solid #2a3a5c;border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;font-family:monospace;font-size:.72rem;line-height:1.7;color:#7eb3f7;word-break:break-all}
+    .debug-box .db-title{font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#4f8ef7;margin-bottom:6px;border-bottom:1px solid #1e2e50;padding-bottom:4px}
+    .debug-box .db-row{display:flex;gap:6px}
+    .debug-box .db-key{color:#5a6a8a;flex-shrink:0}
+    .debug-box .db-val{color:#a8c8f8}
+    .debug-box .db-ok{color:#22c55e}
+    .debug-box .db-err{color:#ef4444}
   </style>
 </head>
 <body>
@@ -131,6 +140,16 @@
       <span id="locDetail">Please allow location access</span>
     </div>
     <button class="retry-btn" id="retryBtn" onclick="initLocation()" style="display:none">Retry</button>
+  </div>
+
+  <!-- Debug Box -->
+  <div class="debug-box" id="debugBox">
+    <div class="db-title">🐛 Debug Panel</div>
+    <div class="db-row"><span class="db-key">RGC status:</span><span class="db-val" id="dbRgcStatus">—</span></div>
+    <div class="db-row"><span class="db-key">HTTP code:</span><span class="db-val" id="dbRgcHttp">—</span></div>
+    <div class="db-row"><span class="db-key">area2.name:</span><span class="db-val" id="dbArea2">—</span></div>
+    <div class="db-row"><span class="db-key">userDistrict:</span><span class="db-val" id="dbDistrict">—</span></div>
+    <div class="db-row"><span class="db-key">searchQuery:</span><span class="db-val" id="dbQuery">—</span></div>
   </div>
 
   <main class="grid">
@@ -226,8 +245,17 @@ async function naverSearch(query){
   return d.items||[];
 }
 
+// ── Debug helper ────────────────────────────────────────
+function dbSet(id, val, ok){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = val;
+  el.className = 'db-val' + (ok === true ? ' db-ok' : ok === false ? ' db-err' : '');
+}
+
 // ── Naver Cloud Reverse Geocoding ───────────────────────
 async function reverseGeocode(lat, lng){
+  dbSet('dbRgcStatus', '⏳ calling…');
   const target =
     `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc` +
     `?coords=${lng},${lat}&output=json&orders=admcode`;
@@ -237,10 +265,16 @@ async function reverseGeocode(lat, lng){
       'X-NCP-APIGW-API-KEY':    NAVER_CLOUD_SECRET
     }
   });
-  if(!res.ok) throw new Error(`RGC ${res.status}`);
+  dbSet('dbRgcHttp', res.status, res.ok);
+  if(!res.ok){
+    dbSet('dbRgcStatus', '❌ HTTP error', false);
+    throw new Error(`RGC ${res.status}`);
+  }
   const d = await res.json();
-  // area2 = 시·군·구 단위 (예: "마포구", "해운대구")
-  return d.results?.[0]?.region?.area2?.name || '';
+  const area2 = d.results?.[0]?.region?.area2?.name || '';
+  dbSet('dbArea2',    area2 || '(empty)', !!area2);
+  dbSet('dbRgcStatus', area2 ? '✅ success' : '⚠️ area2 empty', !!area2);
+  return area2;
 }
 
 // ── DeepL Translation ────────────────────────────────────
@@ -333,9 +367,13 @@ async function searchNearby(type){
     // 0. Reverse Geocoding → 행정구역 이름 (실패 시 빈 문자열로 폴백)
     let district = '';
     try{ district = await reverseGeocode(userLat, userLng); }
-    catch(e){ console.warn('RGC failed, using global search:', e); }
+    catch(e){
+      dbSet('dbRgcStatus', '❌ ' + e.message, false);
+    }
     userDistrict = district;
     const searchQuery = district ? `${district} ${cat.query}` : cat.query;
+    dbSet('dbDistrict', userDistrict || '(empty — global search)', !!userDistrict);
+    dbSet('dbQuery',    searchQuery, true);
 
     // 1. Naver search (지역명 포함)
     const raw=await naverSearch(searchQuery);
