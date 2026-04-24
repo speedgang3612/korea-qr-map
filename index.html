@@ -367,28 +367,24 @@
     <div class="card card-1" id="btn-subway" onclick="openMap('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
       <span class="card-icon">🚇</span>
       <span class="card-label">Find Subway<br>Station</span>
-      <span class="card-sub">지하철역 찾기</span>
       <span class="card-pill">Naver Map</span>
     </div>
 
     <div class="card card-2" id="btn-bus" onclick="openMap('bus')" role="button" tabindex="0" aria-label="Find Bus Stop">
       <span class="card-icon">🚌</span>
       <span class="card-label">Find Bus<br>Stop</span>
-      <span class="card-sub">버스 정류장 찾기</span>
       <span class="card-pill">Naver Map</span>
     </div>
 
     <div class="card card-3" id="btn-food" onclick="openMap('restaurant')" role="button" tabindex="0" aria-label="Find Restaurant">
       <span class="card-icon">🍜</span>
       <span class="card-label">Find<br>Restaurant</span>
-      <span class="card-sub">맛집 찾기</span>
       <span class="card-pill">Naver Map</span>
     </div>
 
     <div class="card card-4" id="btn-store" onclick="openMap('convenience')" role="button" tabindex="0" aria-label="Find Convenience Store">
       <span class="card-icon">🏪</span>
       <span class="card-label">Find Convenience<br>Store</span>
-      <span class="card-sub">편의점 찾기</span>
       <span class="card-pill">Naver Map</span>
     </div>
 
@@ -418,19 +414,19 @@
   let locationReady = false;
 
   // ── Naver Map URL builder ──────────────────────────────
-  // Query keywords per category (Korean for better Naver results)
+  // Query keywords per category (English, pre-encoded)
   const QUERIES = {
-    subway:      '지하철역',
-    bus:         '버스정류장',
-    restaurant:  '맛집',
-    convenience: '편의점'
+    subway:      'subway%20station',
+    bus:         'bus%20stop',
+    restaurant:  'restaurant',
+    convenience: 'convenience%20store'
   };
 
   function buildNaverUrl(type, lat, lng) {
-    const query = encodeURIComponent(QUERIES[type]);
+    const query = QUERIES[type]; // already URL-encoded, skip encodeURIComponent
     // Naver Map mobile search: search around the given coordinates
     // Uses mobile web URL with coordinates embedded in the query string
-    return `https://m.map.naver.com/search2/search.nhn?query=${query}&type=all&queryRank=0&where=m&lng=${lng}&lat=${lat}&dlng=${lng}&dlat=${lat}&level=12`;
+    return `https://m.map.naver.com/search2/search.nhn?query=${query}&type=all&queryRank=0&where=m&lng=${lng}&lat=${lat}&dlng=${lng}&dlat=${lat}&level=12&lang=en`;
   }
 
   // ── Open map ──────────────────────────────────────────
