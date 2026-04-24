@@ -121,6 +121,12 @@
     .debug-box .db-val{color:#a8c8f8}
     .debug-box .db-ok{color:#22c55e}
     .debug-box .db-err{color:#ef4444}
+
+    /* ── Results Panel Debug Strip ── */
+    .rp-debug{background:#0a1628;border-bottom:1px solid #2a3a5c;padding:7px 16px;font-family:monospace;font-size:.68rem;line-height:1.65;color:#5a6a8a;flex-shrink:0;word-break:break-all}
+    .rp-debug span{color:#7eb3f7;margin-left:3px}
+    .rp-debug .ok{color:#22c55e}
+    .rp-debug .err{color:#ef4444}
   </style>
 </head>
 <body>
@@ -192,6 +198,13 @@
     </div>
     <span class="rp-count" id="rpCount"></span>
   </div>
+  <!-- Debug strip: always visible at top of results panel -->
+  <div class="rp-debug">
+    RGC:<span id="rd-status">—</span> &nbsp;·&nbsp;
+    HTTP:<span id="rd-http">—</span> &nbsp;·&nbsp;
+    area2:<span id="rd-area2">—</span><br>
+    query:<span id="rd-query">—</span>
+  </div>
   <div class="rp-body" id="rpBody"></div>
 </div>
 
@@ -246,11 +259,24 @@ async function naverSearch(query){
 }
 
 // ── Debug helper ────────────────────────────────────────
+// Maps main-page debug IDs → results-panel mirror IDs
+const DB_MIRROR = {
+  dbRgcStatus: 'rd-status',
+  dbRgcHttp:   'rd-http',
+  dbArea2:     'rd-area2',
+  dbQuery:     'rd-query',
+};
 function dbSet(id, val, ok){
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.textContent = val;
-  el.className = 'db-val' + (ok === true ? ' db-ok' : ok === false ? ' db-err' : '');
+  [id, DB_MIRROR[id]].filter(Boolean).forEach(tid => {
+    const el = document.getElementById(tid);
+    if(!el) return;
+    el.textContent = val;
+    // Main page uses db-val/db-ok/db-err; strip uses ok/err
+    const isStrip = tid.startsWith('rd-');
+    el.className = isStrip
+      ? (ok === true ? 'ok' : ok === false ? 'err' : '')
+      : 'db-val' + (ok === true ? ' db-ok' : ok === false ? ' db-err' : '');
+  });
 }
 
 // ── Naver Cloud Reverse Geocoding ───────────────────────
