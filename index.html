@@ -182,8 +182,10 @@
 // ── Config ──────────────────────────────────────────────
 const NAVER_CLIENT_ID     = 'dzy8A8DveVa1HLrkLGhA';
 const NAVER_CLIENT_SECRET = 'npl0Jjjv5r';
-const DEEPL_API_KEY       = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
-const CORS_PROXY          = 'https://corsproxy.io/?url=';
+const DEEPL_API_KEY          = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
+const NAVER_CLOUD_ID         = 'h6lriwqixr';
+const NAVER_CLOUD_SECRET     = 'QKkuZ0deQUO71QuERj2E6q1ttozINZMgmsbVbs9d';
+const CORS_PROXY             = 'https://corsproxy.io/?';
 
 const CATS = {
   subway:      { query:'지하철역',   label:'Subway Stations',    icon:'🚇' },
@@ -193,7 +195,7 @@ const CATS = {
 };
 
 // ── State ───────────────────────────────────────────────
-let userLat = null, userLng = null, locationReady = false;
+let userLat = null, userLng = null, locationReady = false, userDistrict = '';
 
 // ── Helpers ─────────────────────────────────────────────
 function stripHtml(s){ return s.replace(/<[^>]*>/g,''); }
@@ -224,18 +226,34 @@ async function naverSearch(query){
   return d.items||[];
 }
 
+// ── Naver Cloud Reverse Geocoding ───────────────────────
+async function reverseGeocode(lat, lng){
+  const target =
+    `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc` +
+    `?coords=${lng},${lat}&output=json&orders=admcode`;
+  const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
+    headers:{
+      'X-NCP-APIGW-API-KEY-ID': NAVER_CLOUD_ID,
+      'X-NCP-APIGW-API-KEY':    NAVER_CLOUD_SECRET
+    }
+  });
+  if(!res.ok) throw new Error(`RGC ${res.status}`);
+  const d = await res.json();
+  // area2 = 시·군·구 단위 (예: "마포구", "해운대구")
+  return d.results?.[0]?.region?.area2?.name || '';
+}
+
 // ── DeepL Translation ────────────────────────────────────
 async function deepLTranslate(texts){
   if(!texts.length) return [];
-  const params=new URLSearchParams();
-  params.append('auth_key',DEEPL_API_KEY);
-  params.append('target_lang','EN');
-  texts.forEach(t=>params.append('text',t));
   const target='https://api-free.deepl.com/v2/translate';
   const res=await fetch(CORS_PROXY+encodeURIComponent(target),{
     method:'POST',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:params.toString()
+    headers:{
+      'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`,
+      'Content-Type':  'application/json'
+    },
+    body: JSON.stringify({ text: texts, target_lang: 'EN' })
   });
   if(!res.ok) throw new Error(`DeepL API ${res.status}`);
   const d=await res.json();
@@ -312,8 +330,15 @@ async function searchNearby(type){
   const fallbackUrl=`https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(cat.query)}&lat=${userLat}&lng=${userLng}&lang=en`;
 
   try {
-    // 1. Naver search
-    const raw=await naverSearch(cat.query);
+    // 0. Reverse Geocoding → 행정구역 이름 (실패 시 빈 문자열로 폴백)
+    let district = '';
+    try{ district = await reverseGeocode(userLat, userLng); }
+    catch(e){ console.warn('RGC failed, using global search:', e); }
+    userDistrict = district;
+    const searchQuery = district ? `${district} ${cat.query}` : cat.query;
+
+    // 1. Naver search (지역명 포함)
+    const raw=await naverSearch(searchQuery);
     if(!raw.length){ showEmpty(); return; }
 
     // 2. Distance & sort
