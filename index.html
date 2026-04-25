@@ -1,494 +1,1305 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-  <meta name="description" content="Korea Travel Guide – Find nearby places in English using GPS."/>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-800PGMFEHK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-800PGMFEHK');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta name="description" content="Korea Travel Guide – Find nearby places in English using GPS." />
   <title>Korea Travel Guide 🇰🇷</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=h6lriwqixr"></script>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#0d0f14;--surface:#161a24;--card:#1e2333;--border:rgba(255,255,255,.07);
-      --text:#f0f2f8;--muted:#8891a8;--accent:#4f8ef7;--success:#22c55e;--error:#ef4444;
-      --c1:#4f8ef7;--c2:#22c55e;--c3:#f97316;--c4:#a78bfa;
-      --radius:20px;--radius-sm:12px;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
     }
-    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(79,142,247,.18) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(167,139,250,.10) 0%,transparent 50%);pointer-events:none;z-index:0}
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a24;
+      --card: #1e2333;
+      --border: rgba(255, 255, 255, .07);
+      --text: #f0f2f8;
+      --muted: #8891a8;
+      --accent: #4f8ef7;
+      --success: #22c55e;
+      --error: #ef4444;
+      --c1: #4f8ef7;
+      --c2: #22c55e;
+      --c3: #f97316;
+      --c4: #a78bfa;
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79, 142, 247, .18) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(167, 139, 250, .10) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0
+    }
 
     /* ── Main page ── */
-    .page{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:28px 20px 48px;max-width:480px;margin:0 auto}
-    .header{width:100%;text-align:center;margin-bottom:28px}
-    .flag{font-size:2.4rem;line-height:1;margin-bottom:8px;display:block;animation:floatEmoji 3s ease-in-out infinite}
-    @keyframes floatEmoji{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-    .header h1{font-size:1.65rem;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#fff 30%,#a0b4d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
-    .header p{font-size:.88rem;color:var(--muted);line-height:1.5}
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 20px 48px;
+      max-width: 480px;
+      margin: 0 auto
+    }
+
+    .header {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 28px
+    }
+
+    .flag {
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-bottom: 8px;
+      display: block;
+      animation: floatEmoji 3s ease-in-out infinite
+    }
+
+    @keyframes floatEmoji {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-6px)
+      }
+    }
+
+    .header h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      background: linear-gradient(135deg, #fff 30%, #a0b4d8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px
+    }
+
+    .header p {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.5
+    }
 
     /* location bar */
-    .location-bar{width:100%;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:28px;transition:border-color .3s}
-    .location-bar.success{border-color:rgba(34,197,94,.4)}.location-bar.error{border-color:rgba(239,68,68,.4)}.location-bar.loading{border-color:rgba(79,142,247,.4)}
-    .loc-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
-    .location-bar.success .loc-dot{background:var(--success);box-shadow:0 0 0 3px rgba(34,197,94,.2)}
-    .location-bar.error .loc-dot{background:var(--error);box-shadow:0 0 0 3px rgba(239,68,68,.2)}
-    .location-bar.loading .loc-dot{background:var(--accent);animation:pulse 1.2s ease-in-out infinite}
-    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,142,247,.5)}50%{box-shadow:0 0 0 8px rgba(79,142,247,0)}}
-    .loc-text{flex:1;font-size:.82rem;color:var(--muted);line-height:1.35}
-    .loc-text strong{display:block;font-size:.88rem;font-weight:600;color:var(--text)}
-    .retry-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.78rem;font-family:inherit;padding:6px 10px;cursor:pointer;transition:all .2s;white-space:nowrap}
-    .retry-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .location-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 28px;
+      transition: border-color .3s
+    }
+
+    .location-bar.success {
+      border-color: rgba(34, 197, 94, .4)
+    }
+
+    .location-bar.error {
+      border-color: rgba(239, 68, 68, .4)
+    }
+
+    .location-bar.loading {
+      border-color: rgba(79, 142, 247, .4)
+    }
+
+    .loc-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background .3s
+    }
+
+    .location-bar.success .loc-dot {
+      background: var(--success);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .2)
+    }
+
+    .location-bar.error .loc-dot {
+      background: var(--error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, .2)
+    }
+
+    .location-bar.loading .loc-dot {
+      background: var(--accent);
+      animation: pulse 1.2s ease-in-out infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(79, 142, 247, .5)
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(79, 142, 247, 0)
+      }
+    }
+
+    .loc-text {
+      flex: 1;
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.35
+    }
+
+    .loc-text strong {
+      display: block;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .retry-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-family: inherit;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .retry-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
 
     /* language selector */
-    .lang-bar{width:100%;display:flex;gap:8px;margin-bottom:28px}
-    .lang-btn{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:.78rem;font-family:inherit;padding:9px 6px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.3}
-    .lang-btn:hover{border-color:rgba(79,142,247,.4);color:var(--text)}
-    .lang-btn.active{background:rgba(79,142,247,.15);border-color:var(--accent);color:var(--accent);font-weight:600}
+    .lang-bar {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px
+    }
+
+    .lang-btn {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-family: inherit;
+      padding: 9px 6px;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      line-height: 1.3
+    }
+
+    .lang-btn:hover {
+      border-color: rgba(79, 142, 247, .4);
+      color: var(--text)
+    }
+
+    .lang-btn.active {
+      background: rgba(79, 142, 247, .15);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600
+    }
 
     /* category grid */
-    .grid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 16px 20px;text-align:center;cursor:pointer;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;-webkit-tap-highlight-color:transparent;user-select:none;display:flex;flex-direction:column;align-items:center;gap:10px}
-    .card-1:hover{box-shadow:0 8px 32px rgba(79,142,247,.25);border-color:rgba(79,142,247,.5)}
-    .card-2:hover{box-shadow:0 8px 32px rgba(34,197,94,.25);border-color:rgba(34,197,94,.5)}
-    .card-3:hover{box-shadow:0 8px 32px rgba(249,115,22,.25);border-color:rgba(249,115,22,.5)}
-    .card-4:hover{box-shadow:0 8px 32px rgba(167,139,250,.25);border-color:rgba(167,139,250,.5)}
-    .card:active{transform:scale(.95)}
-    .card::before{content:'';position:absolute;top:0;left:0;width:60px;height:60px;border-radius:0 0 60px 0;opacity:.12}
-    .card-1::before{background:var(--c1)}.card-2::before{background:var(--c2)}.card-3::before{background:var(--c3)}.card-4::before{background:var(--c4)}
-    .card-icon{font-size:2.6rem;line-height:1;display:block}
-    .card-label{font-size:.82rem;font-weight:700;letter-spacing:.3px;color:var(--text);line-height:1.3}
-    .card-pill{margin-top:4px;padding:3px 12px;border-radius:20px;font-size:.65rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-    .card-1 .card-pill{background:rgba(79,142,247,.15);color:var(--c1)}
-    .card-2 .card-pill{background:rgba(34,197,94,.15);color:var(--c2)}
-    .card-3 .card-pill{background:rgba(249,115,22,.15);color:var(--c3)}
-    .card-4 .card-pill{background:rgba(167,139,250,.15);color:var(--c4)}
+    .grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
 
-    .tip{margin-top:28px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;gap:10px;align-items:flex-start}
-    .tip-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-    .tip p{font-size:.78rem;color:var(--muted);line-height:1.55}
-    .tip p strong{color:var(--text);font-weight:600}
-    .footer{margin-top:24px;text-align:center;font-size:.72rem;color:var(--muted);opacity:.6}
-    .contact-section{margin-top:20px;width:100%;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:4px}
-    .contact-brand{font-size:.78rem;font-weight:600;color:var(--text);letter-spacing:.3px}
-    .contact-label{font-size:.72rem;color:var(--muted)}
-    .contact-email{font-size:.75rem;font-weight:500;color:var(--accent);text-decoration:none}
-    .contact-email:hover{text-decoration:underline}
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 16px 20px;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .18s, box-shadow .18s, border-color .18s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px
+    }
+
+    .card-1:hover {
+      box-shadow: 0 8px 32px rgba(79, 142, 247, .25);
+      border-color: rgba(79, 142, 247, .5)
+    }
+
+    .card-2:hover {
+      box-shadow: 0 8px 32px rgba(34, 197, 94, .25);
+      border-color: rgba(34, 197, 94, .5)
+    }
+
+    .card-3:hover {
+      box-shadow: 0 8px 32px rgba(249, 115, 22, .25);
+      border-color: rgba(249, 115, 22, .5)
+    }
+
+    .card-4:hover {
+      box-shadow: 0 8px 32px rgba(167, 139, 250, .25);
+      border-color: rgba(167, 139, 250, .5)
+    }
+
+    .card:active {
+      transform: scale(.95)
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60px;
+      height: 60px;
+      border-radius: 0 0 60px 0;
+      opacity: .12
+    }
+
+    .card-1::before {
+      background: var(--c1)
+    }
+
+    .card-2::before {
+      background: var(--c2)
+    }
+
+    .card-3::before {
+      background: var(--c3)
+    }
+
+    .card-4::before {
+      background: var(--c4)
+    }
+
+    .card-icon {
+      font-size: 2.6rem;
+      line-height: 1;
+      display: block
+    }
+
+    .card-label {
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .3px;
+      color: var(--text);
+      line-height: 1.3
+    }
+
+    .card-pill {
+      margin-top: 4px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase
+    }
+
+    .card-1 .card-pill {
+      background: rgba(79, 142, 247, .15);
+      color: var(--c1)
+    }
+
+    .card-2 .card-pill {
+      background: rgba(34, 197, 94, .15);
+      color: var(--c2)
+    }
+
+    .card-3 .card-pill {
+      background: rgba(249, 115, 22, .15);
+      color: var(--c3)
+    }
+
+    .card-4 .card-pill {
+      background: rgba(167, 139, 250, .15);
+      color: var(--c4)
+    }
+
+    .tip {
+      margin-top: 28px;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start
+    }
+
+    .tip-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .tip p {
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.55
+    }
+
+    .tip p strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: .72rem;
+      color: var(--muted);
+      opacity: .6
+    }
+
+    .contact-section {
+      margin-top: 20px;
+      width: 100%;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px
+    }
+
+    .contact-brand {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: .3px
+    }
+
+    .contact-label {
+      font-size: .72rem;
+      color: var(--muted)
+    }
+
+    .contact-email {
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none
+    }
+
+    .contact-email:hover {
+      text-decoration: underline
+    }
 
     /* ── Results Panel ── */
-    .rp{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
-    .rp.open{transform:translateX(0)}
-    body::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;opacity:0;pointer-events:none;transition:opacity .35s}
-    body.rp-open::after{opacity:1}
+    .rp {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+      overflow: hidden
+    }
 
-    .rp-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-    .rp-back{background:none;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-family:inherit;padding:8px 14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-    .rp-back:hover{border-color:var(--accent);color:var(--accent)}
-    .rp-title-wrap{flex:1;display:flex;align-items:center;gap:8px}
-    .rp-cat-icon{font-size:1.4rem;line-height:1}
-    .rp-title{font-size:1rem;font-weight:700;color:var(--text)}
-    .rp-count{font-size:.75rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+    .rp.open {
+      transform: translateX(0)
+    }
 
-    .rp-body{flex:1;overflow-y:auto;padding:16px 20px;-webkit-overflow-scrolling:touch}
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      z-index: 199;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s
+    }
+
+    body.rp-open::after {
+      opacity: 1
+    }
+
+    .rp-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0
+    }
+
+    .rp-back {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: .9rem;
+      font-family: inherit;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap
+    }
+
+    .rp-back:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .rp-title-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .rp-cat-icon {
+      font-size: 1.4rem;
+      line-height: 1
+    }
+
+    .rp-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .rp-count {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-left: auto;
+      white-space: nowrap
+    }
+
+    .rp-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      -webkit-overflow-scrolling: touch
+    }
 
     /* loading */
-    .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px}
-    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .loading-state p{font-size:.9rem;color:var(--muted);text-align:center}
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      gap: 16px
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .loading-state p {
+      font-size: .9rem;
+      color: var(--muted);
+      text-align: center
+    }
 
     /* error / empty */
-    .msg-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;text-align:center}
-    .msg-state .msg-icon{font-size:2.5rem}
-    .msg-state h3{font-size:1rem;font-weight:700;color:var(--text)}
-    .msg-state p{font-size:.82rem;color:var(--muted);line-height:1.55;max-width:280px}
-    .msg-btn{margin-top:8px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.85rem;font-weight:600;padding:10px 20px;cursor:pointer;transition:opacity .2s}
-    .msg-btn:hover{opacity:.85}
+    .msg-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      gap: 12px;
+      text-align: center
+    }
+
+    .msg-state .msg-icon {
+      font-size: 2.5rem
+    }
+
+    .msg-state h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .msg-state p {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 280px
+    }
+
+    .msg-btn {
+      margin-top: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: opacity .2s
+    }
+
+    .msg-btn:hover {
+      opacity: .85
+    }
 
     /* result cards */
-    .result-list{display:flex;flex-direction:column;gap:12px}
-    .result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
-    .result-card:hover{border-color:rgba(255,255,255,.15)}
-    .rc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-    .rc-name{font-size:.95rem;font-weight:700;color:var(--text);line-height:1.3;flex:1}
-    .rc-dist{font-size:.75rem;font-weight:600;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:var(--accent);flex-shrink:0}
-    .rc-addr{font-size:.78rem;color:var(--muted);line-height:1.45;display:flex;align-items:flex-start;gap:5px}
-    .rc-addr-icon{flex-shrink:0;margin-top:1px}
-    .rc-btns{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-    .rc-btn-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
-    .rc-btn-sub{font-size:.63rem;color:var(--muted);text-align:center;line-height:1.5;word-break:keep-all}
-    .rc-link{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:.75rem;font-weight:600;color:var(--accent);text-decoration:none;padding:8px 10px;border:1px solid rgba(79,142,247,.3);border-radius:8px;transition:all .2s;white-space:nowrap;background:none;font-family:inherit;cursor:pointer}
-    .rc-link:hover{background:rgba(79,142,247,.1);border-color:var(--accent)}
-    .rc-link.google{color:#34a853;border-color:rgba(52,168,83,.3)}
-    .rc-link.google:hover{background:rgba(52,168,83,.1);border-color:#34a853}
+    .result-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color .2s
+    }
+
+    .result-card:hover {
+      border-color: rgba(255, 255, 255, .15)
+    }
+
+    .rc-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px
+    }
+
+    .rc-name {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      flex: 1
+    }
+
+    .rc-dist {
+      font-size: .75rem;
+      font-weight: 600;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      white-space: nowrap;
+      color: var(--accent);
+      flex-shrink: 0
+    }
+
+    .rc-addr {
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.45;
+      display: flex;
+      align-items: flex-start;
+      gap: 5px
+    }
+
+    .rc-addr-icon {
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .rc-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap
+    }
+
+    .rc-btn-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px
+    }
+
+    .rc-btn-sub {
+      font-size: .63rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      word-break: keep-all
+    }
+
+    .rc-link {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 8px 10px;
+      border: 1px solid rgba(79, 142, 247, .3);
+      border-radius: 8px;
+      transition: all .2s;
+      white-space: nowrap;
+      background: none;
+      font-family: inherit;
+      cursor: pointer
+    }
+
+    .rc-link:hover {
+      background: rgba(79, 142, 247, .1);
+      border-color: var(--accent)
+    }
+
+    .rc-link.google {
+      color: #34a853;
+      border-color: rgba(52, 168, 83, .3)
+    }
+
+    .rc-link.google:hover {
+      background: rgba(52, 168, 83, .1);
+      border-color: #34a853
+    }
 
     /* toast */
-    .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:30px;padding:12px 20px;font-size:.82rem;color:var(--text);white-space:nowrap;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s;opacity:0;pointer-events:none}
-    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 12px 20px;
+      font-size: .82rem;
+      color: var(--text);
+      white-space: nowrap;
+      z-index: 999;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      pointer-events: none
+    }
 
-    @media(max-width:360px){.header h1{font-size:1.4rem}.card-icon{font-size:2.2rem}.card-label{font-size:.76rem}}
-    @media(min-width:481px){.page{padding-top:48px}.rp{max-width:480px;left:50%;transform:translateX(calc(-50% + 100%))}.rp.open{transform:translateX(-50%)}}
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1
+    }
+
+    @media(max-width:360px) {
+      .header h1 {
+        font-size: 1.4rem
+      }
+
+      .card-icon {
+        font-size: 2.2rem
+      }
+
+      .card-label {
+        font-size: .76rem
+      }
+    }
+
+    @media(min-width:481px) {
+      .page {
+        padding-top: 48px
+      }
+
+      .rp {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(calc(-50% + 100%))
+      }
+
+      .rp.open {
+        transform: translateX(-50%)
+      }
+    }
 
     /* ── Mini Map ── */
-    .mini-map-wrap{width:100%;overflow:hidden;max-height:0;opacity:0;transition:max-height .42s cubic-bezier(.4,0,.2,1),opacity .42s ease;margin-top:-8px}
-    .mini-map-wrap.open{max-height:220px;opacity:1}
-    .mini-map-inner{height:220px;width:100%;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);overflow:hidden;background:var(--surface)}
-    #miniMap{width:100%;height:100%}
-    .location-bar.success{cursor:pointer}
-    .loc-toggle-hint{font-size:.72rem;color:var(--muted);flex-shrink:0;transition:transform .3s;display:none;margin-left:4px}
-    .loc-toggle-hint.rotated{transform:rotate(180deg)}
+    .mini-map-wrap {
+      width: 100%;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .42s cubic-bezier(.4, 0, .2, 1), opacity .42s ease;
+      margin-top: -8px
+    }
+
+    .mini-map-wrap.open {
+      max-height: 220px;
+      opacity: 1
+    }
+
+    .mini-map-inner {
+      height: 220px;
+      width: 100%;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      overflow: hidden;
+      background: var(--surface)
+    }
+
+    #miniMap {
+      width: 100%;
+      height: 100%
+    }
+
+    .location-bar.success {
+      cursor: pointer
+    }
+
+    .loc-toggle-hint {
+      font-size: .72rem;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform .3s;
+      display: none;
+      margin-left: 4px
+    }
+
+    .loc-toggle-hint.rotated {
+      transform: rotate(180deg)
+    }
 
     /* ── Naver Map Modal ── */
-    .nm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:400;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
-    .nm-overlay.show{opacity:1;pointer-events:auto}
-    .nm-modal{background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border);width:100%;max-width:480px;padding:28px 22px 40px;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.56,.64,1)}
-    .nm-overlay.show .nm-modal{transform:translateY(0)}
-    .nm-modal h2{font-size:1.05rem;font-weight:700;margin-bottom:8px;line-height:1.4}
-    .nm-desc{font-size:.84rem;color:var(--text-muted);line-height:1.65;margin-bottom:20px}
-    .nm-dl-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
-    .nm-dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;font-size:.9rem;font-weight:600;text-decoration:none;color:#fff;background:var(--accent);transition:opacity .15s}
-    .nm-dl-btn.android{background:#2d9e5f}
-    .nm-dl-btn:active{opacity:.8}
-    .nm-steps{background:#0d1f3a;border-radius:12px;padding:14px 16px;font-size:.78rem;line-height:1.85;color:var(--text-muted);margin-bottom:18px}
-    .nm-steps strong{color:var(--text);display:block;margin-bottom:2px;font-size:.8rem}
-    .nm-bottom{display:flex;gap:10px}
-    .nm-web-btn{flex:1;padding:12px;border-radius:12px;text-align:center;font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--border);color:var(--text-muted)}
-    .nm-close-btn{flex:1;padding:12px;border-radius:12px;text-align:center;font-size:.82rem;font-weight:600;background:var(--border);color:var(--text);cursor:pointer;border:none}
+    .nm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .72);
+      z-index: 400;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s
+    }
+
+    .nm-overlay.show {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .nm-modal {
+      background: var(--card);
+      border-radius: 20px 20px 0 0;
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 480px;
+      padding: 28px 22px 40px;
+      transform: translateY(100%);
+      transition: transform .32s cubic-bezier(.34, 1.56, .64, 1)
+    }
+
+    .nm-overlay.show .nm-modal {
+      transform: translateY(0)
+    }
+
+    .nm-modal h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.4
+    }
+
+    .nm-desc {
+      font-size: .84rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 20px
+    }
+
+    .nm-dl-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px
+    }
+
+    .nm-dl-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: .9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: #fff;
+      background: var(--accent);
+      transition: opacity .15s
+    }
+
+    .nm-dl-btn.android {
+      background: #2d9e5f
+    }
+
+    .nm-dl-btn:active {
+      opacity: .8
+    }
+
+    .nm-steps {
+      background: #0d1f3a;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: .78rem;
+      line-height: 1.85;
+      color: var(--text-muted);
+      margin-bottom: 18px
+    }
+
+    .nm-steps strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 2px;
+      font-size: .8rem
+    }
+
+    .nm-bottom {
+      display: flex;
+      gap: 10px
+    }
+
+    .nm-web-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: .82rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted)
+    }
+
+    .nm-close-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: .82rem;
+      font-weight: 600;
+      background: var(--border);
+      color: var(--text);
+      cursor: pointer;
+      border: none
+    }
   </style>
 </head>
+
 <body>
 
-<!-- ── Main Page ── -->
-<div class="page">
-  <header class="header">
-    <span class="flag">🇰🇷</span>
-    <h1>Korea Travel Guide</h1>
-    <p id="headerSubtitle">Tap a category to find nearby places<br>in English — no app needed</p>
-  </header>
+  <!-- ── Main Page ── -->
+  <div class="page">
+    <header class="header">
+      <span class="flag">🇰🇷</span>
+      <h1>Korea Travel Guide</h1>
+      <p id="headerSubtitle">Tap a category to find nearby places<br>in English — no app needed</p>
+    </header>
 
-  <div class="location-bar loading" id="locationBar" onclick="toggleMiniMap()">
-    <div class="loc-dot"></div>
-    <div class="loc-text">
-      <strong id="locStatus">Detecting your location…</strong>
-      <span id="locDetail">Please allow location access</span>
-      <span id="tapHint" style="display:none;font-size:.72rem;color:var(--muted);margin-top:3px">👆 Tap to see your location on the map</span>
+    <div class="location-bar loading" id="locationBar" onclick="toggleMiniMap()">
+      <div class="loc-dot"></div>
+      <div class="loc-text">
+        <strong id="locStatus">Detecting your location…</strong>
+        <span id="locDetail">Please allow location access</span>
+        <span id="tapHint" style="display:none;font-size:.72rem;color:var(--muted);margin-top:3px">👆 Tap to see your
+          location on the map</span>
+      </div>
+      <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()"
+        style="display:none">Retry</button>
+      <span class="loc-toggle-hint" id="toggleHint">▾</span>
     </div>
-    <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
-    <span class="loc-toggle-hint" id="toggleHint">▾</span>
-  </div>
 
-  <div class="mini-map-wrap" id="miniMapWrap">
-    <div class="mini-map-inner">
-      <div id="miniMap"></div>
+    <div class="mini-map-wrap" id="miniMapWrap">
+      <div class="mini-map-inner">
+        <div id="miniMap"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="lang-bar" id="langBar">
-    <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">🇺🇸 English</button>
-    <button class="lang-btn"        id="lang-ja" onclick="setLang('JA')">🇯🇵 日本語</button>
-    <button class="lang-btn"        id="lang-zh" onclick="setLang('ZH-HANS')">🇨🇳 中文</button>
-  </div>
+    <div class="lang-bar" id="langBar">
+      <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">🇺🇸 English</button>
+      <button class="lang-btn" id="lang-ja" onclick="setLang('JA')">🇯🇵 日本語</button>
+      <button class="lang-btn" id="lang-zh" onclick="setLang('ZH-HANS')">🇨🇳 中文</button>
+    </div>
 
-  <main class="grid">
-    <div class="card card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
-      <span class="card-icon">🚇</span>
-      <span class="card-label" id="card-label-subway">Find Subway<br>Station</span>
-      <span class="card-pill" id="card-pill-subway">Nearest stations</span>
-    </div>
-    <div class="card card-2" id="btn-bus" onclick="searchNearby('bus')" role="button" tabindex="0" aria-label="Find Bus Stop">
-      <span class="card-icon">🚌</span>
-      <span class="card-label" id="card-label-bus">Find Bus<br>Stop</span>
-      <span class="card-pill" id="card-pill-bus">Nearby stops</span>
-    </div>
-    <div class="card card-3" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0" aria-label="Find Restaurant">
-      <span class="card-icon">🍜</span>
-      <span class="card-label" id="card-label-restaurant">Find<br>Restaurant</span>
-      <span class="card-pill" id="card-pill-restaurant">Places to eat</span>
-    </div>
-    <div class="card card-4" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0" aria-label="Find Convenience Store">
-      <span class="card-icon">🏪</span>
-      <span class="card-label" id="card-label-convenience">Find Convenience<br>Store</span>
-      <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
-    </div>
-  </main>
+    <main class="grid">
+      <div class="card card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0"
+        aria-label="Find Subway Station">
+        <span class="card-icon">🚇</span>
+        <span class="card-label" id="card-label-subway">Find Subway<br>Station</span>
+        <span class="card-pill" id="card-pill-subway">Nearest stations</span>
+      </div>
+      <div class="card card-2" id="btn-bus" onclick="searchNearby('bus')" role="button" tabindex="0"
+        aria-label="Find Bus Stop">
+        <span class="card-icon">🚌</span>
+        <span class="card-label" id="card-label-bus">Find Bus<br>Stop</span>
+        <span class="card-pill" id="card-pill-bus">Nearby stops</span>
+      </div>
+      <div class="card card-3" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0"
+        aria-label="Find Restaurant">
+        <span class="card-icon">🍜</span>
+        <span class="card-label" id="card-label-restaurant">Find<br>Restaurant</span>
+        <span class="card-pill" id="card-pill-restaurant">Places to eat</span>
+      </div>
+      <div class="card card-4" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0"
+        aria-label="Find Convenience Store">
+        <span class="card-icon">🏪</span>
+        <span class="card-label" id="card-label-convenience">Find Convenience<br>Store</span>
+        <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
+      </div>
+    </main>
 
-  <aside class="tip">
-    <span class="tip-icon">💡</span>
-    <p><strong>How it works:</strong> Tap any button to search nearby places using your GPS. Results are translated to English automatically. <strong>No app download needed.</strong></p>
-  </aside>
-  <footer class="footer">GPS required · Results via Naver · Translated by DeepL</footer>
-  <div class="contact-section">
-    <span class="contact-brand">SG Next</span>
-    <span class="contact-label">Contact by SG Next</span>
-    <a class="contact-email" href="mailto:sgnext33@gmail.com">sgnext33@gmail.com</a>
-  </div>
-</div>
-
-<!-- ── Results Panel ── -->
-<div class="rp" id="rp" role="dialog" aria-modal="true" aria-label="Search results">
-  <div class="rp-header">
-    <button class="rp-back" onclick="closeResults()" aria-label="Go back">← Back</button>
-    <div class="rp-title-wrap">
-      <span class="rp-cat-icon" id="rpIcon"></span>
-      <span class="rp-title" id="rpTitle">Nearby Places</span>
-    </div>
-    <span class="rp-count" id="rpCount"></span>
-  </div>
-  <div class="rp-body" id="rpBody"></div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- ── Naver Map Modal ── -->
-<div class="nm-overlay" id="nmOverlay" onclick="closeNaverModal(event)">
-  <div class="nm-modal">
-    <h2>📱 Get Naver Map for English Navigation</h2>
-    <p class="nm-desc">
-      Naver Map is Korea’s most accurate navigation app.<br>
-      Download it free — no account needed for basic use!
-    </p>
-    <div class="nm-dl-btns">
-      <a class="nm-dl-btn" id="nmIosBtn"
-         href="https://apps.apple.com/us/app/naver-maps-navigation/id311867728"
-         target="_blank" rel="noopener">
-        🍎 Download for iPhone →
-      </a>
-      <a class="nm-dl-btn android" id="nmAndroidBtn"
-         href="https://play.google.com/store/apps/details?id=com.nhn.android.nmap"
-         target="_blank" rel="noopener">
-        🤖 Download for Android →
-      </a>
-    </div>
-    <div class="nm-steps">
-      <strong>How to switch to English:</strong>
-      1. Open Naver Map → tap ☰ (top left)<br>
-      2. Tap ⚙️ Settings<br>
-      3. Tap Language → Select English ✓
-    </div>
-    <div class="nm-bottom">
-      <a class="nm-web-btn" id="nmWebLink" href="#" target="_blank" rel="noopener">
-        Open in browser (Korean)
-      </a>
-      <button class="nm-close-btn" onclick="closeNaverModal()">Close</button>
+    <aside class="tip">
+      <span class="tip-icon">💡</span>
+      <p><strong>How it works:</strong> Tap any button to search nearby places using your GPS. Results are translated to
+        English automatically. <strong>No app download needed.</strong></p>
+    </aside>
+    <footer class="footer">GPS required · Results via Naver · Translated by DeepL</footer>
+    <div class="contact-section">
+      <span class="contact-brand">SG Next</span>
+      <span class="contact-label">Contact by SG Next</span>
+      <a class="contact-email" href="mailto:sgnext33@gmail.com">sgnext33@gmail.com</a>
     </div>
   </div>
-</div>
 
-<script>
-// ── Config ──────────────────────────────────────────────
-const NAVER_CLIENT_ID     = 'dzy8A8DveVa1HLrkLGhA';
-const NAVER_CLIENT_SECRET = 'npl0Jjjv5r';
-const DEEPL_API_KEY          = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
-const CORS_PROXY             = 'https://corsproxy.io/?';
+  <!-- ── Results Panel ── -->
+  <div class="rp" id="rp" role="dialog" aria-modal="true" aria-label="Search results">
+    <div class="rp-header">
+      <button class="rp-back" onclick="closeResults()" aria-label="Go back">← Back</button>
+      <div class="rp-title-wrap">
+        <span class="rp-cat-icon" id="rpIcon"></span>
+        <span class="rp-title" id="rpTitle">Nearby Places</span>
+      </div>
+      <span class="rp-count" id="rpCount"></span>
+    </div>
+    <div class="rp-body" id="rpBody"></div>
+  </div>
 
-const CATS = {
-  subway:      { query:'지하철역',   label:'Subway Stations',    icon:'🚇' },
-  bus:         { query:'버스정류장', label:'Bus Stops',           icon:'🚌' },
-  restaurant:  { query:'맛집',      label:'Restaurants',         icon:'🍜' },
-  convenience: { query:'편의점',    label:'Convenience Stores',  icon:'🏪' },
-};
+  <div class="toast" id="toast"></div>
 
-// ── i18n ────────────────────────────────────────────────
-const i18n = {
-  EN: {
-    subtitle:      'Tap a category to find nearby places in English — no app needed',
-    tapHint:       '👆 Tap to see your location on the map',
-    subway:        'Find Subway<br>Station',    subwaySub:      'Nearest stations',
-    bus:           'Find Bus<br>Stop',          busSub:         'Nearby stops',
-    restaurant:    'Find<br>Restaurant',        restaurantSub:  'Places to eat',
-    convenience:   'Find Convenience<br>Store', convenienceSub: '24H stores nearby',
-    naverBtn:  '📱 Naver Map', naverSub1: 'More detailed',
-    naverSub2: '⚙️ Set app to English in Settings',
-    googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
-    googleSub2:'⚠️ Directions may be inaccurate in Korea',
-  },
-  JA: {
-    subtitle:      'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
-    tapHint:       '👆 タップして現在地を地図で確認',
-    subway:        '地下鉄駅を探す',   subwaySub:      '最寄り駅',
-    bus:           'バス停を探す',     busSub:         '近くのバス停',
-    restaurant:    'レストランを探す', restaurantSub:  '近くの飲食店',
-    convenience:   'コンビニを探す',   convenienceSub: '24時間営業',
-    naverBtn:  '📱 Naver Map', naverSub1: 'より詳細',
-    naverSub2: '⚙️ 設定で日本語に変更可能',
-    googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
-    googleSub2:'⚠️ 韓国では経路が不正確な場合あり',
-  },
-  'ZH-HANS': {
-    subtitle:      '点击类别查找附近的地方 — 无需下载应用',
-    tapHint:       '👆 点击查看当前位置地图',
-    subway:        '查找地铁站', subwaySub:      '最近的地铁站',
-    bus:           '查找公交站', busSub:         '附近的公交站',
-    restaurant:    '查找餐厅',   restaurantSub:  '附近的餐厅',
-    convenience:   '查找便利店', convenienceSub: '24小时营业',
-    naverBtn:  '📱 Naver地图', naverSub1: '更详细',
-    naverSub2: '⚙️ 在设置中切换为中文',
-    googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
-    googleSub2:'⚠️ 在韩国路线可能不准确',
-  },
-};
+  <!-- ── Naver Map Modal ── -->
+  <div class="nm-overlay" id="nmOverlay" onclick="closeNaverModal(event)">
+    <div class="nm-modal">
+      <h2>📱 Get Naver Map for English Navigation</h2>
+      <p class="nm-desc">
+        Naver Map is Korea’s most accurate navigation app.<br>
+        Download it free — no account needed for basic use!
+      </p>
+      <div class="nm-dl-btns">
+        <a class="nm-dl-btn" id="nmIosBtn" href="https://apps.apple.com/us/app/naver-maps-navigation/id311867728"
+          target="_blank" rel="noopener">
+          🍎 Download for iPhone →
+        </a>
+        <a class="nm-dl-btn android" id="nmAndroidBtn"
+          href="https://play.google.com/store/apps/details?id=com.nhn.android.nmap" target="_blank" rel="noopener">
+          🤖 Download for Android →
+        </a>
+      </div>
+      <div class="nm-steps">
+        <strong>How to switch to English:</strong>
+        1. Open Naver Map → tap ☰ (top left)<br>
+        2. Tap ⚙️ Settings<br>
+        3. Tap Language → Select English ✓
+      </div>
+      <div class="nm-bottom">
+        <a class="nm-web-btn" id="nmWebLink" href="#" target="_blank" rel="noopener">
+          Open in browser (Korean)
+        </a>
+        <button class="nm-close-btn" onclick="closeNaverModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
-// ── State ───────────────────────────────────────────────
-let userLat = null, userLng = null, locationReady = false, userDistrict = '', currentLang = 'EN';
-let lastItems = [];   // 재번역용 한국어 원본 보관
+  <script>
+    // ── Config ──────────────────────────────────────────────
+    const NAVER_CLIENT_ID = 'dzy8A8DveVa1HLrkLGhA';
+    const NAVER_CLIENT_SECRET = 'npl0Jjjv5r';
+    const DEEPL_API_KEY = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
+    const CORS_PROXY = 'https://corsproxy.io/?';
 
-// ── Language ────────────────────────────────────────────
-function setLang(lang){
-  currentLang = lang;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('lang-' + lang.toLowerCase().replace('-hans',''))
-          .classList.add('active');
-  // i18n 텍스트 교체
-  const t = i18n[lang];
-  document.getElementById('headerSubtitle').innerHTML        = t.subtitle;
-  document.getElementById('tapHint').textContent             = t.tapHint;
-  document.getElementById('card-label-subway').innerHTML     = t.subway;
-  document.getElementById('card-pill-subway').textContent    = t.subwaySub;
-  document.getElementById('card-label-bus').innerHTML        = t.bus;
-  document.getElementById('card-pill-bus').textContent       = t.busSub;
-  document.getElementById('card-label-restaurant').innerHTML = t.restaurant;
-  document.getElementById('card-pill-restaurant').textContent= t.restaurantSub;
-  document.getElementById('card-label-convenience').innerHTML= t.convenience;
-  document.getElementById('card-pill-convenience').textContent=t.convenienceSub;
-  if(document.getElementById('rp').classList.contains('open')){
-    retranslate();
-  }
-}
+    const CATS = {
+      subway: { query: '지하철역', label: 'Subway Stations', icon: '🚇' },
+      bus: { query: '버스정류장', label: 'Bus Stops', icon: '🚌' },
+      restaurant: { query: '맛집', label: 'Restaurants', icon: '🍜' },
+      convenience: { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
+    };
 
-async function retranslate(){
-  if(!lastItems.length) return;
-  document.getElementById('rpBody').innerHTML=`
+    // ── i18n ────────────────────────────────────────────────
+    const i18n = {
+      EN: {
+        subtitle: 'Tap a category to find nearby places in English — no app needed',
+        tapHint: '👆 Tap to see your location on the map',
+        subway: 'Find Subway<br>Station', subwaySub: 'Nearest stations',
+        bus: 'Find Bus<br>Stop', busSub: 'Nearby stops',
+        restaurant: 'Find<br>Restaurant', restaurantSub: 'Places to eat',
+        convenience: 'Find Convenience<br>Store', convenienceSub: '24H stores nearby',
+        naverBtn: '📱 Naver Map', naverSub1: 'More detailed',
+        naverSub2: '⚙️ Set app to English in Settings',
+        googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
+        googleSub2: '⚠️ Directions may be inaccurate in Korea',
+      },
+      JA: {
+        subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
+        tapHint: '👆 タップして現在地を地図で確認',
+        subway: '地下鉄駅を探す', subwaySub: '最寄り駅',
+        bus: 'バス停を探す', busSub: '近くのバス停',
+        restaurant: 'レストランを探す', restaurantSub: '近くの飲食店',
+        convenience: 'コンビニを探す', convenienceSub: '24時間営業',
+        naverBtn: '📱 Naver Map', naverSub1: 'より詳細',
+        naverSub2: '⚙️ 設定で日本語に変更可能',
+        googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
+        googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
+      },
+      'ZH-HANS': {
+        subtitle: '点击类别查找附近的地方 — 无需下载应用',
+        tapHint: '👆 点击查看当前位置地图',
+        subway: '查找地铁站', subwaySub: '最近的地铁站',
+        bus: '查找公交站', busSub: '附近的公交站',
+        restaurant: '查找餐厅', restaurantSub: '附近的餐厅',
+        convenience: '查找便利店', convenienceSub: '24小时营业',
+        naverBtn: '📱 Naver地图', naverSub1: '更详细',
+        naverSub2: '⚙️ 在设置中切换为中文',
+        googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
+        googleSub2: '⚠️ 在韩国路线可能不准确',
+      },
+    };
+
+    // ── State ───────────────────────────────────────────────
+    let userLat = null, userLng = null, locationReady = false, userDistrict = '', currentLang = 'EN';
+    let lastItems = [];   // 재번역용 한국어 원본 보관
+
+    // ── Language ────────────────────────────────────────────
+    function setLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('lang-' + lang.toLowerCase().replace('-hans', ''))
+        .classList.add('active');
+      // i18n 텍스트 교체
+      const t = i18n[lang];
+      document.getElementById('headerSubtitle').innerHTML = t.subtitle;
+      document.getElementById('tapHint').textContent = t.tapHint;
+      document.getElementById('card-label-subway').innerHTML = t.subway;
+      document.getElementById('card-pill-subway').textContent = t.subwaySub;
+      document.getElementById('card-label-bus').innerHTML = t.bus;
+      document.getElementById('card-pill-bus').textContent = t.busSub;
+      document.getElementById('card-label-restaurant').innerHTML = t.restaurant;
+      document.getElementById('card-pill-restaurant').textContent = t.restaurantSub;
+      document.getElementById('card-label-convenience').innerHTML = t.convenience;
+      document.getElementById('card-pill-convenience').textContent = t.convenienceSub;
+      if (document.getElementById('rp').classList.contains('open')) {
+        retranslate();
+      }
+    }
+
+    async function retranslate() {
+      if (!lastItems.length) return;
+      document.getElementById('rpBody').innerHTML = `
     <div class="loading-state">
       <div class="spinner"></div>
       <p>Translating…</p>
     </div>`;
-  try{
-    const toTranslate = lastItems.flatMap(it => [it.nameKo, it.addrKo]);
-    let translated = toTranslate;
-    try{ translated = await deepLTranslate(toTranslate); }
-    catch(e){ console.warn('DeepL failed, showing Korean:', e); }
-    const results = lastItems.map((it, i) => ({
-      ...it,
-      nameEn: translated[i*2]   || it.nameKo,
-      addrEn: translated[i*2+1] || it.addrKo,
-    }));
-    renderResults(results);
-  } catch(e){
-    console.error(e);
-  }
-}
+      try {
+        const toTranslate = lastItems.flatMap(it => [it.nameKo, it.addrKo]);
+        let translated = toTranslate;
+        try { translated = await deepLTranslate(toTranslate); }
+        catch (e) { console.warn('DeepL failed, showing Korean:', e); }
+        const results = lastItems.map((it, i) => ({
+          ...it,
+          nameEn: translated[i * 2] || it.nameKo,
+          addrEn: translated[i * 2 + 1] || it.addrKo,
+        }));
+        renderResults(results);
+      } catch (e) {
+        console.error(e);
+      }
+    }
 
-// ── Helpers ─────────────────────────────────────────────
-function stripHtml(s){ return s.replace(/<[^>]*>/g,''); }
+    // ── Helpers ─────────────────────────────────────────────
+    function stripHtml(s) { return s.replace(/<[^>]*>/g, ''); }
 
-function haversine(lat1,lng1,lat2,lng2){
-  const R=6371000, toR=Math.PI/180;
-  const f1=lat1*toR, f2=lat2*toR, df=(lat2-lat1)*toR, dl=(lng2-lng1)*toR;
-  const a=Math.sin(df/2)**2+Math.cos(f1)*Math.cos(f2)*Math.sin(dl/2)**2;
-  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));
-}
+    function haversine(lat1, lng1, lat2, lng2) {
+      const R = 6371000, toR = Math.PI / 180;
+      const f1 = lat1 * toR, f2 = lat2 * toR, df = (lat2 - lat1) * toR, dl = (lng2 - lng1) * toR;
+      const a = Math.sin(df / 2) ** 2 + Math.cos(f1) * Math.cos(f2) * Math.sin(dl / 2) ** 2;
+      return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
 
-function fmtDist(m){ return m<1000?`${m}m`:`${(m/1000).toFixed(1)}km`; }
+    function fmtDist(m) { return m < 1000 ? `${m}m` : `${(m / 1000).toFixed(1)}km`; }
 
-function naverMapUrl(name,mapx,mapy){
-  const lat=mapy/1e7, lng=mapx/1e7;
-  return `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(name)}&lat=${lat}&lng=${lng}&lang=en`;
-}
+    function naverMapUrl(name, mapx, mapy) {
+      const lat = mapy / 1e7, lng = mapx / 1e7;
+      return `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(name)}&lat=${lat}&lng=${lng}&lang=en`;
+    }
 
-function googleMapUrl(nameEn,mapx,mapy){
-  const lat=mapy/1e7, lng=mapx/1e7;
-  return `https://www.google.com/maps/search/?api=1` +
-         `&query=${encodeURIComponent(nameEn)}&center=${lat},${lng}`;
-}
+    function googleMapUrl(nameEn, mapx, mapy) {
+      const lat = mapy / 1e7, lng = mapx / 1e7;
+      return `https://www.google.com/maps/search/?api=1` +
+        `&query=${encodeURIComponent(nameEn)}&center=${lat},${lng}`;
+    }
 
-// ── Naver Local Search ───────────────────────────────────
-async function naverSearch(query){
-  if(!NAVER_CLIENT_SECRET) throw new Error('NAVER_CLIENT_SECRET is not set');
-  const target=`https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=10&start=1&sort=random`;
-  const res=await fetch(CORS_PROXY+encodeURIComponent(target),{
-    headers:{'X-Naver-Client-Id':NAVER_CLIENT_ID,'X-Naver-Client-Secret':NAVER_CLIENT_SECRET}
-  });
-  if(!res.ok) throw new Error(`Naver API ${res.status}`);
-  const d=await res.json();
-  return d.items||[];
-}
+    // ── Naver Local Search ───────────────────────────────────
+    async function naverSearch(query) {
+      if (!NAVER_CLIENT_SECRET) throw new Error('NAVER_CLIENT_SECRET is not set');
+      const target = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=10&start=1&sort=random`;
+      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
+        headers: { 'X-Naver-Client-Id': NAVER_CLIENT_ID, 'X-Naver-Client-Secret': NAVER_CLIENT_SECRET }
+      });
+      if (!res.ok) throw new Error(`Naver API ${res.status}`);
+      const d = await res.json();
+      return d.items || [];
+    }
 
 
-// ── BigDataCloud Reverse Geocoding (browser-native, no proxy, no API key) ──
-async function reverseGeocode(lat, lng){
-  const url = `https://api.bigdatacloud.net/data/reverse-geocode-client` +
-              `?latitude=${lat}&longitude=${lng}&localityLanguage=ko`;
-  const res = await fetch(url);
-  if(!res.ok) throw new Error(`RGC ${res.status}`);
-  const d = await res.json();
-  // adminLevel 6 = 구(區) 단위 (locality는 동 단위라 불가)
-  const admins = d.localityInfo?.administrative || [];
-  return admins.find(a => a.adminLevel === 6)?.name || '';
-}
+    // ── BigDataCloud Reverse Geocoding (browser-native, no proxy, no API key) ──
+    async function reverseGeocode(lat, lng) {
+      const url = `https://api.bigdatacloud.net/data/reverse-geocode-client` +
+        `?latitude=${lat}&longitude=${lng}&localityLanguage=ko`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`RGC ${res.status}`);
+      const d = await res.json();
+      // adminLevel 6 = 구(區) 단위 (locality는 동 단위라 불가)
+      const admins = d.localityInfo?.administrative || [];
+      return admins.find(a => a.adminLevel === 6)?.name || '';
+    }
 
-// ── DeepL Translation ────────────────────────────────────
-async function deepLTranslate(texts){
-  if(!texts.length) return [];
-  const target='https://api-free.deepl.com/v2/translate';
-  const res=await fetch(CORS_PROXY+encodeURIComponent(target),{
-    method:'POST',
-    headers:{
-      'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`,
-      'Content-Type':  'application/json'
-    },
-    body: JSON.stringify({ text: texts, target_lang: currentLang })
-  });
-  if(!res.ok) throw new Error(`DeepL API ${res.status}`);
-  const d=await res.json();
-  return d.translations.map(t=>t.text);
-}
+    // ── DeepL Translation ────────────────────────────────────
+    async function deepLTranslate(texts) {
+      if (!texts.length) return [];
+      const target = 'https://api-free.deepl.com/v2/translate';
+      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
+        method: 'POST',
+        headers: {
+          'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: texts, target_lang: currentLang })
+      });
+      if (!res.ok) throw new Error(`DeepL API ${res.status}`);
+      const d = await res.json();
+      return d.translations.map(t => t.text);
+    }
 
-// ── Results Panel ────────────────────────────────────────
-function openPanel(cat){
-  document.getElementById('rpIcon').textContent=cat.icon;
-  document.getElementById('rpTitle').textContent=cat.label;
-  document.getElementById('rpCount').textContent='';
-  document.getElementById('rp').classList.add('open');
-  document.body.classList.add('rp-open');
-}
+    // ── Results Panel ────────────────────────────────────────
+    function openPanel(cat) {
+      document.getElementById('rpIcon').textContent = cat.icon;
+      document.getElementById('rpTitle').textContent = cat.label;
+      document.getElementById('rpCount').textContent = '';
+      document.getElementById('rp').classList.add('open');
+      document.body.classList.add('rp-open');
+    }
 
-function closeResults(){
-  document.getElementById('rp').classList.remove('open');
-  document.body.classList.remove('rp-open');
-}
+    function closeResults() {
+      document.getElementById('rp').classList.remove('open');
+      document.body.classList.remove('rp-open');
+    }
 
-function showLoading(){
-  document.getElementById('rpBody').innerHTML=`
+    function showLoading() {
+      document.getElementById('rpBody').innerHTML = `
     <div class="loading-state">
       <div class="spinner"></div>
       <p>Searching nearby places<br>and translating to English…</p>
     </div>`;
-}
+    }
 
-function showError(msg, fallbackUrl){
-  document.getElementById('rpBody').innerHTML=`
+    function showError(msg, fallbackUrl) {
+      document.getElementById('rpBody').innerHTML = `
     <div class="msg-state">
       <div class="msg-icon">⚠️</div>
       <h3>Something went wrong</h3>
       <p>${msg}</p>
-      ${fallbackUrl?`<a class="msg-btn" href="${fallbackUrl}" target="_blank">Open Naver Map instead</a>`:''}
+      ${fallbackUrl ? `<a class="msg-btn" href="${fallbackUrl}" target="_blank">Open Naver Map instead</a>` : ''}
     </div>`;
-}
+    }
 
-function showEmpty(){
-  document.getElementById('rpBody').innerHTML=`
+    function showEmpty() {
+      document.getElementById('rpBody').innerHTML = `
     <div class="msg-state">
       <div class="msg-icon">🔍</div>
       <h3>No results found</h3>
       <p>Try again in a different area or check your location settings.</p>
     </div>`;
-}
+    }
 
-function renderResults(items){
-  document.getElementById('rpCount').textContent=`${items.length} found`;
-  const t=i18n[currentLang];
-  const html=items.map(it=>`
+    function renderResults(items) {
+      document.getElementById('rpCount').textContent = `${items.length} found`;
+      const t = i18n[currentLang];
+      const html = items.map(it => `
     <div class="result-card">
       <div class="rc-top">
         <span class="rc-name">${it.nameEn}</span>
@@ -497,14 +1308,14 @@ function renderResults(items){
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
       <div class="rc-btns">
         <div class="rc-btn-wrap">
-          <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
+          <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
             ${t.naverBtn}
           </button>
           <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
         </div>
         <div class="rc-btn-wrap">
           <a class="rc-link google"
-             href="${googleMapUrl(it.nameEn,it.mapx,it.mapy)}"
+             href="${googleMapUrl(it.nameEn, it.mapx, it.mapy)}"
              target="_blank" rel="noopener">
             ${t.googleBtn}
           </a>
@@ -513,161 +1324,164 @@ function renderResults(items){
         </div>
       </div>
     </div>`).join('');
-  document.getElementById('rpBody').innerHTML=`<div class="result-list">${html}</div>`;
-}
-
-// ── Naver Map Modal ─────────────────────────────────────
-function openNaverModal(url){
-  document.getElementById('nmWebLink').href = url;
-  document.getElementById('nmOverlay').classList.add('show');
-}
-function closeNaverModal(e){
-  // overlay 배경 클릭 시에만 닫힘 (모달 내부 클릭은 무시)
-  if(e && e.target !== document.getElementById('nmOverlay')) return;
-  document.getElementById('nmOverlay').classList.remove('show');
-}
-
-// ── Main Search Flow ─────────────────────────────────────
-async function searchNearby(type){
-  if(!locationReady||userLat===null){
-    showToast('⏳ Still getting your location… please wait');
-    return;
-  }
-  const cat=CATS[type];
-  openPanel(cat);
-  showLoading();
-
-  const fallbackUrl=`https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(cat.query)}&lat=${userLat}&lng=${userLng}&lang=en`;
-
-  try {
-    // 0. Reverse Geocoding → 구(區) 이름 획득 (실패 시 빈 문자열로 폴백)
-    let district = '';
-    try{ district = await reverseGeocode(userLat, userLng); }
-    catch(e){ /* silent fallback to global search */ }
-    userDistrict = district;
-    const searchQuery = district ? `${district} ${cat.query}` : cat.query;
-
-    // 1. Naver search (지역명 포함)
-    const raw=await naverSearch(searchQuery);
-    if(!raw.length){ showEmpty(); return; }
-
-    // 2. Distance & sort
-    const items=raw.map(it=>({
-      nameKo: stripHtml(it.title),
-      addrKo: it.roadAddress||it.address||'',
-      mapx:   parseInt(it.mapx)||0,
-      mapy:   parseInt(it.mapy)||0,
-      dist:   haversine(parseFloat(userLat),parseFloat(userLng),
-                        (parseInt(it.mapy)||0)/1e7,(parseInt(it.mapx)||0)/1e7)
-    })).sort((a,b)=>a.dist-b.dist).slice(0,8);
-    lastItems = items;   // 재번역용 원본 보관
-
-    // 3. Batch translate (names + addresses)
-    const toTranslate=items.flatMap(it=>[it.nameKo,it.addrKo]);
-    let translated=toTranslate; // fallback: show Korean
-    try{ translated=await deepLTranslate(toTranslate); }
-    catch(e){ console.warn('DeepL failed, showing Korean:',e); }
-
-    // 4. Merge translations
-    const results=items.map((it,i)=>({
-      ...it,
-      nameEn: translated[i*2]   ||it.nameKo,
-      addrEn: translated[i*2+1] ||it.addrKo,
-    }));
-
-    renderResults(results);
-  } catch(e){
-    console.error(e);
-    showError(e.message||'API error. Please try again.', fallbackUrl);
-  }
-}
-
-// ── Location ─────────────────────────────────────────────
-function setBar(state,strong,detail){
-  const bar=document.getElementById('locationBar');
-  bar.className='location-bar '+state;
-  document.getElementById('locStatus').textContent=strong;
-  document.getElementById('locDetail').textContent=detail;
-  document.getElementById('retryBtn').style.display=state==='error'?'block':'none';
-  document.getElementById('toggleHint').style.display=state==='success'?'inline':'none';
-  document.getElementById('tapHint').style.display=state==='success'?'block':'none';
-}
-
-function initLocation(){
-  setBar('loading','Detecting your location…','Please allow location access');
-  if(!navigator.geolocation){ setBar('error','GPS not supported','Please use a modern browser'); return; }
-  navigator.geolocation.getCurrentPosition(
-    pos=>{
-      userLat=pos.coords.latitude.toFixed(6);
-      userLng=pos.coords.longitude.toFixed(6);
-      locationReady=true;
-      setBar('success','📍 Location found!',`Lat ${userLat}, Lng ${userLng}  ±${Math.round(pos.coords.accuracy)}m`);
-      showToast('✅ Location ready — tap a category!');
-    },
-    err=>{
-      locationReady=false;
-      const msgs={1:['Location access denied','Enable location in browser settings, then retry.'],
-                   2:['Location unavailable','Move to an open area and tap Retry.'],
-                   3:['Location timed out','GPS is slow. Try outside.']};
-      const [m,d]=msgs[err.code]||['Location error','Tap Retry.'];
-      setBar('error',m,d);
-    },
-    {enableHighAccuracy:true,timeout:12000,maximumAge:30000}
-  );
-}
-
-// ── Toast ─────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
-}
-
-// ── Mini Map ─────────────────────────────────────────────
-let miniMapOpen=false, naverMapInstance=null;
-
-function toggleMiniMap(){
-  if(!locationReady||userLat===null) return;
-  const wrap=document.getElementById('miniMapWrap');
-  const hint=document.getElementById('toggleHint');
-  if(miniMapOpen){
-    wrap.classList.remove('open');
-    hint.classList.remove('rotated');
-    miniMapOpen=false;
-  } else {
-    if(!naverMapInstance){
-      const center=new naver.maps.LatLng(parseFloat(userLat),parseFloat(userLng));
-      naverMapInstance=new naver.maps.Map('miniMap',{
-        center:center,zoom:16,
-        mapTypeControl:false,zoomControl:false,
-        scaleControl:false,logoControl:false,mapDataControl:false
-      });
-      new naver.maps.Marker({
-        position:center,
-        map:naverMapInstance,
-        icon:{
-          content:'<div style="font-size:2rem;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">🧍</div>',
-          anchor:new naver.maps.Point(16,32)
-        }
-      });
+      document.getElementById('rpBody').innerHTML = `<div class="result-list">${html}</div>`;
     }
-    wrap.classList.add('open');
-    hint.classList.add('rotated');
-    miniMapOpen=true;
-    setTimeout(()=>naver.maps.Event.trigger(naverMapInstance,'resize'),450);
-  }
-}
 
-// ── Keyboard ─────────────────────────────────────────────
-document.querySelectorAll('.card').forEach(c=>c.addEventListener('keydown',e=>{
-  if(e.key==='Enter'||e.key===' '){ e.preventDefault(); c.click(); }
-}));
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeResults(); });
+    // ── Naver Map Modal ─────────────────────────────────────
+    function openNaverModal(url) {
+      document.getElementById('nmWebLink').href = url;
+      document.getElementById('nmOverlay').classList.add('show');
+    }
+    function closeNaverModal(e) {
+      // overlay 배경 클릭 시에만 닫힘 (모달 내부 클릭은 무시)
+      if (e && e.target !== document.getElementById('nmOverlay')) return;
+      document.getElementById('nmOverlay').classList.remove('show');
+    }
 
-// ── Init ─────────────────────────────────────────────────
-initLocation();
-</script>
+    // ── Main Search Flow ─────────────────────────────────────
+    async function searchNearby(type) {
+      if (!locationReady || userLat === null) {
+        showToast('⏳ Still getting your location… please wait');
+        return;
+      }
+      const cat = CATS[type];
+      openPanel(cat);
+      showLoading();
+
+      const fallbackUrl = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(cat.query)}&lat=${userLat}&lng=${userLng}&lang=en`;
+
+      try {
+        // 0. Reverse Geocoding → 구(區) 이름 획득 (실패 시 빈 문자열로 폴백)
+        let district = '';
+        try { district = await reverseGeocode(userLat, userLng); }
+        catch (e) { /* silent fallback to global search */ }
+        userDistrict = district;
+        const searchQuery = district ? `${district} ${cat.query}` : cat.query;
+
+        // 1. Naver search (지역명 포함)
+        const raw = await naverSearch(searchQuery);
+        if (!raw.length) { showEmpty(); return; }
+
+        // 2. Distance & sort
+        const items = raw.map(it => ({
+          nameKo: stripHtml(it.title),
+          addrKo: it.roadAddress || it.address || '',
+          mapx: parseInt(it.mapx) || 0,
+          mapy: parseInt(it.mapy) || 0,
+          dist: haversine(parseFloat(userLat), parseFloat(userLng),
+            (parseInt(it.mapy) || 0) / 1e7, (parseInt(it.mapx) || 0) / 1e7)
+        })).sort((a, b) => a.dist - b.dist).slice(0, 8);
+        lastItems = items;   // 재번역용 원본 보관
+
+        // 3. Batch translate (names + addresses)
+        const toTranslate = items.flatMap(it => [it.nameKo, it.addrKo]);
+        let translated = toTranslate; // fallback: show Korean
+        try { translated = await deepLTranslate(toTranslate); }
+        catch (e) { console.warn('DeepL failed, showing Korean:', e); }
+
+        // 4. Merge translations
+        const results = items.map((it, i) => ({
+          ...it,
+          nameEn: translated[i * 2] || it.nameKo,
+          addrEn: translated[i * 2 + 1] || it.addrKo,
+        }));
+
+        renderResults(results);
+      } catch (e) {
+        console.error(e);
+        showError(e.message || 'API error. Please try again.', fallbackUrl);
+      }
+    }
+
+    // ── Location ─────────────────────────────────────────────
+    function setBar(state, strong, detail) {
+      const bar = document.getElementById('locationBar');
+      bar.className = 'location-bar ' + state;
+      document.getElementById('locStatus').textContent = strong;
+      document.getElementById('locDetail').textContent = detail;
+      document.getElementById('retryBtn').style.display = state === 'error' ? 'block' : 'none';
+      document.getElementById('toggleHint').style.display = state === 'success' ? 'inline' : 'none';
+      document.getElementById('tapHint').style.display = state === 'success' ? 'block' : 'none';
+    }
+
+    function initLocation() {
+      setBar('loading', 'Detecting your location…', 'Please allow location access');
+      if (!navigator.geolocation) { setBar('error', 'GPS not supported', 'Please use a modern browser'); return; }
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          userLat = pos.coords.latitude.toFixed(6);
+          userLng = pos.coords.longitude.toFixed(6);
+          locationReady = true;
+          setBar('success', '📍 Location found!', `Lat ${userLat}, Lng ${userLng}  ±${Math.round(pos.coords.accuracy)}m`);
+          showToast('✅ Location ready — tap a category!');
+        },
+        err => {
+          locationReady = false;
+          const msgs = {
+            1: ['Location access denied', 'Enable location in browser settings, then retry.'],
+            2: ['Location unavailable', 'Move to an open area and tap Retry.'],
+            3: ['Location timed out', 'GPS is slow. Try outside.']
+          };
+          const [m, d] = msgs[err.code] || ['Location error', 'Tap Retry.'];
+          setBar('error', m, d);
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
+      );
+    }
+
+    // ── Toast ─────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ── Mini Map ─────────────────────────────────────────────
+    let miniMapOpen = false, naverMapInstance = null;
+
+    function toggleMiniMap() {
+      if (!locationReady || userLat === null) return;
+      const wrap = document.getElementById('miniMapWrap');
+      const hint = document.getElementById('toggleHint');
+      if (miniMapOpen) {
+        wrap.classList.remove('open');
+        hint.classList.remove('rotated');
+        miniMapOpen = false;
+      } else {
+        if (!naverMapInstance) {
+          const center = new naver.maps.LatLng(parseFloat(userLat), parseFloat(userLng));
+          naverMapInstance = new naver.maps.Map('miniMap', {
+            center: center, zoom: 16,
+            mapTypeControl: false, zoomControl: false,
+            scaleControl: false, logoControl: false, mapDataControl: false
+          });
+          new naver.maps.Marker({
+            position: center,
+            map: naverMapInstance,
+            icon: {
+              content: '<div style="font-size:2rem;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">🧍</div>',
+              anchor: new naver.maps.Point(16, 32)
+            }
+          });
+        }
+        wrap.classList.add('open');
+        hint.classList.add('rotated');
+        miniMapOpen = true;
+        setTimeout(() => naver.maps.Event.trigger(naverMapInstance, 'resize'), 450);
+      }
+    }
+
+    // ── Keyboard ─────────────────────────────────────────────
+    document.querySelectorAll('.card').forEach(c => c.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }
+    }));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResults(); });
+
+    // ── Init ─────────────────────────────────────────────────
+    initLocation();
+  </script>
 </body>
+
 </html>
