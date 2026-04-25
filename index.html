@@ -987,8 +987,48 @@
       font-weight: 600;
       color: var(--accent);
       margin-bottom: 4px;
-      letter-spacing: .3px
+      letter-spacing: .3px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent
     }
+
+    .weather-bar:hover { opacity: .82 }
+
+    .weather-wrap { width: 100%; margin-bottom: 2px }
+
+    .weather-detail {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+      background: rgba(79,142,247,.08);
+      border: 1px solid rgba(79,142,247,.2);
+      border-radius: 10px;
+      margin-top: 6px
+    }
+
+    .weather-detail.open {
+      max-height: 160px;
+      opacity: 1
+    }
+
+    .weather-detail-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+      padding: 12px 14px
+    }
+
+    .wd-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .72rem;
+      color: var(--muted)
+    }
+
+    .wd-item strong { color: var(--text); font-weight: 600 }
 
     .greeting-bar {
       font-size: .75rem;
@@ -1109,7 +1149,10 @@
   <div class="page">
     <header class="header">
       <span class="flag">🇰🇷</span>
-      <div id="weatherBar" class="weather-bar">⏳ Loading Seoul weather…</div>
+      <div class="weather-wrap">
+        <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">⏳ Loading weather…</div>
+        <div id="weatherDetail" class="weather-detail"></div>
+      </div>
       <div id="greetingBar" class="greeting-bar"></div>
       <h1 id="mainTitle"></h1>
       <p id="headerSubtitle">Tap a category to find nearby places<br>in English — no app needed</p>
@@ -1310,6 +1353,8 @@
         emgTourLabel:   'Korea Travel Helpline', emgTourSub:   '24h · EN / JA / ZH',
         hospital: 'Find<br>Hospital', hospitalSub: 'Near me',
         exchange: 'Currency<br>Exchange', exchangeSub: 'Nearby',
+        wdFeels: 'Feels like', wdHumidity: 'Humidity', wdWind: 'Wind',
+        wdSunrise: 'Sunrise', wdSunset: 'Sunset',
       },
       JA: {
         subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
@@ -1329,6 +1374,8 @@
         emgTourLabel:   '観光案内', emgTourSub:   '24時間対応',
         hospital: '病院を探す', hospitalSub: '近くの病院',
         exchange: '両替', exchangeSub: '近くの両替所',
+        wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '風速',
+        wdSunrise: '日の出', wdSunset: '日没',
       },
       'ZH-HANS': {
         subtitle: '点击类别查找附近的地方 — 无需下载应用',
@@ -1348,6 +1395,8 @@
         emgTourLabel:   '旅游热线', emgTourSub:   '24小时服务',
         hospital: '查找医院', hospitalSub: '附近医院',
         exchange: '货币兑换', exchangeSub: '附近兑换处',
+        wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '风速',
+        wdSunrise: '日出', wdSunset: '日落',
       },
     };
 
@@ -1384,6 +1433,9 @@
       document.getElementById('emg-label-tour').textContent   = t.emgTourLabel;
       document.getElementById('emg-sub-tour').textContent     = t.emgTourSub;
       renderSpots();
+      if (document.getElementById('weatherDetail').dataset.feelsLike) {
+        updateWeatherDetail();
+      }
       if (document.getElementById('rp').classList.contains('open')) {
         retranslate();
       }
@@ -1660,18 +1712,59 @@
       return '⛈️';
     }
 
-    async function fetchSeoulWeather() {
+    let weatherDetailOpen = false;
+
+    async function fetchWeather(lat, lng, district) {
+      const locName = district || 'My Location';
       try {
         const res = await fetch(
-          'https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weathercode'
+          `https://api.open-meteo.com/v1/forecast` +
+          `?latitude=${lat}&longitude=${lng}` +
+          `&current=temperature_2m,weathercode,apparent_temperature,relative_humidity_2m,wind_speed_10m` +
+          `&daily=sunrise,sunset&timezone=Asia%2FSeoul`
         );
         const d = await res.json();
-        const temp = Math.round(d.current.temperature_2m);
-        const emoji = weatherEmoji(d.current.weathercode);
-        document.getElementById('weatherBar').textContent = `${emoji} Seoul · ${temp}°C`;
+        const temp      = Math.round(d.current.temperature_2m);
+        const feelsLike = Math.round(d.current.apparent_temperature);
+        const humidity  = d.current.relative_humidity_2m;
+        const wind      = Math.round(d.current.wind_speed_10m);
+        const sunrise   = d.daily.sunrise[0].slice(11, 16);
+        const sunset    = d.daily.sunset[0].slice(11, 16);
+        const emoji     = weatherEmoji(d.current.weathercode);
+        document.getElementById('weatherBar').textContent = `${emoji} ${locName} · ${temp}°C ▾`;
+        const det = document.getElementById('weatherDetail');
+        det.dataset.feelsLike = feelsLike;
+        det.dataset.humidity  = humidity;
+        det.dataset.wind      = wind;
+        det.dataset.sunrise   = sunrise;
+        det.dataset.sunset    = sunset;
+        updateWeatherDetail();
       } catch (e) {
-        document.getElementById('weatherBar').textContent = '🌐 Seoul Weather unavailable';
+        document.getElementById('weatherBar').textContent = '🌐 Weather unavailable';
       }
+    }
+
+    function toggleWeatherDetail() {
+      const det = document.getElementById('weatherDetail');
+      if (!det.dataset.feelsLike) return;
+      weatherDetailOpen = !weatherDetailOpen;
+      det.classList.toggle('open', weatherDetailOpen);
+      const bar = document.getElementById('weatherBar');
+      bar.textContent = bar.textContent.replace(/[▾▴]$/, weatherDetailOpen ? '▴' : '▾');
+      bar.setAttribute('aria-expanded', weatherDetailOpen);
+    }
+
+    function updateWeatherDetail() {
+      const det = document.getElementById('weatherDetail');
+      const t   = i18n[currentLang];
+      det.innerHTML = `
+        <div class="weather-detail-inner">
+          <div class="wd-item">🌡️ <span>${t.wdFeels} <strong>${det.dataset.feelsLike}°C</strong></span></div>
+          <div class="wd-item">💧 <span>${t.wdHumidity} <strong>${det.dataset.humidity}%</strong></span></div>
+          <div class="wd-item">💨 <span>${t.wdWind} <strong>${det.dataset.wind} km/h</strong></span></div>
+          <div class="wd-item">🌅 <span>${t.wdSunrise} <strong>${det.dataset.sunrise}</strong></span></div>
+          <div class="wd-item">🌇 <span>${t.wdSunset} <strong>${det.dataset.sunset}</strong></span></div>
+        </div>`;
     }
 
     // ── Time-based Greeting ───────────────────────────────────
@@ -1762,6 +1855,7 @@
           locationReady = true;
           setBar('success', '📍 Location found!', `Lat ${userLat}, Lng ${userLng}  ±${Math.round(pos.coords.accuracy)}m`);
           showToast('✅ Location ready — tap a category!');
+          fetchWeather(userLat, userLng, userDistrict);
         },
         err => {
           locationReady = false;
@@ -1829,7 +1923,6 @@
 
     // ── Init ─────────────────────────────────────────────────
     typeText();
-    fetchSeoulWeather();
     setGreeting();
     renderSpots();
     initStarfield();
