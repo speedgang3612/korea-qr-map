@@ -164,7 +164,7 @@
   <header class="header">
     <span class="flag">🇰🇷</span>
     <h1>Korea Travel Guide</h1>
-    <p>Tap a category to find nearby places<br>in English — no app needed</p>
+    <p id="headerSubtitle">Tap a category to find nearby places<br>in English — no app needed</p>
   </header>
 
   <div class="location-bar loading" id="locationBar" onclick="toggleMiniMap()">
@@ -193,23 +193,23 @@
   <main class="grid">
     <div class="card card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0" aria-label="Find Subway Station">
       <span class="card-icon">🚇</span>
-      <span class="card-label">Find Subway<br>Station</span>
-      <span class="card-pill">Nearby</span>
+      <span class="card-label" id="card-label-subway">Find Subway<br>Station</span>
+      <span class="card-pill" id="card-pill-subway">Nearest stations</span>
     </div>
     <div class="card card-2" id="btn-bus" onclick="searchNearby('bus')" role="button" tabindex="0" aria-label="Find Bus Stop">
       <span class="card-icon">🚌</span>
-      <span class="card-label">Find Bus<br>Stop</span>
-      <span class="card-pill">Nearby</span>
+      <span class="card-label" id="card-label-bus">Find Bus<br>Stop</span>
+      <span class="card-pill" id="card-pill-bus">Nearby stops</span>
     </div>
     <div class="card card-3" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0" aria-label="Find Restaurant">
       <span class="card-icon">🍜</span>
-      <span class="card-label">Find<br>Restaurant</span>
-      <span class="card-pill">Nearby</span>
+      <span class="card-label" id="card-label-restaurant">Find<br>Restaurant</span>
+      <span class="card-pill" id="card-pill-restaurant">Places to eat</span>
     </div>
     <div class="card card-4" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0" aria-label="Find Convenience Store">
       <span class="card-icon">🏪</span>
-      <span class="card-label">Find Convenience<br>Store</span>
-      <span class="card-pill">Nearby</span>
+      <span class="card-label" id="card-label-convenience">Find Convenience<br>Store</span>
+      <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
     </div>
   </main>
 
@@ -289,6 +289,46 @@ const CATS = {
   convenience: { query:'편의점',    label:'Convenience Stores',  icon:'🏪' },
 };
 
+// ── i18n ────────────────────────────────────────────────
+const i18n = {
+  EN: {
+    subtitle:      'Tap a category to find nearby places in English — no app needed',
+    tapHint:       '👆 Tap to see your location on the map',
+    subway:        'Find Subway<br>Station',    subwaySub:      'Nearest stations',
+    bus:           'Find Bus<br>Stop',          busSub:         'Nearby stops',
+    restaurant:    'Find<br>Restaurant',        restaurantSub:  'Places to eat',
+    convenience:   'Find Convenience<br>Store', convenienceSub: '24H stores nearby',
+    naverBtn:  '📱 Naver Map', naverSub1: 'More detailed',
+    naverSub2: '⚙️ Set app to English in Settings',
+    googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
+    googleSub2:'⚠️ Directions may be inaccurate in Korea',
+  },
+  JA: {
+    subtitle:      'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
+    tapHint:       '👆 タップして現在地を地図で確認',
+    subway:        '地下鉄駅を探す',   subwaySub:      '最寄り駅',
+    bus:           'バス停を探す',     busSub:         '近くのバス停',
+    restaurant:    'レストランを探す', restaurantSub:  '近くの飲食店',
+    convenience:   'コンビニを探す',   convenienceSub: '24時間営業',
+    naverBtn:  '📱 Naver Map', naverSub1: 'より詳細',
+    naverSub2: '⚙️ 設定で日本語に変更可能',
+    googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
+    googleSub2:'⚠️ 韓国では経路が不正確な場合あり',
+  },
+  'ZH-HANS': {
+    subtitle:      '点击类别查找附近的地方 — 无需下载应用',
+    tapHint:       '👆 点击查看当前位置地图',
+    subway:        '查找地铁站', subwaySub:      '最近的地铁站',
+    bus:           '查找公交站', busSub:         '附近的公交站',
+    restaurant:    '查找餐厅',   restaurantSub:  '附近的餐厅',
+    convenience:   '查找便利店', convenienceSub: '24小时营业',
+    naverBtn:  '📱 Naver地图', naverSub1: '更详细',
+    naverSub2: '⚙️ 在设置中切换为中文',
+    googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
+    googleSub2:'⚠️ 在韩国路线可能不准确',
+  },
+};
+
 // ── State ───────────────────────────────────────────────
 let userLat = null, userLng = null, locationReady = false, userDistrict = '', currentLang = 'EN';
 let lastItems = [];   // 재번역용 한국어 원본 보관
@@ -299,6 +339,18 @@ function setLang(lang){
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('lang-' + lang.toLowerCase().replace('-hans',''))
           .classList.add('active');
+  // i18n 텍스트 교체
+  const t = i18n[lang];
+  document.getElementById('headerSubtitle').innerHTML        = t.subtitle;
+  document.getElementById('tapHint').textContent             = t.tapHint;
+  document.getElementById('card-label-subway').innerHTML     = t.subway;
+  document.getElementById('card-pill-subway').textContent    = t.subwaySub;
+  document.getElementById('card-label-bus').innerHTML        = t.bus;
+  document.getElementById('card-pill-bus').textContent       = t.busSub;
+  document.getElementById('card-label-restaurant').innerHTML = t.restaurant;
+  document.getElementById('card-pill-restaurant').textContent= t.restaurantSub;
+  document.getElementById('card-label-convenience').innerHTML= t.convenience;
+  document.getElementById('card-pill-convenience').textContent=t.convenienceSub;
   if(document.getElementById('rp').classList.contains('open')){
     retranslate();
   }
@@ -435,6 +487,7 @@ function showEmpty(){
 
 function renderResults(items){
   document.getElementById('rpCount').textContent=`${items.length} found`;
+  const t=i18n[currentLang];
   const html=items.map(it=>`
     <div class="result-card">
       <div class="rc-top">
@@ -445,18 +498,18 @@ function renderResults(items){
       <div class="rc-btns">
         <div class="rc-btn-wrap">
           <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo,it.mapx,it.mapy)}')">
-            📱 Naver Map
+            ${t.naverBtn}
           </button>
-          <span class="rc-btn-sub">More detailed<br>⚙️ Set app to English in Settings</span>
+          <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
         </div>
         <div class="rc-btn-wrap">
           <a class="rc-link google"
              href="${googleMapUrl(it.nameEn,it.mapx,it.mapy)}"
              target="_blank" rel="noopener">
-            🗺️ Google Maps
+            ${t.googleBtn}
           </a>
-          <span class="rc-btn-sub">Faster · English</span>
-          <span style="font-size:.63rem;color:var(--muted);text-align:center;line-height:1.5">⚠️ Directions may be inaccurate in Korea</span>
+          <span class="rc-btn-sub">${t.googleSub1}</span>
+          <span style="font-size:.63rem;color:var(--muted);text-align:center;line-height:1.5">${t.googleSub2}</span>
         </div>
       </div>
     </div>`).join('');
