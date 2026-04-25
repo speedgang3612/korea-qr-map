@@ -375,33 +375,86 @@
       color: var(--c4)
     }
 
-    .tip {
-      margin-top: 28px;
+    /* ── Tip Toggle ── */
+    .tip-wrap { width: 100%; margin-bottom: 16px }
+
+    .tip-toggle {
       width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid rgba(250,204,21,.35);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text);
+      transition: border-color .3s;
+      -webkit-tap-highlight-color: transparent;
+      animation: tipPulse 2.5s ease-in-out infinite
+    }
+
+    .tip-toggle:hover { border-color: rgba(250,204,21,.6) }
+    .tip-toggle.used { animation: none; border-color: var(--border) }
+
+    @keyframes tipPulse {
+      0%,100% { border-color: rgba(250,204,21,.2); box-shadow: 0 0 0 0 rgba(250,204,21,0) }
+      50%     { border-color: rgba(250,204,21,.55); box-shadow: 0 0 12px rgba(250,204,21,.15) }
+    }
+
+    .tip-bulb {
+      font-size: 1.1rem;
+      animation: bulbBlink 2s ease-in-out infinite
+    }
+
+    .tip-toggle.used .tip-bulb { animation: none }
+
+    @keyframes bulbBlink {
+      0%,100% { opacity: 1 }
+      50%     { opacity: .4 }
+    }
+
+    .tip-toggle-text {
+      flex: 1;
+      font-size: .82rem;
+      font-weight: 600;
+      text-align: left
+    }
+
+    .tip-tap {
+      background: #facc15;
+      color: #1a1a00;
+      font-size: .68rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: .3px
+    }
+
+    .tip-body {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .4s cubic-bezier(.4,0,.2,1), opacity .35s ease;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-top: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      margin-top: -1px
+    }
+
+    .tip-body.open {
+      max-height: 200px;
+      opacity: 1
+    }
+
+    .tip-body p {
       padding: 14px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start
-    }
-
-    .tip-icon {
-      font-size: 1.1rem;
-      flex-shrink: 0;
-      margin-top: 1px
-    }
-
-    .tip p {
       font-size: .78rem;
       color: var(--muted);
-      line-height: 1.55
-    }
-
-    .tip p strong {
-      color: var(--text);
-      font-weight: 600
+      line-height: 1.65
     }
 
     .footer {
@@ -1229,6 +1282,18 @@
       <button class="lang-btn" id="lang-zh" onclick="setLang('ZH-HANS')">🇨🇳 中文</button>
     </div>
 
+    <!-- ── How it works (토글) ── -->
+    <div class="tip-wrap" id="tipWrap">
+      <button class="tip-toggle" id="tipToggle" onclick="toggleTip()" aria-expanded="false">
+        <span class="tip-bulb">💡</span>
+        <span class="tip-toggle-text" id="tipToggleText">How it works?</span>
+        <span class="tip-tap">👆 TAP HERE</span>
+      </button>
+      <div class="tip-body" id="tipBody">
+        <p id="tipText">Tap any button to find nearby places using your GPS. Results are translated into your selected language. For detailed navigation, download Naver Map — Korea's #1 map app.</p>
+      </div>
+    </div>
+
     <section class="spots-section" aria-label="Popular tourist spots">
       <div class="spots-scroll" id="spotsScroll"></div>
     </section>
@@ -1284,11 +1349,6 @@
       </div>
     </main>
 
-    <aside class="tip">
-      <span class="tip-icon">💡</span>
-      <p><strong>How it works:</strong> Tap any button to search nearby places using your GPS. Results are translated to
-        English automatically. <strong>No app download needed.</strong></p>
-    </aside>
     <footer class="footer">GPS required · Results via Naver · Translated by DeepL</footer>
     <div class="contact-section">
       <span class="contact-brand">SG Next</span>
@@ -1412,6 +1472,8 @@
         cafe: 'Cafe', cafeSub: 'Coffee & Drinks',
         wdFeels: 'Feels like', wdHumidity: 'Humidity', wdWind: 'Wind',
         wdSunrise: 'Sunrise', wdSunset: 'Sunset',
+        tipToggle: 'How it works?',
+        tipText: 'Tap any button to find nearby places using your GPS. Results are translated into your selected language. For detailed navigation, download Naver Map \u2014 Korea\'s #1 map app.',
       },
       JA: {
         subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
@@ -1435,6 +1497,8 @@
         cafe: 'カフェ', cafeSub: 'コーヒー・ドリンク',
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '風速',
         wdSunrise: '日の出', wdSunset: '日没',
+        tipToggle: '使い方',
+        tipText: 'ボタンをタップして近くの場所をGPSで検索。結果は選択した言語に自動翻訳されます。詳細なナビには Naver Map アプリをどうぞ。',
       },
       'ZH-HANS': {
         subtitle: '点击类别查找附近的地方 — 无需下载应用',
@@ -1458,6 +1522,8 @@
         cafe: '咖啡厅', cafeSub: '咖啡与饮品',
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '风速',
         wdSunrise: '日出', wdSunset: '日落',
+        tipToggle: '使用方法',
+        tipText: '点击按钮使用GPS查找附近的地方。结果将自动翻译成您选择的语言。详细导航请下载 Naver Map — 韩国第一地图。',
       },
     };
 
@@ -1498,6 +1564,8 @@
       document.getElementById('emg-sub-fire').textContent     = t.emgFireSub;
       document.getElementById('emg-label-tour').textContent   = t.emgTourLabel;
       document.getElementById('emg-sub-tour').textContent     = t.emgTourSub;
+      document.getElementById('tipToggleText').textContent = t.tipToggle;
+      document.getElementById('tipText').textContent = t.tipText;
       renderSpots();
       if (document.getElementById('weatherDetail').dataset.feelsLike) {
         updateWeatherDetail();
@@ -1830,6 +1898,15 @@
     }
 
     let weatherDetailOpen = false;
+
+    // ── Tip Toggle ─────────────────────────────────────────
+    let tipOpen = false;
+    function toggleTip() {
+      tipOpen = !tipOpen;
+      document.getElementById('tipBody').classList.toggle('open', tipOpen);
+      document.getElementById('tipToggle').classList.add('used');
+      document.getElementById('tipToggle').setAttribute('aria-expanded', tipOpen);
+    }
 
     async function fetchWeather(lat, lng, district) {
       const locName = district || 'My Location';
