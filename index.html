@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=h6lriwqixr"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -129,6 +130,15 @@
     @media(max-width:360px){.header h1{font-size:1.4rem}.card-icon{font-size:2.2rem}.card-label{font-size:.76rem}}
     @media(min-width:481px){.page{padding-top:48px}.rp{max-width:480px;left:50%;transform:translateX(calc(-50% + 100%))}.rp.open{transform:translateX(-50%)}}
 
+    /* ── Mini Map ── */
+    .mini-map-wrap{width:100%;overflow:hidden;max-height:0;opacity:0;transition:max-height .42s cubic-bezier(.4,0,.2,1),opacity .42s ease;margin-top:-8px}
+    .mini-map-wrap.open{max-height:220px;opacity:1}
+    .mini-map-inner{height:220px;width:100%;border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);overflow:hidden;background:var(--surface)}
+    #miniMap{width:100%;height:100%}
+    .location-bar.success{cursor:pointer}
+    .loc-toggle-hint{font-size:.72rem;color:var(--muted);flex-shrink:0;transition:transform .3s;display:none;margin-left:4px}
+    .loc-toggle-hint.rotated{transform:rotate(180deg)}
+
     /* ── Naver Map Modal ── */
     .nm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:400;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
     .nm-overlay.show{opacity:1;pointer-events:auto}
@@ -157,13 +167,20 @@
     <p>Tap a category to find nearby places<br>in English — no app needed</p>
   </header>
 
-  <div class="location-bar loading" id="locationBar">
+  <div class="location-bar loading" id="locationBar" onclick="toggleMiniMap()">
     <div class="loc-dot"></div>
     <div class="loc-text">
       <strong id="locStatus">Detecting your location…</strong>
       <span id="locDetail">Please allow location access</span>
     </div>
-    <button class="retry-btn" id="retryBtn" onclick="initLocation()" style="display:none">Retry</button>
+    <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
+    <span class="loc-toggle-hint" id="toggleHint">▾</span>
+  </div>
+
+  <div class="mini-map-wrap" id="miniMapWrap">
+    <div class="mini-map-inner">
+      <div id="miniMap"></div>
+    </div>
   </div>
 
   <div class="lang-bar" id="langBar">
@@ -517,6 +534,7 @@ function setBar(state,strong,detail){
   document.getElementById('locStatus').textContent=strong;
   document.getElementById('locDetail').textContent=detail;
   document.getElementById('retryBtn').style.display=state==='error'?'block':'none';
+  document.getElementById('toggleHint').style.display=state==='success'?'inline':'none';
 }
 
 function initLocation(){
@@ -549,6 +567,39 @@ function showToast(msg){
   t.textContent=msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── Mini Map ─────────────────────────────────────────────
+let miniMapOpen=false, naverMapInstance=null;
+
+function toggleMiniMap(){
+  if(!locationReady||userLat===null) return;
+  const wrap=document.getElementById('miniMapWrap');
+  const hint=document.getElementById('toggleHint');
+  if(miniMapOpen){
+    wrap.classList.remove('open');
+    hint.classList.remove('rotated');
+    miniMapOpen=false;
+  } else {
+    if(!naverMapInstance){
+      const center=new naver.maps.LatLng(parseFloat(userLat),parseFloat(userLng));
+      naverMapInstance=new naver.maps.Map('miniMap',{
+        center:center,zoom:16,
+        mapTypeControl:false,zoomControl:false,
+        scaleControl:false,logoControl:false,mapDataControl:false
+      });
+      new naver.maps.CustomOverlay({
+        position:center,
+        content:'<div style="font-size:2rem;line-height:1;transform:translate(-50%,-100%);filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">🧍</div>',
+        anchor:new naver.maps.Point(0,0),
+        map:naverMapInstance
+      });
+    }
+    wrap.classList.add('open');
+    hint.classList.add('rotated');
+    miniMapOpen=true;
+    setTimeout(()=>naver.maps.Event.trigger(naverMapInstance,'resize'),450);
+  }
 }
 
 // ── Keyboard ─────────────────────────────────────────────
