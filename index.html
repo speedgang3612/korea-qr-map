@@ -1226,6 +1226,7 @@
         googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
         spots: ['Gyeongbokgung', 'Myeongdong', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan'],
+        spotQueries: ['Gyeongbokgung Palace', 'Myeongdong Shopping Street', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan Tower'],
       },
       JA: {
         subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
@@ -1239,6 +1240,7 @@
         googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
         spots: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山'],
+        spotQueries: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山タワー'],
       },
       'ZH-HANS': {
         subtitle: '点击类别查找附近的地方 — 无需下载应用',
@@ -1252,6 +1254,7 @@
         googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
         googleSub2: '⚠️ 在韩国路线可能不准确',
         spots: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山'],
+        spotQueries: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山塔'],
       },
     };
 
@@ -1510,15 +1513,16 @@
     }
 
     // ── Tourist Spots ─────────────────────────────────────────
-    function spotNaverUrl(searchKo) {
-      const base = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(searchKo)}&lang=en`;
+    function spotNaverUrl(query) {
+      const base = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(query)}&lang=en`;
       return userLat ? base + `&lat=${userLat}&lng=${userLng}` : base;
     }
 
     function renderSpots() {
       const names = i18n[currentLang].spots;
+      const queries = i18n[currentLang].spotQueries;
       const html = SPOTS.map((s, i) =>
-        `<a class="spot-btn" href="${spotNaverUrl(s.searchKo)}" target="_blank" rel="noopener">
+        `<a class="spot-btn" href="${spotNaverUrl(queries[i])}" target="_blank" rel="noopener">
           <span class="spot-emoji">${s.emoji}</span>
           <span class="spot-name">${names[i]}</span>
         </a>`
