@@ -1501,6 +1501,11 @@
       renderSpots();
       if (document.getElementById('weatherDetail').dataset.feelsLike) {
         updateWeatherDetail();
+        // 날씨 바 지역명도 현재 언어로 갱신
+        const det = document.getElementById('weatherDetail');
+        const locName = addrCache[lang] || userDistrict || 'My Location';
+        document.getElementById('weatherText').textContent =
+          `${det.dataset.emoji} ${locName} · ${det.dataset.temp}°C`;
       }
       if (document.getElementById('rp').classList.contains('open')) {
         retranslate();
@@ -1846,6 +1851,8 @@
         document.getElementById('weatherText').textContent = `${emoji} ${locName} · ${temp}°C`;
         document.getElementById('weatherArrow').textContent = '▾';
         const det = document.getElementById('weatherDetail');
+        det.dataset.temp      = temp;
+        det.dataset.emoji     = emoji;
         det.dataset.feelsLike = feelsLike;
         det.dataset.humidity  = humidity;
         det.dataset.wind      = wind;
