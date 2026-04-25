@@ -39,10 +39,12 @@
       --error: #ef4444;
       --c1: #4f8ef7;
       --c2: #22c55e;
-      --c3: #f97316;
-      --c4: #a78bfa;
-      --c5: #e11d48;
-      --c6: #f59e0b;
+      --c3: #4f46e5;
+      --c4: #f97316;
+      --c5: #92400e;
+      --c6: #a78bfa;
+      --c7: #e11d48;
+      --c8: #f59e0b;
       --radius: 20px;
       --radius-sm: 12px;
     }
@@ -372,12 +374,12 @@
     }
 
     .card-3 .card-pill {
-      background: rgba(249, 115, 22, .15);
+      background: rgba(79,70,229,.15);
       color: var(--c3)
     }
 
     .card-4 .card-pill {
-      background: rgba(167, 139, 250, .15);
+      background: rgba(249,115,22,.15);
       color: var(--c4)
     }
 
@@ -1146,13 +1148,27 @@
     .emg-fire   { background: linear-gradient(145deg, #c2410c, #f97316) }
     .emg-tour   { background: linear-gradient(145deg, #1d4ed8, #3b82f6) }
 
+    /* ── Card 3 (accommodation - 딥 인디고) ── */
+    .card-3:hover { box-shadow: 0 8px 32px rgba(79,70,229,.25); border-color: rgba(79,70,229,.5) }
+
+    /* ── Card 4 (restaurant - 오렌지) ── */
+    .card-4:hover { box-shadow: 0 8px 32px rgba(249,115,22,.25); border-color: rgba(249,115,22,.5) }
+
     /* ── Card 5 & 6 ── */
-    .card-5:hover { box-shadow: 0 8px 32px rgba(225,29,72,.25); border-color: rgba(225,29,72,.5) }
-    .card-6:hover { box-shadow: 0 8px 32px rgba(245,158,11,.25); border-color: rgba(245,158,11,.5) }
+    .card-5:hover { box-shadow: 0 8px 32px rgba(146,64,14,.25); border-color: rgba(146,64,14,.5) }
+    .card-6:hover { box-shadow: 0 8px 32px rgba(167,139,250,.25); border-color: rgba(167,139,250,.5) }
     .card-5::before { background: var(--c5) }
     .card-6::before { background: var(--c6) }
-    .card-5 .card-pill { background: rgba(225,29,72,.15); color: var(--c5) }
-    .card-6 .card-pill { background: rgba(245,158,11,.15); color: var(--c6) }
+    .card-5 .card-pill { background: rgba(146,64,14,.15); color: var(--c5) }
+    .card-6 .card-pill { background: rgba(167,139,250,.15); color: var(--c6) }
+
+    /* ── Card 7 & 8 ── */
+    .card-7:hover { box-shadow: 0 8px 32px rgba(225,29,72,.25); border-color: rgba(225,29,72,.5) }
+    .card-8:hover { box-shadow: 0 8px 32px rgba(245,158,11,.25); border-color: rgba(245,158,11,.5) }
+    .card-7::before { background: var(--c7) }
+    .card-8::before { background: var(--c8) }
+    .card-7 .card-pill { background: rgba(225,29,72,.15); color: var(--c7) }
+    .card-8 .card-pill { background: rgba(245,158,11,.15); color: var(--c8) }
   </style>
 </head>
 
@@ -1238,25 +1254,37 @@
         <span class="card-label" id="card-label-bus">Find Bus<br>Stop</span>
         <span class="card-pill" id="card-pill-bus">Nearby stops</span>
       </div>
-      <div class="card card-3" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0"
+      <div class="card card-3" id="btn-accommodation" onclick="searchNearby('accommodation')" role="button" tabindex="0"
+        aria-label="Find Accommodation">
+        <span class="card-icon">🏨</span>
+        <span class="card-label" id="card-label-accommodation">Accommodation</span>
+        <span class="card-pill" id="card-pill-accommodation">Hotels &amp; Stays</span>
+      </div>
+      <div class="card card-4" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0"
         aria-label="Find Restaurant">
         <span class="card-icon">🍜</span>
         <span class="card-label" id="card-label-restaurant">Find<br>Restaurant</span>
         <span class="card-pill" id="card-pill-restaurant">Places to eat</span>
       </div>
-      <div class="card card-4" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0"
+      <div class="card card-5" id="btn-cafe" onclick="searchNearby('cafe')" role="button" tabindex="0"
+        aria-label="Find Cafe">
+        <span class="card-icon">☕</span>
+        <span class="card-label" id="card-label-cafe">Cafe</span>
+        <span class="card-pill" id="card-pill-cafe">Coffee &amp; Drinks</span>
+      </div>
+      <div class="card card-6" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0"
         aria-label="Find Convenience Store">
         <span class="card-icon">🏪</span>
         <span class="card-label" id="card-label-convenience">Find Convenience<br>Store</span>
         <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
       </div>
-      <div class="card card-5" id="btn-hospital" onclick="searchNearby('hospital')" role="button" tabindex="0"
+      <div class="card card-7" id="btn-hospital" onclick="searchNearby('hospital')" role="button" tabindex="0"
         aria-label="Find Hospital">
         <span class="card-icon">🏥</span>
         <span class="card-label" id="card-label-hospital">Find<br>Hospital</span>
         <span class="card-pill" id="card-pill-hospital">Near me</span>
       </div>
-      <div class="card card-6" id="btn-exchange" onclick="searchNearby('exchange')" role="button" tabindex="0"
+      <div class="card card-8" id="btn-exchange" onclick="searchNearby('exchange')" role="button" tabindex="0"
         aria-label="Find Currency Exchange">
         <span class="card-icon">💱</span>
         <span class="card-label" id="card-label-exchange">Currency<br>Exchange</span>
@@ -1333,12 +1361,14 @@
     const CORS_PROXY = 'https://corsproxy.io/?';
 
     const CATS = {
-      subway:      { query: '지하철역', label: 'Subway Stations',    icon: '🚇' },
-      bus:         { query: '버스정류장', label: 'Bus Stops',          icon: '🚌' },
-      restaurant:  { query: '맛집',    label: 'Restaurants',       icon: '🍜' },
-      convenience: { query: '편의점',  label: 'Convenience Stores', icon: '🏪' },
-      hospital:    { query: '병원',    label: 'Hospitals',          icon: '🏥' },
-      exchange:    { query: '환전소',  label: 'Currency Exchange',  icon: '💱' },
+      subway:        { query: '지하철역', label: 'Subway Stations',    icon: '🚇' },
+      bus:           { query: '버스정류장', label: 'Bus Stops',          icon: '🚌' },
+      accommodation: { query: '숙소',   label: 'Accommodation',     icon: '🏨' },
+      restaurant:    { query: '맛집',   label: 'Restaurants',       icon: '🍜' },
+      cafe:          { query: '카페',     label: 'Cafe',              icon: '☕' },
+      convenience:   { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
+      hospital:      { query: '병원',   label: 'Hospitals',          icon: '🏥' },
+      exchange:      { query: '환전소', label: 'Currency Exchange',  icon: '💱' },
     };
 
     const SPOTS = [
@@ -1370,6 +1400,8 @@
         emgTourLabel:   'Korea Travel Helpline', emgTourSub:   '24h · EN / JA / ZH',
         hospital: 'Find<br>Hospital', hospitalSub: 'Near me',
         exchange: 'Currency<br>Exchange', exchangeSub: 'Nearby',
+        accommodation: 'Accommodation', accommodationSub: 'Hotels & Stays',
+        cafe: 'Cafe', cafeSub: 'Coffee & Drinks',
         wdFeels: 'Feels like', wdHumidity: 'Humidity', wdWind: 'Wind',
         wdSunrise: 'Sunrise', wdSunset: 'Sunset',
       },
@@ -1391,6 +1423,8 @@
         emgTourLabel:   '観光案内', emgTourSub:   '24時間対応',
         hospital: '病院を探す', hospitalSub: '近くの病院',
         exchange: '両替', exchangeSub: '近くの両替所',
+        accommodation: '宿泊施設', accommodationSub: 'ホテル・旅館',
+        cafe: 'カフェ', cafeSub: 'コーヒー・ドリンク',
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '風速',
         wdSunrise: '日の出', wdSunset: '日没',
       },
@@ -1412,6 +1446,8 @@
         emgTourLabel:   '旅游热线', emgTourSub:   '24小时服务',
         hospital: '查找医院', hospitalSub: '附近医院',
         exchange: '货币兑换', exchangeSub: '附近兑换处',
+        accommodation: '住宿', accommodationSub: '酒店与民宿',
+        cafe: '咖啡厅', cafeSub: '咖啡与饮品',
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '风速',
         wdSunrise: '日出', wdSunset: '日落',
       },
@@ -1443,6 +1479,10 @@
       document.getElementById('card-pill-hospital').textContent  = t.hospitalSub;
       document.getElementById('card-label-exchange').innerHTML   = t.exchange;
       document.getElementById('card-pill-exchange').textContent  = t.exchangeSub;
+      document.getElementById('card-label-accommodation').innerHTML  = t.accommodation;
+      document.getElementById('card-pill-accommodation').textContent = t.accommodationSub;
+      document.getElementById('card-label-cafe').innerHTML  = t.cafe;
+      document.getElementById('card-pill-cafe').textContent = t.cafeSub;
       document.getElementById('emg-label-police').textContent = t.emgPoliceLabel;
       document.getElementById('emg-sub-police').textContent   = t.emgPoliceSub;
       document.getElementById('emg-label-fire').textContent   = t.emgFireLabel;
