@@ -41,6 +41,8 @@
       --c2: #22c55e;
       --c3: #f97316;
       --c4: #a78bfa;
+      --c5: #e11d48;
+      --c6: #f59e0b;
       --radius: 20px;
       --radius-sm: 12px;
     }
@@ -1055,6 +1057,47 @@
       line-height: 1.3;
       color: var(--text)
     }
+
+    /* ── Emergency Bar ── */
+    .emergency-bar {
+      width: 100%;
+      display: flex;
+      gap: 7px;
+      margin-bottom: 16px
+    }
+
+    .emg-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 10px 6px 9px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-family: inherit;
+      color: #fff;
+      transition: opacity .15s, transform .15s;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden
+    }
+
+    .emg-btn:active { transform: scale(.95); opacity: .85 }
+    .emg-icon  { font-size: 1.25rem; line-height: 1; margin-bottom: 1px }
+    .emg-num   { font-size: 1.1rem; font-weight: 800; letter-spacing: .5px; line-height: 1.1 }
+    .emg-label { font-size: .62rem; font-weight: 700; text-align: center; line-height: 1.2 }
+    .emg-sub   { font-size: .55rem; font-weight: 400; text-align: center; opacity: .82; line-height: 1.3 }
+    .emg-police { background: linear-gradient(145deg, #b91c1c, #ef4444) }
+    .emg-fire   { background: linear-gradient(145deg, #c2410c, #f97316) }
+    .emg-tour   { background: linear-gradient(145deg, #1d4ed8, #3b82f6) }
+
+    /* ── Card 5 & 6 ── */
+    .card-5:hover { box-shadow: 0 8px 32px rgba(225,29,72,.25); border-color: rgba(225,29,72,.5) }
+    .card-6:hover { box-shadow: 0 8px 32px rgba(245,158,11,.25); border-color: rgba(245,158,11,.5) }
+    .card-5::before { background: var(--c5) }
+    .card-6::before { background: var(--c6) }
+    .card-5 .card-pill { background: rgba(225,29,72,.15); color: var(--c5) }
+    .card-6 .card-pill { background: rgba(245,158,11,.15); color: var(--c6) }
   </style>
 </head>
 
@@ -1091,6 +1134,27 @@
       </div>
     </div>
 
+    <section class="emergency-bar" aria-label="Emergency contacts">
+      <a class="emg-btn emg-police" href="tel:112">
+        <span class="emg-icon">🚔</span>
+        <span class="emg-num">112</span>
+        <span class="emg-label" id="emg-label-police">Police</span>
+        <span class="emg-sub" id="emg-sub-police">Crime &amp; Safety</span>
+      </a>
+      <a class="emg-btn emg-fire" href="tel:119">
+        <span class="emg-icon">🚑</span>
+        <span class="emg-num">119</span>
+        <span class="emg-label" id="emg-label-fire">Ambulance</span>
+        <span class="emg-sub" id="emg-sub-fire">Fire &amp; Medical</span>
+      </a>
+      <a class="emg-btn emg-tour" href="tel:1330">
+        <span class="emg-icon">📞</span>
+        <span class="emg-num">1330</span>
+        <span class="emg-label" id="emg-label-tour">Korea Travel Helpline</span>
+        <span class="emg-sub" id="emg-sub-tour">24h · EN / JA / ZH</span>
+      </a>
+    </section>
+
     <div class="lang-bar" id="langBar">
       <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">🇺🇸 English</button>
       <button class="lang-btn" id="lang-ja" onclick="setLang('JA')">🇯🇵 日本語</button>
@@ -1125,6 +1189,18 @@
         <span class="card-icon">🏪</span>
         <span class="card-label" id="card-label-convenience">Find Convenience<br>Store</span>
         <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
+      </div>
+      <div class="card card-5" id="btn-hospital" onclick="searchNearby('hospital')" role="button" tabindex="0"
+        aria-label="Find Hospital">
+        <span class="card-icon">🏥</span>
+        <span class="card-label" id="card-label-hospital">Find<br>Hospital</span>
+        <span class="card-pill" id="card-pill-hospital">Near me</span>
+      </div>
+      <div class="card card-6" id="btn-exchange" onclick="searchNearby('exchange')" role="button" tabindex="0"
+        aria-label="Find Currency Exchange">
+        <span class="card-icon">💱</span>
+        <span class="card-label" id="card-label-exchange">Currency<br>Exchange</span>
+        <span class="card-pill" id="card-pill-exchange">Nearby</span>
       </div>
     </main>
 
@@ -1197,10 +1273,12 @@
     const CORS_PROXY = 'https://corsproxy.io/?';
 
     const CATS = {
-      subway: { query: '지하철역', label: 'Subway Stations', icon: '🚇' },
-      bus: { query: '버스정류장', label: 'Bus Stops', icon: '🚌' },
-      restaurant: { query: '맛집', label: 'Restaurants', icon: '🍜' },
-      convenience: { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
+      subway:      { query: '지하철역', label: 'Subway Stations',    icon: '🚇' },
+      bus:         { query: '버스정류장', label: 'Bus Stops',          icon: '🚌' },
+      restaurant:  { query: '맛집',    label: 'Restaurants',       icon: '🍜' },
+      convenience: { query: '편의점',  label: 'Convenience Stores', icon: '🏪' },
+      hospital:    { query: '병원',    label: 'Hospitals',          icon: '🏥' },
+      exchange:    { query: '환전소',  label: 'Currency Exchange',  icon: '💱' },
     };
 
     const SPOTS = [
@@ -1227,6 +1305,11 @@
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
         spots: ['Gyeongbokgung', 'Myeongdong', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan'],
         spotQueries: ['Gyeongbokgung Palace', 'Myeongdong Shopping Street', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan Tower'],
+        emgPoliceLabel: 'Police',               emgPoliceSub: 'Crime & Safety',
+        emgFireLabel:   'Ambulance',             emgFireSub:   'Fire & Medical',
+        emgTourLabel:   'Korea Travel Helpline', emgTourSub:   '24h · EN / JA / ZH',
+        hospital: 'Find<br>Hospital', hospitalSub: 'Near me',
+        exchange: 'Currency<br>Exchange', exchangeSub: 'Nearby',
       },
       JA: {
         subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
@@ -1241,6 +1324,11 @@
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
         spots: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山'],
         spotQueries: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山タワー'],
+        emgPoliceLabel: '警察',    emgPoliceSub: '犯罪・安全',
+        emgFireLabel:   '救急',    emgFireSub:   '火災・医療',
+        emgTourLabel:   '観光案内', emgTourSub:   '24時間対応',
+        hospital: '病院を探す', hospitalSub: '近くの病院',
+        exchange: '両替', exchangeSub: '近くの両替所',
       },
       'ZH-HANS': {
         subtitle: '点击类别查找附近的地方 — 无需下载应用',
@@ -1255,6 +1343,11 @@
         googleSub2: '⚠️ 在韩国路线可能不准确',
         spots: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山'],
         spotQueries: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山塔'],
+        emgPoliceLabel: '警察',   emgPoliceSub: '犯罪与安全',
+        emgFireLabel:   '救护车', emgFireSub:   '火灾与医疗',
+        emgTourLabel:   '旅游热线', emgTourSub:   '24小时服务',
+        hospital: '查找医院', hospitalSub: '附近医院',
+        exchange: '货币兑换', exchangeSub: '附近兑换处',
       },
     };
 
@@ -1280,6 +1373,16 @@
       document.getElementById('card-pill-restaurant').textContent = t.restaurantSub;
       document.getElementById('card-label-convenience').innerHTML = t.convenience;
       document.getElementById('card-pill-convenience').textContent = t.convenienceSub;
+      document.getElementById('card-label-hospital').innerHTML   = t.hospital;
+      document.getElementById('card-pill-hospital').textContent  = t.hospitalSub;
+      document.getElementById('card-label-exchange').innerHTML   = t.exchange;
+      document.getElementById('card-pill-exchange').textContent  = t.exchangeSub;
+      document.getElementById('emg-label-police').textContent = t.emgPoliceLabel;
+      document.getElementById('emg-sub-police').textContent   = t.emgPoliceSub;
+      document.getElementById('emg-label-fire').textContent   = t.emgFireLabel;
+      document.getElementById('emg-sub-fire').textContent     = t.emgFireSub;
+      document.getElementById('emg-label-tour').textContent   = t.emgTourLabel;
+      document.getElementById('emg-sub-tour').textContent     = t.emgTourSub;
       renderSpots();
       if (document.getElementById('rp').classList.contains('open')) {
         retranslate();
