@@ -990,10 +990,25 @@
       letter-spacing: .3px;
       cursor: pointer;
       user-select: none;
-      -webkit-tap-highlight-color: transparent
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px
     }
 
     .weather-bar:hover { opacity: .82 }
+
+    .weather-arrow {
+      font-size: 1.3rem;
+      line-height: 1;
+      color: rgba(255,255,255,.55);
+      padding: 2px 6px;
+      transition: transform .3s ease;
+      display: inline-block
+    }
+
+    .weather-arrow.open { transform: rotate(180deg) }
 
     .weather-wrap { width: 100%; margin-bottom: 2px }
 
@@ -1150,7 +1165,9 @@
     <header class="header">
       <span class="flag">🇰🇷</span>
       <div class="weather-wrap">
-        <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">⏳ Loading weather…</div>
+        <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">
+          <span id="weatherText">⏳ Loading weather…</span><span id="weatherArrow" class="weather-arrow" aria-hidden="true"></span>
+        </div>
         <div id="weatherDetail" class="weather-detail"></div>
       </div>
       <div id="greetingBar" class="greeting-bar"></div>
@@ -1731,7 +1748,8 @@
         const sunrise   = d.daily.sunrise[0].slice(11, 16);
         const sunset    = d.daily.sunset[0].slice(11, 16);
         const emoji     = weatherEmoji(d.current.weathercode);
-        document.getElementById('weatherBar').textContent = `${emoji} ${locName} · ${temp}°C ▾`;
+        document.getElementById('weatherText').textContent = `${emoji} ${locName} · ${temp}°C`;
+        document.getElementById('weatherArrow').textContent = '▾';
         const det = document.getElementById('weatherDetail');
         det.dataset.feelsLike = feelsLike;
         det.dataset.humidity  = humidity;
@@ -1749,9 +1767,8 @@
       if (!det.dataset.feelsLike) return;
       weatherDetailOpen = !weatherDetailOpen;
       det.classList.toggle('open', weatherDetailOpen);
-      const bar = document.getElementById('weatherBar');
-      bar.textContent = bar.textContent.replace(/[▾▴]$/, weatherDetailOpen ? '▴' : '▾');
-      bar.setAttribute('aria-expanded', weatherDetailOpen);
+      document.getElementById('weatherArrow').classList.toggle('open', weatherDetailOpen);
+      document.getElementById('weatherBar').setAttribute('aria-expanded', weatherDetailOpen);
     }
 
     function updateWeatherDetail() {
