@@ -1363,9 +1363,25 @@
     const CATS = {
       subway:        { query: '지하철역', label: 'Subway Stations',    icon: '🚇' },
       bus:           { query: '버스정류장', label: 'Bus Stops',          icon: '🚌' },
-      accommodation: { query: '숙소',   label: 'Accommodation',     icon: '🏨' },
+      accommodation: {
+        query:   '숙소',
+        queries: [
+          { q: '호텔',        display: 4 },
+          { q: '게스트하우스', display: 3 },
+          { q: '모텔',        display: 3 },
+        ],
+        label: 'Accommodation', icon: '🏨'
+      },
       restaurant:    { query: '맛집',   label: 'Restaurants',       icon: '🍜' },
-      cafe:          { query: '카페',     label: 'Cafe',              icon: '☕' },
+      cafe: {
+        query:   '카페',
+        queries: [
+          { q: '카페',       display: 4 },
+          { q: '커피전문점',  display: 4 },
+          { q: '스타벅스',   display: 2 },
+        ],
+        label: 'Cafe', icon: '☕'
+      },
       convenience:   { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
       hospital:      { query: '병원',   label: 'Hospitals',          icon: '🏥' },
       exchange:      { query: '환전소', label: 'Currency Exchange',  icon: '💱' },
@@ -1545,9 +1561,9 @@
     }
 
     // ── Naver Local Search ───────────────────────────────────
-    async function naverSearch(query) {
+    async function naverSearch(query, display = 10) {
       if (!NAVER_CLIENT_SECRET) throw new Error('NAVER_CLIENT_SECRET is not set');
-      const target = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=10&start=1&sort=random`;
+      const target = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=${display}&start=1&sort=random`;
       const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
         headers: { 'X-Naver-Client-Id': NAVER_CLIENT_ID, 'X-Naver-Client-Secret': NAVER_CLIENT_SECRET }
       });
@@ -1687,10 +1703,30 @@
         try { district = await reverseGeocode(userLat, userLng); }
         catch (e) { /* silent fallback to global search */ }
         userDistrict = district;
-        const searchQuery = district ? `${district} ${cat.query}` : cat.query;
+        const prefix = district ? district + ' ' : '';
 
-        // 1. Naver search (지역명 포함)
-        const raw = await naverSearch(searchQuery);
+        // 1. Naver search — 다중 쿼리(queries 배열) 또는 단일 쿼리 분기
+        let raw;
+        if (cat.queries) {
+          // ── 다중 쿼리: Promise.all 병렬 호출 ──────────────────
+          const results = await Promise.all(
+            cat.queries.map(({ q, display }) =>
+              naverSearch(prefix + q, display).catch(() => [])
+            )
+          );
+          // 중복 제거: 장소명+주소 조합 기준
+          const seen = new Set();
+          raw = results.flat().filter(it => {
+            const key = stripHtml(it.title) + '|' + (it.roadAddress || it.address || '');
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        } else {
+          // ── 단일 쿼리: 기존 방식 유지 ─────────────────────────
+          const searchQuery = prefix + cat.query;
+          raw = await naverSearch(searchQuery);
+        }
         if (!raw.length) { showEmpty(); return; }
 
         // 2. Distance & sort
