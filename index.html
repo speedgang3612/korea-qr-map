@@ -1464,6 +1464,7 @@
     // ── State ───────────────────────────────────────────────
     let userLat = null, userLng = null, locationReady = false, userDistrict = '', currentLang = 'EN';
     let lastItems = [];   // 재번역용 한국어 원본 보관
+    const addrCache = {}; // 언어별 위치 주소 캐시 { EN: '..', JA: '..', 'ZH-HANS': '..' }
 
     // ── Language ────────────────────────────────────────────
     function setLang(lang) {
@@ -1503,6 +1504,19 @@
       }
       if (document.getElementById('rp').classList.contains('open')) {
         retranslate();
+      }
+      // 위치바 주소 언어 갱신 (캐시 우선)
+      if (locationReady && userLat !== null) {
+        if (addrCache[lang]) {
+          setBar('success', '📍 ' + addrCache[lang], '');
+        } else {
+          reverseGeocodeLocalized(userLat, userLng, lang)
+            .then(addr => {
+              addrCache[lang] = addr;
+              setBar('success', '📍 ' + addr, '');
+            })
+            .catch(() => {});
+        }
       }
     }
 
@@ -1575,6 +1589,20 @@
       // adminLevel 6 = 구(區) 단위 (locality는 동 단위라 불가)
       const admins = d.localityInfo?.administrative || [];
       return admins.find(a => a.adminLevel === 6)?.name || '';
+    }
+
+    // ── Reverse Geocoding (다국어 위치바용) ───────────────────
+    async function reverseGeocodeLocalized(lat, lng, lang) {
+      const bdcLang = { EN: 'en', JA: 'ja', 'ZH-HANS': 'zh' }[lang] || 'en';
+      const url = `https://api.bigdatacloud.net/data/reverse-geocode-client` +
+        `?latitude=${lat}&longitude=${lng}&localityLanguage=${bdcLang}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`RGC ${res.status}`);
+      const d = await res.json();
+      const admins = d.localityInfo?.administrative || [];
+      const gu   = admins.find(a => a.adminLevel === 6)?.name || '';
+      const city = d.city || '';
+      return gu && city ? `${gu}, ${city}` : gu || city || '';
     }
 
     // ── DeepL Translation ────────────────────────────────────
@@ -1938,12 +1966,19 @@
           userLat = pos.coords.latitude.toFixed(6);
           userLng = pos.coords.longitude.toFixed(6);
           locationReady = true;
-          setBar('success', '📍 Location found!', `Lat ${userLat}, Lng ${userLng}  ±${Math.round(pos.coords.accuracy)}m`);
+          setBar('success', '📍 Location found!', 'Loading address…');
           showToast('✅ Location ready — tap a category!');
-          reverseGeocode(userLat, userLng)
-            .then(d => { userDistrict = d; })
-            .catch(() => {})
-            .finally(() => { fetchWeather(userLat, userLng, userDistrict); });
+          reverseGeocodeLocalized(userLat, userLng, currentLang)
+            .then(addr => {
+              userDistrict = addr;
+              addrCache[currentLang] = addr;
+              setBar('success', '📍 ' + addr, '');
+              fetchWeather(userLat, userLng, userDistrict);
+            })
+            .catch(() => {
+              setBar('success', '📍 Location found!', '');
+              fetchWeather(userLat, userLng, '');
+            });
         },
         err => {
           locationReady = false;
