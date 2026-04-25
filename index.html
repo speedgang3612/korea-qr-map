@@ -1722,7 +1722,6 @@
         let district = '';
         try { district = await reverseGeocode(userLat, userLng); }
         catch (e) { /* silent fallback to global search */ }
-        userDistrict = district;
         const prefix = district ? district + ' ' : '';
 
         // 1. Naver search — 다중 쿼리(queries 배열) 또는 단일 쿼리 분기
