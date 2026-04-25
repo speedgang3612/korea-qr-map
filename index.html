@@ -172,6 +172,7 @@
     <div class="loc-text">
       <strong id="locStatus">Detecting your location…</strong>
       <span id="locDetail">Please allow location access</span>
+      <span id="tapHint" style="display:none;font-size:.72rem;color:var(--muted);margin-top:3px">👆 Tap to see your location on the map</span>
     </div>
     <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
     <span class="loc-toggle-hint" id="toggleHint">▾</span>
@@ -455,6 +456,7 @@ function renderResults(items){
             🗺️ Google Maps
           </a>
           <span class="rc-btn-sub">Faster · English</span>
+          <span style="font-size:.63rem;color:var(--muted);text-align:center;line-height:1.5">⚠️ Directions may be inaccurate in Korea</span>
         </div>
       </div>
     </div>`).join('');
@@ -535,6 +537,7 @@ function setBar(state,strong,detail){
   document.getElementById('locDetail').textContent=detail;
   document.getElementById('retryBtn').style.display=state==='error'?'block':'none';
   document.getElementById('toggleHint').style.display=state==='success'?'inline':'none';
+  document.getElementById('tapHint').style.display=state==='success'?'block':'none';
 }
 
 function initLocation(){
@@ -588,11 +591,13 @@ function toggleMiniMap(){
         mapTypeControl:false,zoomControl:false,
         scaleControl:false,logoControl:false,mapDataControl:false
       });
-      new naver.maps.CustomOverlay({
+      new naver.maps.Marker({
         position:center,
-        content:'<div style="font-size:2rem;line-height:1;transform:translate(-50%,-100%);filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">🧍</div>',
-        anchor:new naver.maps.Point(0,0),
-        map:naverMapInstance
+        map:naverMapInstance,
+        icon:{
+          content:'<div style="font-size:2rem;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">🧍</div>',
+          anchor:new naver.maps.Point(16,32)
+        }
       });
     }
     wrap.classList.add('open');
