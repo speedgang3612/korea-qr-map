@@ -1547,7 +1547,7 @@
 
     const CATS = {
       subway: { query: '지하철역', label: 'Subway Stations', icon: '🚇' },
-      bus: { query: '버스정류장', label: 'Bus Stops', icon: '🚌' },
+      bus: { query: '버스정류소', label: 'Bus Stops', icon: '🚌' },
       accommodation: {
         query: '숙소',
         queries: [
@@ -1881,7 +1881,7 @@
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
       <div class="rc-btns">
         <div class="rc-btn-wrap">
-          <button class="rc-link" onclick="openNaverModal(decodeURIComponent('${encodeURIComponent(it.nameEn)}'), '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
+          <button class="rc-link" onclick="openNaverModal(decodeURIComponent('${encodeURIComponent(it.nameKo)}'), '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
             ${t.naverBtn}
           </button>
           <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
@@ -1901,8 +1901,8 @@
     }
 
     // ── Naver Map Modal ─────────────────────────────────────
-    function openNaverModal(nameEn, webUrl) {
-      const deepLink = `nmap://search?query=${encodeURIComponent(nameEn)}&appname=kr.co.sgnext`;
+    function openNaverModal(nameKo, webUrl) {
+      const deepLink = `nmap://search?query=${encodeURIComponent(nameKo)}&appname=kr.co.sgnext`;
 
       // 사용자 클릭 컨텍스트에서 직접 실행 (iOS Safari 호환)
       window.location.href = deepLink;
