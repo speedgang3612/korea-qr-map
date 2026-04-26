@@ -6,7 +6,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-800PGMFEHK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-800PGMFEHK');
   </script>
@@ -99,9 +99,19 @@
     }
 
     @keyframes flagDrop {
-      0%   { transform: translateY(-120px); opacity: 0; }
-      60%  { opacity: 1; }
-      100% { transform: translateY(0); opacity: 1; }
+      0% {
+        transform: translateY(-120px);
+        opacity: 0;
+      }
+
+      60% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     @keyframes floatEmoji {
@@ -366,17 +376,20 @@
     }
 
     .card-3 .card-pill {
-      background: rgba(79,70,229,.15);
+      background: rgba(79, 70, 229, .15);
       color: var(--c3)
     }
 
     .card-4 .card-pill {
-      background: rgba(249,115,22,.15);
+      background: rgba(249, 115, 22, .15);
       color: var(--c4)
     }
 
     /* ── Tip Toggle ── */
-    .tip-wrap { width: 100%; margin-bottom: 16px }
+    .tip-wrap {
+      width: 100%;
+      margin-bottom: 16px
+    }
 
     .tip-toggle {
       width: 100%;
@@ -384,7 +397,7 @@
       align-items: center;
       gap: 8px;
       background: var(--surface);
-      border: 1px solid rgba(250,204,21,.35);
+      border: 1px solid rgba(250, 204, 21, .35);
       border-radius: var(--radius-sm);
       padding: 12px 16px;
       cursor: pointer;
@@ -395,12 +408,27 @@
       animation: tipPulse 2.5s ease-in-out infinite
     }
 
-    .tip-toggle:hover { border-color: rgba(250,204,21,.6) }
-    .tip-toggle.used { animation: none; border-color: var(--border) }
+    .tip-toggle:hover {
+      border-color: rgba(250, 204, 21, .6)
+    }
+
+    .tip-toggle.used {
+      animation: none;
+      border-color: var(--border)
+    }
 
     @keyframes tipPulse {
-      0%,100% { border-color: rgba(250,204,21,.2); box-shadow: 0 0 0 0 rgba(250,204,21,0) }
-      50%     { border-color: rgba(250,204,21,.55); box-shadow: 0 0 12px rgba(250,204,21,.15) }
+
+      0%,
+      100% {
+        border-color: rgba(250, 204, 21, .2);
+        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0)
+      }
+
+      50% {
+        border-color: rgba(250, 204, 21, .55);
+        box-shadow: 0 0 12px rgba(250, 204, 21, .15)
+      }
     }
 
     .tip-bulb {
@@ -408,11 +436,20 @@
       animation: bulbBlink 2s ease-in-out infinite
     }
 
-    .tip-toggle.used .tip-bulb { animation: none }
+    .tip-toggle.used .tip-bulb {
+      animation: none
+    }
 
     @keyframes bulbBlink {
-      0%,100% { opacity: 1 }
-      50%     { opacity: .4 }
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
     }
 
     .tip-toggle-text {
@@ -437,7 +474,7 @@
       overflow: hidden;
       max-height: 0;
       opacity: 0;
-      transition: max-height .4s cubic-bezier(.4,0,.2,1), opacity .35s ease;
+      transition: max-height .4s cubic-bezier(.4, 0, .2, 1), opacity .35s ease;
       background: var(--surface);
       border: 1px solid var(--border);
       border-top: none;
@@ -1044,28 +1081,35 @@
       gap: 6px
     }
 
-    .weather-bar:hover { opacity: .82 }
+    .weather-bar:hover {
+      opacity: .82
+    }
 
     .weather-arrow {
       font-size: 1.3rem;
       line-height: 1;
-      color: rgba(255,255,255,.55);
+      color: rgba(255, 255, 255, .55);
       padding: 2px 6px;
       transition: transform .3s ease;
       display: inline-block
     }
 
-    .weather-arrow.open { transform: rotate(180deg) }
+    .weather-arrow.open {
+      transform: rotate(180deg)
+    }
 
-    .weather-wrap { width: 100%; margin-bottom: 2px }
+    .weather-wrap {
+      width: 100%;
+      margin-bottom: 2px
+    }
 
     .weather-detail {
       overflow: hidden;
       max-height: 0;
       opacity: 0;
-      transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease;
-      background: rgba(79,142,247,.08);
-      border: 1px solid rgba(79,142,247,.2);
+      transition: max-height .35s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
+      background: rgba(79, 142, 247, .08);
+      border: 1px solid rgba(79, 142, 247, .2);
       border-radius: 10px;
       margin-top: 6px
     }
@@ -1090,7 +1134,10 @@
       color: var(--muted)
     }
 
-    .wd-item strong { color: var(--text); font-weight: 600 }
+    .wd-item strong {
+      color: var(--text);
+      font-weight: 600
+    }
 
     .greeting-bar {
       font-size: .75rem;
@@ -1184,36 +1231,120 @@
       overflow: hidden
     }
 
-    .emg-btn:active { transform: scale(.95); opacity: .85 }
-    .emg-icon  { font-size: 1.25rem; line-height: 1; margin-bottom: 1px }
-    .emg-num   { font-size: 1.1rem; font-weight: 800; letter-spacing: .5px; line-height: 1.1 }
-    .emg-label { font-size: .62rem; font-weight: 700; text-align: center; line-height: 1.2 }
-    .emg-sub   { font-size: .55rem; font-weight: 400; text-align: center; opacity: .82; line-height: 1.3 }
-    .emg-police { background: linear-gradient(145deg, #b91c1c, #ef4444) }
-    .emg-fire   { background: linear-gradient(145deg, #c2410c, #f97316) }
-    .emg-tour   { background: linear-gradient(145deg, #1d4ed8, #3b82f6) }
+    .emg-btn:active {
+      transform: scale(.95);
+      opacity: .85
+    }
+
+    .emg-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+      margin-bottom: 1px
+    }
+
+    .emg-num {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .5px;
+      line-height: 1.1
+    }
+
+    .emg-label {
+      font-size: .62rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2
+    }
+
+    .emg-sub {
+      font-size: .55rem;
+      font-weight: 400;
+      text-align: center;
+      opacity: .82;
+      line-height: 1.3
+    }
+
+    .emg-police {
+      background: linear-gradient(145deg, #b91c1c, #ef4444)
+    }
+
+    .emg-fire {
+      background: linear-gradient(145deg, #c2410c, #f97316)
+    }
+
+    .emg-tour {
+      background: linear-gradient(145deg, #1d4ed8, #3b82f6)
+    }
 
     /* ── Card 3 (accommodation - 딥 인디고) ── */
-    .card-3:hover { box-shadow: 0 8px 32px rgba(79,70,229,.25); border-color: rgba(79,70,229,.5) }
+    .card-3:hover {
+      box-shadow: 0 8px 32px rgba(79, 70, 229, .25);
+      border-color: rgba(79, 70, 229, .5)
+    }
 
     /* ── Card 4 (restaurant - 오렌지) ── */
-    .card-4:hover { box-shadow: 0 8px 32px rgba(249,115,22,.25); border-color: rgba(249,115,22,.5) }
+    .card-4:hover {
+      box-shadow: 0 8px 32px rgba(249, 115, 22, .25);
+      border-color: rgba(249, 115, 22, .5)
+    }
 
     /* ── Card 5 & 6 ── */
-    .card-5:hover { box-shadow: 0 8px 32px rgba(146,64,14,.25); border-color: rgba(146,64,14,.5) }
-    .card-6:hover { box-shadow: 0 8px 32px rgba(167,139,250,.25); border-color: rgba(167,139,250,.5) }
-    .card-5::before { background: var(--c5) }
-    .card-6::before { background: var(--c6) }
-    .card-5 .card-pill { background: rgba(146,64,14,.15); color: var(--c5) }
-    .card-6 .card-pill { background: rgba(167,139,250,.15); color: var(--c6) }
+    .card-5:hover {
+      box-shadow: 0 8px 32px rgba(146, 64, 14, .25);
+      border-color: rgba(146, 64, 14, .5)
+    }
+
+    .card-6:hover {
+      box-shadow: 0 8px 32px rgba(167, 139, 250, .25);
+      border-color: rgba(167, 139, 250, .5)
+    }
+
+    .card-5::before {
+      background: var(--c5)
+    }
+
+    .card-6::before {
+      background: var(--c6)
+    }
+
+    .card-5 .card-pill {
+      background: rgba(146, 64, 14, .15);
+      color: var(--c5)
+    }
+
+    .card-6 .card-pill {
+      background: rgba(167, 139, 250, .15);
+      color: var(--c6)
+    }
 
     /* ── Card 7 & 8 ── */
-    .card-7:hover { box-shadow: 0 8px 32px rgba(225,29,72,.25); border-color: rgba(225,29,72,.5) }
-    .card-8:hover { box-shadow: 0 8px 32px rgba(245,158,11,.25); border-color: rgba(245,158,11,.5) }
-    .card-7::before { background: var(--c7) }
-    .card-8::before { background: var(--c8) }
-    .card-7 .card-pill { background: rgba(225,29,72,.15); color: var(--c7) }
-    .card-8 .card-pill { background: rgba(245,158,11,.15); color: var(--c8) }
+    .card-7:hover {
+      box-shadow: 0 8px 32px rgba(225, 29, 72, .25);
+      border-color: rgba(225, 29, 72, .5)
+    }
+
+    .card-8:hover {
+      box-shadow: 0 8px 32px rgba(245, 158, 11, .25);
+      border-color: rgba(245, 158, 11, .5)
+    }
+
+    .card-7::before {
+      background: var(--c7)
+    }
+
+    .card-8::before {
+      background: var(--c8)
+    }
+
+    .card-7 .card-pill {
+      background: rgba(225, 29, 72, .15);
+      color: var(--c7)
+    }
+
+    .card-8 .card-pill {
+      background: rgba(245, 158, 11, .15);
+      color: var(--c8)
+    }
   </style>
 </head>
 
@@ -1227,7 +1358,8 @@
       <span class="flag">🇰🇷</span>
       <div class="weather-wrap">
         <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">
-          <span id="weatherText">⏳ Loading weather…</span><span id="weatherArrow" class="weather-arrow" aria-hidden="true"></span>
+          <span id="weatherText">⏳ Loading weather…</span><span id="weatherArrow" class="weather-arrow"
+            aria-hidden="true"></span>
         </div>
         <div id="weatherDetail" class="weather-detail"></div>
       </div>
@@ -1290,7 +1422,8 @@
         <span class="tip-tap">👆 TAP HERE</span>
       </button>
       <div class="tip-body" id="tipBody">
-        <p id="tipText">Tap any button to find nearby places using your GPS. Results are translated into your selected language. For detailed navigation, download Naver Map — Korea's #1 map app.</p>
+        <p id="tipText">Tap any button to find nearby places using your GPS. Results are translated into your selected
+          language. For detailed navigation, download Naver Map — Korea's #1 map app.</p>
       </div>
     </div>
 
@@ -1413,30 +1546,30 @@
     const CORS_PROXY = 'https://corsproxy.io/?';
 
     const CATS = {
-      subway:        { query: '지하철역', label: 'Subway Stations',    icon: '🚇' },
-      bus:           { query: '버스정류장', label: 'Bus Stops',          icon: '🚌' },
+      subway: { query: '지하철역', label: 'Subway Stations', icon: '🚇' },
+      bus: { query: '버스정류장', label: 'Bus Stops', icon: '🚌' },
       accommodation: {
-        query:   '숙소',
+        query: '숙소',
         queries: [
-          { q: '호텔',        display: 4 },
+          { q: '호텔', display: 4 },
           { q: '게스트하우스', display: 3 },
-          { q: '모텔',        display: 3 },
+          { q: '모텔', display: 3 },
         ],
         label: 'Accommodation', icon: '🏨'
       },
-      restaurant:    { query: '맛집',   label: 'Restaurants',       icon: '🍜' },
+      restaurant: { query: '맛집', label: 'Restaurants', icon: '🍜' },
       cafe: {
-        query:   '카페',
+        query: '카페',
         queries: [
-          { q: '카페',       display: 4 },
-          { q: '커피전문점',  display: 4 },
-          { q: '스타벅스',   display: 2 },
+          { q: '카페', display: 4 },
+          { q: '커피전문점', display: 4 },
+          { q: '스타벅스', display: 2 },
         ],
         label: 'Cafe', icon: '☕'
       },
-      convenience:   { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
-      hospital:      { query: '병원',   label: 'Hospitals',          icon: '🏥' },
-      exchange:      { query: '환전소', label: 'Currency Exchange',  icon: '💱' },
+      convenience: { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
+      hospital: { query: '병원', label: 'Hospitals', icon: '🏥' },
+      exchange: { query: '환전소', label: 'Currency Exchange', icon: '💱' },
     };
 
     const SPOTS = [
@@ -1463,9 +1596,9 @@
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
         spots: ['Gyeongbokgung', 'Myeongdong', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan'],
         spotQueries: ['Gyeongbokgung Palace', 'Myeongdong Shopping Street', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan Tower'],
-        emgPoliceLabel: 'Police',               emgPoliceSub: 'Crime & Safety',
-        emgFireLabel:   'Ambulance',             emgFireSub:   'Fire & Medical',
-        emgTourLabel:   'Korea Travel Helpline', emgTourSub:   '24h · EN / JA / ZH',
+        emgPoliceLabel: 'Police', emgPoliceSub: 'Crime & Safety',
+        emgFireLabel: 'Ambulance', emgFireSub: 'Fire & Medical',
+        emgTourLabel: 'Korea Travel Helpline', emgTourSub: '24h · EN / JA / ZH',
         hospital: 'Find<br>Hospital', hospitalSub: 'Near me',
         exchange: 'Currency<br>Exchange', exchangeSub: 'Nearby',
         accommodation: 'Accommodation', accommodationSub: 'Hotels & Stays',
@@ -1488,9 +1621,9 @@
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
         spots: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山'],
         spotQueries: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山タワー'],
-        emgPoliceLabel: '警察',    emgPoliceSub: '犯罪・安全',
-        emgFireLabel:   '救急',    emgFireSub:   '火災・医療',
-        emgTourLabel:   '観光案内', emgTourSub:   '24時間対応',
+        emgPoliceLabel: '警察', emgPoliceSub: '犯罪・安全',
+        emgFireLabel: '救急', emgFireSub: '火災・医療',
+        emgTourLabel: '観光案内', emgTourSub: '24時間対応',
         hospital: '病院を探す', hospitalSub: '近くの病院',
         exchange: '両替', exchangeSub: '近くの両替所',
         accommodation: '宿泊施設', accommodationSub: 'ホテル・旅館',
@@ -1513,9 +1646,9 @@
         googleSub2: '⚠️ 在韩国路线可能不准确',
         spots: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山'],
         spotQueries: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山塔'],
-        emgPoliceLabel: '警察',   emgPoliceSub: '犯罪与安全',
-        emgFireLabel:   '救护车', emgFireSub:   '火灾与医疗',
-        emgTourLabel:   '旅游热线', emgTourSub:   '24小时服务',
+        emgPoliceLabel: '警察', emgPoliceSub: '犯罪与安全',
+        emgFireLabel: '救护车', emgFireSub: '火灾与医疗',
+        emgTourLabel: '旅游热线', emgTourSub: '24小时服务',
         hospital: '查找医院', hospitalSub: '附近医院',
         exchange: '货币兑换', exchangeSub: '附近兑换处',
         accommodation: '住宿', accommodationSub: '酒店与民宿',
@@ -1550,20 +1683,20 @@
       document.getElementById('card-pill-restaurant').textContent = t.restaurantSub;
       document.getElementById('card-label-convenience').innerHTML = t.convenience;
       document.getElementById('card-pill-convenience').textContent = t.convenienceSub;
-      document.getElementById('card-label-hospital').innerHTML   = t.hospital;
-      document.getElementById('card-pill-hospital').textContent  = t.hospitalSub;
-      document.getElementById('card-label-exchange').innerHTML   = t.exchange;
-      document.getElementById('card-pill-exchange').textContent  = t.exchangeSub;
-      document.getElementById('card-label-accommodation').innerHTML  = t.accommodation;
+      document.getElementById('card-label-hospital').innerHTML = t.hospital;
+      document.getElementById('card-pill-hospital').textContent = t.hospitalSub;
+      document.getElementById('card-label-exchange').innerHTML = t.exchange;
+      document.getElementById('card-pill-exchange').textContent = t.exchangeSub;
+      document.getElementById('card-label-accommodation').innerHTML = t.accommodation;
       document.getElementById('card-pill-accommodation').textContent = t.accommodationSub;
-      document.getElementById('card-label-cafe').innerHTML  = t.cafe;
+      document.getElementById('card-label-cafe').innerHTML = t.cafe;
       document.getElementById('card-pill-cafe').textContent = t.cafeSub;
       document.getElementById('emg-label-police').textContent = t.emgPoliceLabel;
-      document.getElementById('emg-sub-police').textContent   = t.emgPoliceSub;
-      document.getElementById('emg-label-fire').textContent   = t.emgFireLabel;
-      document.getElementById('emg-sub-fire').textContent     = t.emgFireSub;
-      document.getElementById('emg-label-tour').textContent   = t.emgTourLabel;
-      document.getElementById('emg-sub-tour').textContent     = t.emgTourSub;
+      document.getElementById('emg-sub-police').textContent = t.emgPoliceSub;
+      document.getElementById('emg-label-fire').textContent = t.emgFireLabel;
+      document.getElementById('emg-sub-fire').textContent = t.emgFireSub;
+      document.getElementById('emg-label-tour').textContent = t.emgTourLabel;
+      document.getElementById('emg-sub-tour').textContent = t.emgTourSub;
       document.getElementById('tipToggleText').textContent = t.tipToggle;
       document.getElementById('tipText').textContent = t.tipText;
       renderSpots();
@@ -1588,7 +1721,7 @@
               addrCache[lang] = addr;
               setBar('success', '📍 ' + addr, '');
             })
-            .catch(() => {});
+            .catch(() => { });
         }
       }
     }
@@ -1673,7 +1806,7 @@
       if (!res.ok) throw new Error(`RGC ${res.status}`);
       const d = await res.json();
       const admins = d.localityInfo?.administrative || [];
-      const gu   = admins.find(a => a.adminLevel === 6)?.name || '';
+      const gu = admins.find(a => a.adminLevel === 6)?.name || '';
       const city = d.city || '';
       return gu && city ? `${gu}, ${city}` : gu || city || '';
     }
@@ -1748,7 +1881,7 @@
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
       <div class="rc-btns">
         <div class="rc-btn-wrap">
-          <button class="rc-link" onclick="openNaverModal('${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
+          <button class="rc-link" onclick="openNaverModal('${it.nameEn.replace(/'/g, &quot;\\'&quot;)}', '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
             ${t.naverBtn}
           </button>
           <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
@@ -1768,9 +1901,33 @@
     }
 
     // ── Naver Map Modal ─────────────────────────────────────
-    function openNaverModal(url) {
-      document.getElementById('nmWebLink').href = url;
-      document.getElementById('nmOverlay').classList.add('show');
+    function openNaverModal(nameEn, webUrl) {
+      const deepLink = `nmap://search?query=${encodeURIComponent(nameEn)}&appname=kr.co.sgnext`;
+
+      // 사용자 클릭 컨텍스트에서 직접 실행 (iOS Safari 호환)
+      window.location.href = deepLink;
+
+      // 1500ms 후에도 페이지가 visible이면 앱 미설치 → 모달 표시
+      const timer = setTimeout(() => {
+        if (document.visibilityState === 'visible') {
+          document.getElementById('nmWebLink').href = webUrl;
+          document.getElementById('nmOverlay').classList.add('show');
+        }
+      }, 1500);
+
+      // 앱이 열리면 페이지가 hidden → 타이머 취소
+      const onVisChange = () => {
+        if (document.visibilityState === 'hidden') {
+          clearTimeout(timer);
+          document.removeEventListener('visibilitychange', onVisChange);
+        }
+      };
+      document.addEventListener('visibilitychange', onVisChange);
+
+      // 정리: 3초 후 리스너 제거
+      setTimeout(() => {
+        document.removeEventListener('visibilitychange', onVisChange);
+      }, 3000);
     }
     function closeNaverModal(e) {
       // overlay 배경 클릭 시에만 닫힘 (모달 내부 클릭은 무시)
@@ -1918,23 +2075,23 @@
           `&daily=sunrise,sunset&timezone=Asia%2FSeoul`
         );
         const d = await res.json();
-        const temp      = Math.round(d.current.temperature_2m);
+        const temp = Math.round(d.current.temperature_2m);
         const feelsLike = Math.round(d.current.apparent_temperature);
-        const humidity  = d.current.relative_humidity_2m;
-        const wind      = Math.round(d.current.wind_speed_10m);
-        const sunrise   = d.daily.sunrise[0].slice(11, 16);
-        const sunset    = d.daily.sunset[0].slice(11, 16);
-        const emoji     = weatherEmoji(d.current.weathercode);
+        const humidity = d.current.relative_humidity_2m;
+        const wind = Math.round(d.current.wind_speed_10m);
+        const sunrise = d.daily.sunrise[0].slice(11, 16);
+        const sunset = d.daily.sunset[0].slice(11, 16);
+        const emoji = weatherEmoji(d.current.weathercode);
         document.getElementById('weatherText').textContent = `${emoji} ${locName} · ${temp}°C`;
         document.getElementById('weatherArrow').textContent = '▾';
         const det = document.getElementById('weatherDetail');
-        det.dataset.temp      = temp;
-        det.dataset.emoji     = emoji;
+        det.dataset.temp = temp;
+        det.dataset.emoji = emoji;
         det.dataset.feelsLike = feelsLike;
-        det.dataset.humidity  = humidity;
-        det.dataset.wind      = wind;
-        det.dataset.sunrise   = sunrise;
-        det.dataset.sunset    = sunset;
+        det.dataset.humidity = humidity;
+        det.dataset.wind = wind;
+        det.dataset.sunrise = sunrise;
+        det.dataset.sunset = sunset;
         updateWeatherDetail();
       } catch (e) {
         document.getElementById('weatherText').textContent = '🌐 Weather unavailable';
@@ -1952,7 +2109,7 @@
 
     function updateWeatherDetail() {
       const det = document.getElementById('weatherDetail');
-      const t   = i18n[currentLang];
+      const t = i18n[currentLang];
       det.innerHTML = `
         <div class="weather-detail-inner">
           <div class="wd-item">🌡️ <span>${t.wdFeels} <strong>${det.dataset.feelsLike}°C</strong></span></div>
@@ -1967,10 +2124,10 @@
     function setGreeting() {
       const kstHour = new Date(Date.now() + 9 * 3600000).getUTCHours();
       let msg;
-      if (kstHour >= 5 && kstHour < 12)       msg = '🌅 Good Morning, Welcome to Korea!';
-      else if (kstHour >= 12 && kstHour < 18)  msg = '☀️ Good Afternoon, Welcome to Korea!';
-      else if (kstHour >= 18 && kstHour < 23)  msg = '🌆 Good Evening, Welcome to Korea!';
-      else                                       msg = '🌙 Good Night, Welcome to Korea!';
+      if (kstHour >= 5 && kstHour < 12) msg = '🌅 Good Morning, Welcome to Korea!';
+      else if (kstHour >= 12 && kstHour < 18) msg = '☀️ Good Afternoon, Welcome to Korea!';
+      else if (kstHour >= 18 && kstHour < 23) msg = '🌆 Good Evening, Welcome to Korea!';
+      else msg = '🌙 Good Night, Welcome to Korea!';
       document.getElementById('greetingBar').textContent = msg;
     }
 
