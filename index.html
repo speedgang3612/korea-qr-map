@@ -1664,6 +1664,7 @@
     let userLat = null, userLng = null, locationReady = false, userDistrict = '', currentLang = 'EN';
     let lastItems = [];   // 재번역용 한국어 원본 보관
     const addrCache = {}; // 언어별 위치 주소 캐시 { EN: '..', JA: '..', 'ZH-HANS': '..' }
+    let busStopsData = null; // 서울시 버스정류장 JSON 캐시
 
     // ── Language ────────────────────────────────────────────
     function setLang(lang) {
@@ -1760,6 +1761,16 @@
     }
 
     function fmtDist(m) { return m < 1000 ? `${m}m` : `${(m / 1000).toFixed(1)}km`; }
+
+    // ── Bus Stops Data (서울시 공공데이터) ─────────────────────
+    async function loadBusStops() {
+      if (busStopsData) return busStopsData;
+      const res = await fetch('data/seoul-bus-stops.json');
+      if (!res.ok) throw new Error(`Bus data load failed (${res.status})`);
+      const d = await res.json();
+      busStopsData = d.stops;
+      return busStopsData;
+    }
 
     function naverMapUrl(name, mapx, mapy) {
       const lat = mapy / 1e7, lng = mapx / 1e7;
@@ -1948,6 +1959,47 @@
       const fallbackUrl = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(cat.query)}&lat=${userLat}&lng=${userLng}&lang=en`;
 
       try {
+        // ── Bus: 서울시 공공데이터 기반 검색 ──────────────────────
+        if (type === 'bus') {
+          const stops = await loadBusStops();
+          const BUS_RADIUS = 1000; // 1km
+
+          const items = stops.map(s => {
+            const dist = haversine(parseFloat(userLat), parseFloat(userLng), s.lat, s.lng);
+            return {
+              nameKo: s.n, stopNo: s.no, addrKo: `정류소 ${s.no}`,
+              mapx: Math.round(s.lng * 1e7), mapy: Math.round(s.lat * 1e7), dist
+            };
+          }).filter(s => s.dist <= BUS_RADIUS)
+            .sort((a, b) => a.dist - b.dist)
+            .slice(0, 8);
+
+          if (!items.length) {
+            document.getElementById('rpBody').innerHTML = `
+              <div class="msg-state">
+                <div class="msg-icon">🚌</div>
+                <h3>No bus stops within 1km</h3>
+                <p>Try again in a different area or move closer to a main road.</p>
+              </div>`;
+            return;
+          }
+          lastItems = items;
+
+          // 이름만 번역, 주소(정류소 번호+거리)는 영문 직접 구성
+          const toTranslate = items.map(it => it.nameKo);
+          let translated = toTranslate;
+          try { translated = await deepLTranslate(toTranslate); }
+          catch (e) { console.warn('DeepL failed:', e); }
+
+          const results = items.map((it, i) => ({
+            ...it,
+            nameEn: translated[i] || it.nameKo,
+            addrEn: `Stop No. ${it.stopNo} • ${fmtDist(it.dist)}`,
+          }));
+          renderResults(results);
+          return;
+        }
+
         // 0. Reverse Geocoding → 구(區) 이름 획득 (실패 시 빈 문자열로 폴백)
         let district = '';
         try { district = await reverseGeocode(userLat, userLng); }
