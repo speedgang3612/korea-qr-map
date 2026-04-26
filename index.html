@@ -1881,7 +1881,7 @@
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
       <div class="rc-btns">
         <div class="rc-btn-wrap">
-          <button class="rc-link" onclick="openNaverModal('${it.nameEn.replace(/'/g, "\\'")}', '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
+          <button class="rc-link" onclick="openNaverModal(decodeURIComponent('${encodeURIComponent(it.nameEn)}'), '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
             ${t.naverBtn}
           </button>
           <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
