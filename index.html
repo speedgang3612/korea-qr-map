@@ -1633,7 +1633,14 @@
         kakaoRadius: 5000,
         label: 'Medical / Pharmacy', icon: '⚕️'
       },
-      exchange: { query: '환전소', label: 'Currency Exchange', icon: '💱' },
+      exchange: {
+        query: '환전소',
+        kakao: true,
+        kakaoKeyword: '환전',
+        kakaoRadiusPrimary: 2000,
+        kakaoRadiusFallback: 5000,
+        label: 'Currency Exchange', icon: '💱'
+      },
     };
 
     const SPOTS = [
@@ -1910,6 +1917,22 @@
       return d.documents || [];
     }
 
+    // ── Kakao Local Keyword Search ──────────────────────
+    async function kakaoKeywordSearch(query, lat, lng, radius, size = 15) {
+      const target = `https://dapi.kakao.com/v2/local/search/keyword.json` +
+        `?query=${encodeURIComponent(query)}` +
+        `&x=${lng}&y=${lat}` +
+        `&radius=${radius}` +
+        `&sort=distance` +
+        `&size=${size}`;
+      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
+        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
+      });
+      if (!res.ok) throw new Error(`Kakao Keyword API ${res.status}`);
+      const d = await res.json();
+      return d.documents || [];
+    }
+
     // ── BigDataCloud Reverse Geocoding (browser-native, no proxy, no API key) ──
     async function reverseGeocode(lat, lng) {
       const url = `https://api.bigdatacloud.net/data/reverse-geocode-client` +
@@ -2149,6 +2172,53 @@
               <div class="msg-state">
                 <div class="msg-icon">🏪</div>
                 <h3>No convenience stores within 5km</h3>
+                <p>Try again in a different area.</p>
+              </div>`;
+            return;
+          }
+
+          docs = docs.slice(0, 12);
+
+          const items = docs.map(doc => ({
+            nameKo: doc.place_name,
+            addrKo: doc.road_address_name || doc.address_name || '',
+            mapx: Math.round(parseFloat(doc.x) * 1e7),
+            mapy: Math.round(parseFloat(doc.y) * 1e7),
+            dist: parseInt(doc.distance) || 0,
+          }));
+          lastItems = items;
+
+          const toTranslate = items.flatMap(it => [it.nameKo, it.addrKo]);
+          let translated = toTranslate;
+          try { translated = await deepLTranslate(toTranslate); }
+          catch (e) { console.warn('DeepL failed, showing Korean:', e); }
+
+          const results = items.map((it, i) => ({
+            ...it,
+            nameEn: translated[i * 2] || it.nameKo,
+            addrEn: translated[i * 2 + 1] || it.addrKo,
+          }));
+
+          renderResults(results);
+          return;
+        }
+
+        // ── Exchange: 카카오 키워드 검색 + 자동 반경 확대 ────────
+        if (type === 'exchange') {
+          // 1차: 2km (관광지 도보권)
+          let docs = await kakaoKeywordSearch(cat.kakaoKeyword, userLat, userLng, cat.kakaoRadiusPrimary);
+
+          // 2차: 5km (결과 없으면 확대)
+          if (!docs.length) {
+            console.log('Exchange: 2km empty, expanding to 5km');
+            docs = await kakaoKeywordSearch(cat.kakaoKeyword, userLat, userLng, cat.kakaoRadiusFallback);
+          }
+
+          if (!docs.length) {
+            document.getElementById('rpBody').innerHTML = `
+              <div class="msg-state">
+                <div class="msg-icon">💱</div>
+                <h3>No currency exchange within 5km</h3>
                 <p>Try again in a different area.</p>
               </div>`;
             return;
