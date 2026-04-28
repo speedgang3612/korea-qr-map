@@ -1469,10 +1469,10 @@
         <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
       </div>
       <div class="card card-7" id="btn-hospital" onclick="searchNearby('hospital')" role="button" tabindex="0"
-        aria-label="Find Hospital">
-        <span class="card-icon">🏥</span>
-        <span class="card-label" id="card-label-hospital">Find<br>Hospital</span>
-        <span class="card-pill" id="card-pill-hospital">Near me</span>
+        aria-label="Medical / Pharmacy">
+        <span class="card-icon">⚕️</span>
+        <span class="card-label" id="card-label-hospital">Medical<br>Pharmacy</span>
+        <span class="card-pill" id="card-pill-hospital">Hospitals & Pharmacies</span>
       </div>
       <div class="card card-8" id="btn-exchange" onclick="searchNearby('exchange')" role="button" tabindex="0"
         aria-label="Find Currency Exchange">
@@ -1613,7 +1613,24 @@
         label: 'Cafe', icon: '☕'
       },
       convenience: { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
-      hospital: { query: '병원', label: 'Hospitals', icon: '🏥' },
+      hospital: {
+        query: '병원',
+        queries: [
+          { q: '약국', display: 5 },
+          { q: '24시 약국', display: 5 },
+          { q: '365일 약국', display: 5 },
+          { q: '심야약국', display: 5 },
+          { q: '내과', display: 5 },
+          { q: '치과', display: 5 },
+          { q: '이비인후과', display: 5 },
+          { q: '정형외과', display: 5 },
+          { q: '피부과', display: 5 },
+          { q: '응급실', display: 5 },
+          { q: '24시간 병원', display: 5 },
+          { q: '국제진료', display: 5 },
+        ],
+        label: 'Medical / Pharmacy', icon: '⚕️'
+      },
       exchange: { query: '환전소', label: 'Currency Exchange', icon: '💱' },
     };
 
@@ -1644,7 +1661,7 @@
         emgPoliceLabel: 'Police', emgPoliceSub: 'Crime & Safety',
         emgFireLabel: 'Ambulance', emgFireSub: 'Fire & Medical',
         emgTourLabel: 'Korea Travel Helpline', emgTourSub: '24h · EN / JA / ZH',
-        hospital: 'Find<br>Hospital', hospitalSub: 'Near me',
+        hospital: 'Medical<br>Pharmacy', hospitalSub: 'Hospitals & Pharmacies',
         exchange: 'Currency<br>Exchange', exchangeSub: 'Nearby',
         accommodation: 'Accommodation', accommodationSub: 'Hotels & Stays',
         cafe: 'Cafe', cafeSub: 'Coffee & Drinks',
@@ -1669,7 +1686,7 @@
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪・安全',
         emgFireLabel: '救急', emgFireSub: '火災・医療',
         emgTourLabel: '観光案内', emgTourSub: '24時間対応',
-        hospital: '病院を探す', hospitalSub: '近くの病院',
+        hospital: '医療<br>薬局', hospitalSub: '病院・薬局',
         exchange: '両替', exchangeSub: '近くの両替所',
         accommodation: '宿泊施設', accommodationSub: 'ホテル・旅館',
         cafe: 'カフェ', cafeSub: 'コーヒー・ドリンク',
@@ -1694,7 +1711,7 @@
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪与安全',
         emgFireLabel: '救护车', emgFireSub: '火灾与医疗',
         emgTourLabel: '旅游热线', emgTourSub: '24小时服务',
-        hospital: '查找医院', hospitalSub: '附近医院',
+        hospital: '医疗<br>药店', hospitalSub: '医院和药店',
         exchange: '货币兑换', exchangeSub: '附近兑换处',
         accommodation: '住宿', accommodationSub: '酒店与民宿',
         cafe: '咖啡厅', cafeSub: '咖啡与饮品',
