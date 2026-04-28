@@ -1780,7 +1780,7 @@
     function googleMapUrl(nameEn, mapx, mapy) {
       const lat = mapy / 1e7, lng = mapx / 1e7;
       return `https://www.google.com/maps/search/?api=1` +
-        `&query=${encodeURIComponent(nameEn)}&center=${lat},${lng}`;
+        `&query=${lat},${lng}&hl=en`;
     }
 
     // ── Naver Local Search ───────────────────────────────────
@@ -1892,7 +1892,7 @@
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
       <div class="rc-btns">
         <div class="rc-btn-wrap">
-          <button class="rc-link" onclick="openNaverModal(decodeURIComponent('${encodeURIComponent(it.nameKo)}'), '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}')">
+          <button class="rc-link" onclick="openNaverModal(decodeURIComponent('${encodeURIComponent(it.nameKo)}'), '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}', ${it.mapx}, ${it.mapy})">
             ${t.naverBtn}
           </button>
           <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
@@ -1912,8 +1912,9 @@
     }
 
     // ── Naver Map Modal ─────────────────────────────────────
-    function openNaverModal(nameKo, webUrl) {
-      const deepLink = `nmap://search?query=${encodeURIComponent(nameKo)}&appname=kr.co.sgnext`;
+    function openNaverModal(nameKo, webUrl, mapx, mapy) {
+      const lat = mapy / 1e7, lng = mapx / 1e7;
+      const deepLink = `nmap://place?lat=${lat}&lng=${lng}&name=${encodeURIComponent(nameKo)}&appname=kr.co.sgnext`;
 
       // 사용자 클릭 컨텍스트에서 직접 실행 (iOS Safari 호환)
       window.location.href = deepLink;
