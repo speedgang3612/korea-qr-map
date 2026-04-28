@@ -1544,6 +1544,7 @@
     const NAVER_CLIENT_SECRET = 'npl0Jjjv5r';
     const DEEPL_API_KEY = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
     const CORS_PROXY = 'https://corsproxy.io/?';
+    const KAKAO_REST_KEY = '384547a21449af1afab3769446f48b7c';
 
     const CATS = {
       subway: { query: '지하철역', label: 'Subway Stations', icon: '🚇' },
@@ -1615,20 +1616,12 @@
       convenience: { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
       hospital: {
         query: '병원',
-        queries: [
-          { q: '약국', display: 5 },
-          { q: '24시 약국', display: 5 },
-          { q: '365일 약국', display: 5 },
-          { q: '심야약국', display: 5 },
-          { q: '내과', display: 5 },
-          { q: '치과', display: 5 },
-          { q: '이비인후과', display: 5 },
-          { q: '정형외과', display: 5 },
-          { q: '피부과', display: 5 },
-          { q: '응급실', display: 5 },
-          { q: '24시간 병원', display: 5 },
-          { q: '국제진료', display: 5 },
+        kakao: true,
+        kakaoCategories: [
+          { code: 'PM9', label: 'Pharmacy', max: 5 },
+          { code: 'HP8', label: 'Hospital', max: 7 },
         ],
+        kakaoRadius: 5000,
         label: 'Medical / Pharmacy', icon: '⚕️'
       },
       exchange: { query: '환전소', label: 'Currency Exchange', icon: '💱' },
@@ -1892,6 +1885,21 @@
       return d.items || [];
     }
 
+    // ── Kakao Local Category Search ─────────────────────────
+    async function kakaoSearch(categoryCode, lat, lng, radius, size = 15) {
+      const target = `https://dapi.kakao.com/v2/local/search/category.json` +
+        `?category_group_code=${categoryCode}` +
+        `&x=${lng}&y=${lat}` +
+        `&radius=${radius}` +
+        `&sort=distance` +
+        `&size=${size}`;
+      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
+        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
+      });
+      if (!res.ok) throw new Error(`Kakao API ${res.status}`);
+      const d = await res.json();
+      return d.documents || [];
+    }
 
     // ── BigDataCloud Reverse Geocoding (browser-native, no proxy, no API key) ──
     async function reverseGeocode(lat, lng) {
@@ -2057,6 +2065,63 @@
       const fallbackUrl = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(cat.query)}&lat=${userLat}&lng=${userLng}&lang=en`;
 
       try {
+        // ── Hospital: 카카오 로컬 API 기반 검색 ──────────────────
+        if (type === 'hospital') {
+          const cats = cat.kakaoCategories;
+          const radius = cat.kakaoRadius;
+
+          // 1. 카테고리별 병렬 검색 (PM9=약국, HP8=병원)
+          const batches = await Promise.all(
+            cats.map(({ code, max }) =>
+              kakaoSearch(code, userLat, userLng, radius, max)
+                .catch(e => { console.warn(`Kakao ${code} failed:`, e); return []; })
+            )
+          );
+
+          // 2. 카테고리별 max 적용 후 병합 → 거리순 정렬
+          let combined = [];
+          cats.forEach(({ max }, i) => {
+            combined.push(...batches[i].slice(0, max));
+          });
+          combined.sort((a, b) => parseInt(a.distance) - parseInt(b.distance));
+          combined = combined.slice(0, 12);
+
+          if (!combined.length) {
+            document.getElementById('rpBody').innerHTML = `
+              <div class="msg-state">
+                <div class="msg-icon">⚕️</div>
+                <h3>No medical facilities within 5km</h3>
+                <p>Try again in a different area.</p>
+              </div>`;
+            return;
+          }
+
+          // 3. 기존 item 포맷으로 변환 (mapx/mapy = 1e7 배율)
+          const items = combined.map(doc => ({
+            nameKo: doc.place_name,
+            addrKo: doc.road_address_name || doc.address_name || '',
+            mapx: Math.round(parseFloat(doc.x) * 1e7),
+            mapy: Math.round(parseFloat(doc.y) * 1e7),
+            dist: parseInt(doc.distance) || 0,
+          }));
+          lastItems = items;
+
+          // 4. DeepL 번역 (이름 + 주소)
+          const toTranslate = items.flatMap(it => [it.nameKo, it.addrKo]);
+          let translated = toTranslate;
+          try { translated = await deepLTranslate(toTranslate); }
+          catch (e) { console.warn('DeepL failed, showing Korean:', e); }
+
+          const results = items.map((it, i) => ({
+            ...it,
+            nameEn: translated[i * 2] || it.nameKo,
+            addrEn: translated[i * 2 + 1] || it.addrKo,
+          }));
+
+          renderResults(results);
+          return;
+        }
+
         // ── Bus: 서울시 공공데이터 기반 검색 ──────────────────────
         if (type === 'bus') {
           const stops = await loadBusStops();
