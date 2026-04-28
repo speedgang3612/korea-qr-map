@@ -1613,7 +1613,16 @@
         ],
         label: 'Cafe', icon: '☕'
       },
-      convenience: { query: '편의점', label: 'Convenience Stores', icon: '🏪' },
+      convenience: {
+        query: '편의점',
+        kakao: true,
+        kakaoCategories: [
+          { code: 'CS2', label: 'Convenience', max: 12 },
+        ],
+        kakaoRadiusPrimary: 2000,
+        kakaoRadiusFallback: 5000,
+        label: 'Convenience Stores', icon: '🏪'
+      },
       hospital: {
         query: '병원',
         kakao: true,
@@ -2107,6 +2116,55 @@
           lastItems = items;
 
           // 4. DeepL 번역 (이름 + 주소)
+          const toTranslate = items.flatMap(it => [it.nameKo, it.addrKo]);
+          let translated = toTranslate;
+          try { translated = await deepLTranslate(toTranslate); }
+          catch (e) { console.warn('DeepL failed, showing Korean:', e); }
+
+          const results = items.map((it, i) => ({
+            ...it,
+            nameEn: translated[i * 2] || it.nameKo,
+            addrEn: translated[i * 2 + 1] || it.addrKo,
+          }));
+
+          renderResults(results);
+          return;
+        }
+
+        // ── Convenience: 카카오 로컬 API + 자동 반경 확대 ────────
+        if (type === 'convenience') {
+          const { code, max } = cat.kakaoCategories[0];
+
+          // 1차: 2km (도시 도보권)
+          let docs = await kakaoSearch(code, userLat, userLng, cat.kakaoRadiusPrimary, max);
+
+          // 2차: 5km (결과 없으면 확대)
+          if (!docs.length) {
+            console.log('Convenience: 2km empty, expanding to 5km');
+            docs = await kakaoSearch(code, userLat, userLng, cat.kakaoRadiusFallback, max);
+          }
+
+          if (!docs.length) {
+            document.getElementById('rpBody').innerHTML = `
+              <div class="msg-state">
+                <div class="msg-icon">🏪</div>
+                <h3>No convenience stores within 5km</h3>
+                <p>Try again in a different area.</p>
+              </div>`;
+            return;
+          }
+
+          docs = docs.slice(0, 12);
+
+          const items = docs.map(doc => ({
+            nameKo: doc.place_name,
+            addrKo: doc.road_address_name || doc.address_name || '',
+            mapx: Math.round(parseFloat(doc.x) * 1e7),
+            mapy: Math.round(parseFloat(doc.y) * 1e7),
+            dist: parseInt(doc.distance) || 0,
+          }));
+          lastItems = items;
+
           const toTranslate = items.flatMap(it => [it.nameKo, it.addrKo]);
           let translated = toTranslate;
           try { translated = await deepLTranslate(toTranslate); }
