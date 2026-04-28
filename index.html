@@ -1557,13 +1557,30 @@
         ],
         label: 'Accommodation', icon: '🏨'
       },
-      restaurant: { query: '맛집', label: 'Restaurants', icon: '🍜' },
+      restaurant: {
+        query: '맛집',
+        queries: [
+          { q: '맛집', display: 5 },
+          { q: '한식', display: 5 },
+          { q: '레스토랑', display: 5 },
+          { q: '분식', display: 5 },
+          { q: '치킨', display: 5 },
+          { q: '고기집', display: 5 },
+        ],
+        label: 'Restaurants', icon: '🍜'
+      },
       cafe: {
         query: '카페',
         queries: [
-          { q: '카페', display: 4 },
-          { q: '커피전문점', display: 4 },
-          { q: '스타벅스', display: 2 },
+          { q: '카페', display: 5 },
+          { q: '스타벅스', display: 5 },
+          { q: '빽다방', display: 5 },
+          { q: '메가커피', display: 5 },
+          { q: '컴포즈커피', display: 5 },
+          { q: '투썸플레이스', display: 5 },
+          { q: '이디야', display: 5 },
+          { q: '베이커리', display: 5 },
+          { q: '디저트카페', display: 5 },
         ],
         label: 'Cafe', icon: '☕'
       },
@@ -2039,7 +2056,7 @@
           mapy: parseInt(it.mapy) || 0,
           dist: haversine(parseFloat(userLat), parseFloat(userLng),
             (parseInt(it.mapy) || 0) / 1e7, (parseInt(it.mapx) || 0) / 1e7)
-        })).sort((a, b) => a.dist - b.dist).slice(0, 8);
+        })).sort((a, b) => a.dist - b.dist).slice(0, 12);
         lastItems = items;   // 재번역용 원본 보관
 
         // 3. Batch translate (names + addresses)
