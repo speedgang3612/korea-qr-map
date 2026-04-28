@@ -1710,6 +1710,7 @@
     let lastItems = [];   // 재번역용 한국어 원본 보관
     const addrCache = {}; // 언어별 위치 주소 캐시 { EN: '..', JA: '..', 'ZH-HANS': '..' }
     let busStopsData = null; // 서울시 버스정류장 JSON 캐시
+    let subwayStationsData = null; // 서울시 지하철역 JSON 캐시
 
     // ── Language ────────────────────────────────────────────
     function setLang(lang) {
@@ -1815,6 +1816,40 @@
       const d = await res.json();
       busStopsData = d.stops;
       return busStopsData;
+    }
+
+    // ── Subway Stations Data (서울시 공공데이터) ──────────────────
+    const LINE_NAME_EN = {
+      '1호선': 'Line 1', '2호선': 'Line 2', '3호선': 'Line 3',
+      '4호선': 'Line 4', '5호선': 'Line 5', '6호선': 'Line 6',
+      '7호선': 'Line 7', '8호선': 'Line 8', '9호선': 'Line 9',
+      '9호선(연장)': 'Line 9', '7호선(인천)': 'Line 7',
+      '경부선': 'Gyeongbu Line', '경인선': 'Gyeongin Line',
+      '경원선': 'Gyeongwon Line', '경의중앙선': 'Gyeongui-Jungang Line',
+      '중앙선': 'Jungang Line', '경춘선': 'Gyeongchun Line',
+      '분당선': 'Bundang Line', '수인선': 'Suin Line',
+      '신분당선': 'Shinbundang Line', '신분당선(연장)': 'Shinbundang Line',
+      '신분당선(연장2)': 'Shinbundang Line',
+      '공항철도1호선': 'Airport Express (AREX)',
+      '과천선': 'Gwacheon Line', '안산선': 'Ansan Line',
+      '일산선': 'Ilsan Line', '장항선': 'Janghang Line',
+      '경강선': 'Gyeonggang Line',
+      '우이신설선': 'Ui-Sinseol Line', '신림선': 'Sillim Line',
+      '김포골드라인': 'Gimpo Gold Line', '서해선': 'Seohae Line',
+      '에버라인선': 'Everline', '의정부선': 'Uijeongbu Line',
+      '인천1호선': 'Incheon Line 1', '인천2호선': 'Incheon Line 2',
+      '진접선': 'Jinjeop Line', '별내선': 'Byeollae Line',
+      '수도권 광역급행철도': 'GTX-A',
+    };
+    function lineNameEn(ko) { return LINE_NAME_EN[ko] || ko; }
+
+    async function loadSubwayStations() {
+      if (subwayStationsData) return subwayStationsData;
+      const res = await fetch('data/seoul-subway-stations.json');
+      if (!res.ok) throw new Error(`Subway data load failed (${res.status})`);
+      const d = await res.json();
+      subwayStationsData = d.stations;
+      return subwayStationsData;
     }
 
     function naverMapUrl(name, mapx, mapy) {
@@ -2041,6 +2076,48 @@
             ...it,
             nameEn: translated[i] || it.nameKo,
             addrEn: `Stop No. ${it.stopNo} • ${fmtDist(it.dist)}`,
+          }));
+          renderResults(results);
+          return;
+        }
+
+        // ── Subway: 서울시 공공데이터 기반 검색 ─────────────────────
+        if (type === 'subway') {
+          const stations = await loadSubwayStations();
+          const SUBWAY_RADIUS = 5000; // 5km
+
+          const items = stations.map(s => {
+            const dist = haversine(parseFloat(userLat), parseFloat(userLng), s.lat, s.lng);
+            return {
+              nameKo: s.n + '역', addrKo: s.line,
+              mapx: Math.round(s.lng * 1e7), mapy: Math.round(s.lat * 1e7), dist,
+              lineEn: lineNameEn(s.line)
+            };
+          }).filter(s => s.dist <= SUBWAY_RADIUS)
+            .sort((a, b) => a.dist - b.dist)
+            .slice(0, 12);
+
+          if (!items.length) {
+            document.getElementById('rpBody').innerHTML = `
+              <div class="msg-state">
+                <div class="msg-icon">🚇</div>
+                <h3>No subway stations within 5km</h3>
+                <p>Try again in a different area.</p>
+              </div>`;
+            return;
+          }
+          lastItems = items;
+
+          // 역이름만 번역, 호선+거리는 영문 직접 구성
+          const toTranslate = items.map(it => it.nameKo);
+          let translated = toTranslate;
+          try { translated = await deepLTranslate(toTranslate); }
+          catch (e) { console.warn('DeepL failed:', e); }
+
+          const results = items.map((it, i) => ({
+            ...it,
+            nameEn: translated[i] || it.nameKo,
+            addrEn: `${it.lineEn} • ${fmtDist(it.dist)}`,
           }));
           renderResults(results);
           return;
