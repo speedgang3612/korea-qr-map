@@ -106,14 +106,8 @@
     }
 
     .header-flag {
-      width: 48px;
-      height: 48px;
-      background: #FF6B6B;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+      font-size: 2.2rem;
+      line-height: 1;
       flex-shrink: 0
     }
 
@@ -2673,6 +2667,8 @@
           locationReady = true;
           setBar('success', '📍 Location found!', 'Loading address…');
           showToast('✅ Location ready — tap a category!');
+          // Auto-open Live Map after location is ready
+          setTimeout(() => { if (!miniMapOpen) toggleMiniMap(); }, 500);
           reverseGeocodeLocalized(userLat, userLng, currentLang)
             .then(addr => {
               userDistrict = addr;
