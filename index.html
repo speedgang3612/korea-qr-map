@@ -96,63 +96,52 @@
       z-index: 0
     }
 
-    .header {
+    /* ── New Header (K-Wave) ── */
+    .header-new {
       width: 100%;
-      text-align: center;
-      margin-bottom: 28px
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px
     }
 
-    .flag {
-      font-size: 2.4rem;
-      line-height: 1;
-      margin-bottom: 8px;
-      display: block;
-      animation: flagDrop .9s cubic-bezier(.34, 1.56, .64, 1) both, floatEmoji 3s .9s ease-in-out infinite
+    .header-flag {
+      width: 48px;
+      height: 48px;
+      background: #FF6B6B;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0
     }
 
-    @keyframes flagDrop {
-      0% {
-        transform: translateY(-120px);
-        opacity: 0;
-      }
-
-      60% {
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateY(0);
-        opacity: 1;
-      }
+    .header-center {
+      flex: 1;
+      min-width: 0
     }
 
-    @keyframes floatEmoji {
-
-      0%,
-      100% {
-        transform: translateY(0)
-      }
-
-      50% {
-        transform: translateY(-6px)
-      }
+    .header-center h1 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
     }
 
-    .header h1 {
-      font-size: 1.65rem;
-      font-weight: 800;
-      letter-spacing: -.5px;
-      background: linear-gradient(135deg, #1A1A1A 30%, #555555);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 6px
-    }
-
-    .header p {
-      font-size: .88rem;
+    .header-sub {
+      font-size: .78rem;
       color: var(--muted);
-      line-height: 1.5
+      margin-top: 2px
+    }
+
+    .header-lang {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0
     }
 
     /* location bar */
@@ -249,38 +238,23 @@
       color: var(--accent)
     }
 
-    /* language selector */
-    .lang-bar {
-      width: 100%;
-      display: flex;
-      gap: 8px;
-      margin-bottom: 28px
-    }
-
+    /* language toggle (header) */
     .lang-btn {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
       color: var(--muted);
-      font-size: .78rem;
+      font-size: .75rem;
       font-family: inherit;
-      padding: 9px 6px;
+      padding: 6px 10px;
       cursor: pointer;
       transition: all .2s;
-      text-align: center;
-      line-height: 1.3
-    }
-
-    .lang-btn:hover {
-      border-color: rgba(79, 142, 247, .4);
-      color: var(--text)
+      font-weight: 500
     }
 
     .lang-btn.active {
-      background: rgba(79, 142, 247, .15);
-      border-color: var(--accent);
-      color: var(--accent);
+      background: var(--text);
+      color: #FFFFFF;
       font-weight: 600
     }
 
@@ -1366,18 +1340,17 @@
 
   <!-- ── Main Page ── -->
   <div class="page">
-    <header class="header">
-      <span class="flag">🇰🇷</span>
-      <div class="weather-wrap">
-        <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">
-          <span id="weatherText">⏳ Loading weather…</span><span id="weatherArrow" class="weather-arrow"
-            aria-hidden="true"></span>
-        </div>
-        <div id="weatherDetail" class="weather-detail"></div>
+    <header class="header-new">
+      <div class="header-flag">🇰🇷</div>
+      <div class="header-center">
+        <h1 id="mainTitle"></h1>
+        <p id="headerSubtitle" class="header-sub">For travelers · Free</p>
       </div>
-      <div id="greetingBar" class="greeting-bar"></div>
-      <h1 id="mainTitle"></h1>
-      <p id="headerSubtitle">Tap a category to find nearby places<br>in English — no app needed</p>
+      <div class="header-lang" id="langBar">
+        <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">EN</button>
+        <button class="lang-btn" id="lang-ja" onclick="setLang('JA')">JA</button>
+        <button class="lang-btn" id="lang-zh" onclick="setLang('ZH-HANS')">中</button>
+      </div>
     </header>
 
     <div class="location-bar loading" id="locationBar" onclick="toggleMiniMap()">
@@ -1391,6 +1364,14 @@
       <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()"
         style="display:none">Retry</button>
       <span class="loc-toggle-hint" id="toggleHint">▾</span>
+    </div>
+
+    <!-- weather bar (임시 배치 — Stage B에서 통합 카드로 이동) -->
+    <div class="weather-wrap">
+      <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">
+        <span id="weatherText">⏳ Loading weather…</span><span id="weatherArrow" class="weather-arrow" aria-hidden="true"></span>
+      </div>
+      <div id="weatherDetail" class="weather-detail"></div>
     </div>
 
     <div class="mini-map-wrap" id="miniMapWrap">
@@ -1420,11 +1401,7 @@
       </a>
     </section>
 
-    <div class="lang-bar" id="langBar">
-      <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">🇺🇸 English</button>
-      <button class="lang-btn" id="lang-ja" onclick="setLang('JA')">🇯🇵 日本語</button>
-      <button class="lang-btn" id="lang-zh" onclick="setLang('ZH-HANS')">🇨🇳 中文</button>
-    </div>
+    <!-- lang-bar moved to header -->
 
     <!-- ── How it works (토글) ── -->
     <div class="tip-wrap" id="tipWrap">
@@ -2452,7 +2429,8 @@
           <span class="spot-name">${names[i]}</span>
         </a>`
       ).join('');
-      document.getElementById('spotsScroll').innerHTML = html;
+      const ss = document.getElementById('spotsScroll');
+      if (ss) ss.innerHTML = html;
     }
 
     // ── Welcome Animation ─────────────────────────────────────
@@ -2556,7 +2534,8 @@
       else if (kstHour >= 12 && kstHour < 18) msg = '☀️ Good Afternoon, Welcome to Korea!';
       else if (kstHour >= 18 && kstHour < 23) msg = '🌆 Good Evening, Welcome to Korea!';
       else msg = '🌙 Good Night, Welcome to Korea!';
-      document.getElementById('greetingBar').textContent = msg;
+      const gb = document.getElementById('greetingBar');
+      if (gb) gb.textContent = msg;
     }
 
     // ── Starfield Canvas (배터리 최적화) ──────────────────────
