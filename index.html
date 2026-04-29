@@ -28,12 +28,12 @@
     }
 
     :root {
-      --bg: #0d0f14;
-      --surface: #161a24;
-      --card: #1e2333;
-      --border: rgba(255, 255, 255, .07);
-      --text: #f0f2f8;
-      --muted: #8891a8;
+      --bg: #FFFBF7;
+      --surface: #F7F2ED;
+      --card: #FFFFFF;
+      --border: #F0E8E0;
+      --text: #1A1A1A;
+      --muted: #666666;
       --accent: #4f8ef7;
       --success: #22c55e;
       --error: #ef4444;
@@ -63,10 +63,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30, 60, 120, .45) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(80, 30, 140, .25) 0%, transparent 50%),
-        linear-gradient(170deg, #0a0d1a 0%, #0d0f1e 40%, #0f0a1a 70%, #080810 100%);
+      background: #FFFBF7;
       pointer-events: none;
       z-index: 0
     }
@@ -81,7 +78,22 @@
       align-items: center;
       padding: 28px 20px 48px;
       max-width: 480px;
-      margin: 0 auto
+      margin: 0 auto;
+      overflow: hidden
+    }
+
+    .page::after {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 180px;
+      height: 180px;
+      background: #FF6B6B;
+      opacity: 0.06;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0
     }
 
     .header {
@@ -130,7 +142,7 @@
       font-size: 1.65rem;
       font-weight: 800;
       letter-spacing: -.5px;
-      background: linear-gradient(135deg, #fff 30%, #a0b4d8);
+      background: linear-gradient(135deg, #1A1A1A 30%, #555555);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -727,7 +739,7 @@
     }
 
     .result-card:hover {
-      border-color: rgba(255, 255, 255, .15)
+      border-color: rgba(0, 0, 0, .1)
     }
 
     .rc-top {
@@ -843,7 +855,7 @@
       color: var(--text);
       white-space: nowrap;
       z-index: 999;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .1);
       transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
       opacity: 0;
       pointer-events: none
@@ -1010,7 +1022,7 @@
     }
 
     .nm-steps {
-      background: #0d1f3a;
+      background: #F0EADF;
       border-radius: 12px;
       padding: 14px 16px;
       font-size: .78rem;
@@ -1062,7 +1074,7 @@
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      opacity: .65
+      opacity: 0
     }
 
     /* ── Weather & Greeting ── */
