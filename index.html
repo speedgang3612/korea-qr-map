@@ -1540,11 +1540,8 @@
 
   <script>
     // ── Config ──────────────────────────────────────────────
-    const NAVER_CLIENT_ID = 'dzy8A8DveVa1HLrkLGhA';
-    const NAVER_CLIENT_SECRET = 'npl0Jjjv5r';
-    const DEEPL_API_KEY = 'c246fa94-e833-4d7b-b036-25de82d75e2e:fx';
-    const CORS_PROXY = 'https://corsproxy.io/?';
-    const KAKAO_REST_KEY = '384547a21449af1afab3769446f48b7c';
+    // API 키는 Worker 서버사이드에서 관리됨 (보안)
+    const WORKER_BASE = 'https://korea-guide-api.speedgang3612.workers.dev';
 
     const CATS = {
       subway: { query: '지하철역', label: 'Subway Stations', icon: '🚇' },
@@ -1892,11 +1889,9 @@
 
     // ── Naver Local Search ───────────────────────────────────
     async function naverSearch(query, display = 10) {
-      if (!NAVER_CLIENT_SECRET) throw new Error('NAVER_CLIENT_SECRET is not set');
-      const target = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=${display}&start=1&sort=random`;
-      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
-        headers: { 'X-Naver-Client-Id': NAVER_CLIENT_ID, 'X-Naver-Client-Secret': NAVER_CLIENT_SECRET }
-      });
+      const res = await fetch(
+        `${WORKER_BASE}/api/naver-search?query=${encodeURIComponent(query)}&display=${display}&sort=random`
+      );
       if (!res.ok) throw new Error(`Naver API ${res.status}`);
       const d = await res.json();
       return d.items || [];
@@ -1904,15 +1899,9 @@
 
     // ── Kakao Local Category Search ─────────────────────────
     async function kakaoSearch(categoryCode, lat, lng, radius, size = 15) {
-      const target = `https://dapi.kakao.com/v2/local/search/category.json` +
-        `?category_group_code=${categoryCode}` +
-        `&x=${lng}&y=${lat}` +
-        `&radius=${radius}` +
-        `&sort=distance` +
-        `&size=${size}`;
-      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
-        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
-      });
+      const res = await fetch(
+        `${WORKER_BASE}/api/kakao-category?code=${categoryCode}&x=${lng}&y=${lat}&radius=${radius}&size=${size}`
+      );
       if (!res.ok) throw new Error(`Kakao API ${res.status}`);
       const d = await res.json();
       return d.documents || [];
@@ -1920,15 +1909,9 @@
 
     // ── Kakao Local Keyword Search ──────────────────────
     async function kakaoKeywordSearch(query, lat, lng, radius, size = 15) {
-      const target = `https://dapi.kakao.com/v2/local/search/keyword.json` +
-        `?query=${encodeURIComponent(query)}` +
-        `&x=${lng}&y=${lat}` +
-        `&radius=${radius}` +
-        `&sort=distance` +
-        `&size=${size}`;
-      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
-        headers: { 'Authorization': `KakaoAK ${KAKAO_REST_KEY}` }
-      });
+      const res = await fetch(
+        `${WORKER_BASE}/api/kakao-keyword?query=${encodeURIComponent(query)}&x=${lng}&y=${lat}&radius=${radius}&size=${size}`
+      );
       if (!res.ok) throw new Error(`Kakao Keyword API ${res.status}`);
       const d = await res.json();
       return d.documents || [];
@@ -1963,11 +1946,9 @@
     // ── DeepL Translation ────────────────────────────────────
     async function deepLTranslate(texts) {
       if (!texts.length) return [];
-      const target = 'https://api-free.deepl.com/v2/translate';
-      const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
+      const res = await fetch(`${WORKER_BASE}/api/deepl`, {
         method: 'POST',
         headers: {
-          'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ text: texts, target_lang: currentLang })
