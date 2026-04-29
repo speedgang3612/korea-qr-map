@@ -144,80 +144,93 @@
       flex-shrink: 0
     }
 
-    /* location bar */
-    .location-bar {
+    /* ── Info Card (location + weather) ── */
+    #locationBar {
       width: 100%;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: default
+    }
+
+    .info-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      margin-bottom: 28px;
-      transition: border-color .3s
+      gap: 12px
     }
 
-    .location-bar.success {
-      border-color: rgba(34, 197, 94, .4)
+    .info-icon-box {
+      width: 40px;
+      height: 40px;
+      background: #FAECE7;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0
     }
 
-    .location-bar.error {
-      border-color: rgba(239, 68, 68, .4)
-    }
-
-    .location-bar.loading {
-      border-color: rgba(79, 142, 247, .4)
-    }
-
-    .loc-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
-      transition: background .3s
-    }
-
-    .location-bar.success .loc-dot {
-      background: var(--success);
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, .2)
-    }
-
-    .location-bar.error .loc-dot {
-      background: var(--error);
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, .2)
-    }
-
-    .location-bar.loading .loc-dot {
-      background: var(--accent);
-      animation: pulse 1.2s ease-in-out infinite
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
-        box-shadow: 0 0 0 0 rgba(79, 142, 247, .5)
-      }
-
-      50% {
-        box-shadow: 0 0 0 8px rgba(79, 142, 247, 0)
-      }
-    }
-
-    .loc-text {
+    .info-text {
       flex: 1;
-      font-size: .82rem;
-      color: var(--muted);
-      line-height: 1.35
+      min-width: 0
     }
 
-    .loc-text strong {
+    .info-text strong {
       display: block;
       font-size: .88rem;
       font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .info-sub {
+      font-size: .75rem;
+      color: var(--muted)
+    }
+
+    .info-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 14px 0
+    }
+
+    .info-weather-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer
+    }
+
+    .info-weather-text {
+      font-size: .88rem;
+      font-weight: 500;
       color: var(--text)
+    }
+
+    .info-tap {
+      font-size: .72rem;
+      color: var(--muted)
+    }
+
+    /* location states (setBar compatibility) */
+    .location-bar.loading .info-icon-box {
+      animation: pulse 1.2s ease-in-out infinite
+    }
+    .location-bar.error .info-icon-box {
+      background: rgba(239, 68, 68, .12)
+    }
+    .location-bar.success .info-icon-box {
+      background: #FAECE7
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(79, 142, 247, .4) }
+      50% { box-shadow: 0 0 0 8px rgba(79, 142, 247, 0) }
     }
 
     .retry-btn {
@@ -230,12 +243,54 @@
       padding: 6px 10px;
       cursor: pointer;
       transition: all .2s;
-      white-space: nowrap
+      white-space: nowrap;
+      margin-top: 12px
     }
 
     .retry-btn:hover {
       border-color: var(--accent);
       color: var(--accent)
+    }
+
+    /* ── Live Map Card ── */
+    .live-map-card {
+      width: 100%;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      margin-bottom: 20px;
+      overflow: hidden;
+      cursor: pointer
+    }
+
+    .live-map-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 180px;
+      font-size: 1rem;
+      color: #999;
+      font-weight: 500
+    }
+
+    .live-map-card.open .live-map-placeholder {
+      display: none
+    }
+
+    .live-map-inner {
+      height: 0;
+      overflow: hidden;
+      transition: height .4s cubic-bezier(.4,0,.2,1)
+    }
+
+    .live-map-card.open .live-map-inner {
+      height: 280px
+    }
+
+    .live-map-inner #miniMap {
+      width: 100%;
+      height: 280px
     }
 
     /* language toggle (header) */
@@ -1353,31 +1408,34 @@
       </div>
     </header>
 
-    <div class="location-bar loading" id="locationBar" onclick="toggleMiniMap()">
-      <div class="loc-dot"></div>
-      <div class="loc-text">
-        <strong id="locStatus">Detecting your location…</strong>
-        <span id="locDetail">Please allow location access</span>
-        <span id="tapHint" style="display:none;font-size:.72rem;color:var(--muted);margin-top:3px">👆 Tap to see your
-          location on the map</span>
+    <!-- ── Info Card (location + weather) ── -->
+    <div class="location-bar loading" id="locationBar">
+      <div class="info-row">
+        <div class="info-icon-box"><span>📍</span></div>
+        <div class="info-text">
+          <strong id="locStatus">Detecting your location…</strong>
+          <span id="locDetail" class="info-sub">You are here</span>
+        </div>
       </div>
-      <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()"
-        style="display:none">Retry</button>
-      <span class="loc-toggle-hint" id="toggleHint">▾</span>
-    </div>
-
-    <!-- weather bar (임시 배치 — Stage B에서 통합 카드로 이동) -->
-    <div class="weather-wrap">
-      <div id="weatherBar" class="weather-bar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">
-        <span id="weatherText">⏳ Loading weather…</span><span id="weatherArrow" class="weather-arrow" aria-hidden="true"></span>
+      <div class="info-divider"></div>
+      <div class="info-weather-row" id="weatherBar" onclick="toggleWeatherDetail()" role="button" aria-expanded="false">
+        <span id="weatherText" class="info-weather-text">⏳ Loading weather…</span>
+        <span id="weatherArrow" class="info-tap" aria-hidden="true">Tap for details</span>
       </div>
       <div id="weatherDetail" class="weather-detail"></div>
+      <span id="tapHint" style="display:none"></span>
+      <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
     </div>
 
-    <div class="mini-map-wrap" id="miniMapWrap">
-      <div class="mini-map-inner">
+    <!-- ── Live Map ── -->
+    <div class="live-map-card" id="miniMapWrap" onclick="toggleMiniMap()">
+      <div class="live-map-placeholder" id="liveMapPlaceholder">
+        <span>🗺️</span> Live Map
+      </div>
+      <div class="live-map-inner">
         <div id="miniMap"></div>
       </div>
+      <span id="toggleHint" style="display:none"></span>
     </div>
 
     <section class="emergency-bar" aria-label="Emergency contacts">
