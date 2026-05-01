@@ -430,7 +430,7 @@
       align-items: center;
       gap: 8px;
       background: var(--surface);
-      border: 1px solid rgba(250, 204, 21, .35);
+      border: 1px solid rgba(255, 107, 107, .3);
       border-radius: var(--radius-sm);
       padding: 12px 16px;
       cursor: pointer;
@@ -442,7 +442,7 @@
     }
 
     .tip-toggle:hover {
-      border-color: rgba(250, 204, 21, .6)
+      border-color: rgba(255, 107, 107, .5)
     }
 
     .tip-toggle.used {
@@ -454,13 +454,13 @@
 
       0%,
       100% {
-        border-color: rgba(250, 204, 21, .2);
-        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0)
+        border-color: rgba(255, 107, 107, .15);
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0)
       }
 
       50% {
-        border-color: rgba(250, 204, 21, .55);
-        box-shadow: 0 0 12px rgba(250, 204, 21, .15)
+        border-color: rgba(255, 107, 107, .45);
+        box-shadow: 0 0 12px rgba(255, 107, 107, .12)
       }
     }
 
@@ -493,8 +493,8 @@
     }
 
     .tip-tap {
-      background: #facc15;
-      color: #1a1a00;
+      background: #FF6B6B;
+      color: #fff;
       font-size: .68rem;
       font-weight: 700;
       padding: 4px 10px;
@@ -1240,73 +1240,58 @@
       color: var(--text)
     }
 
-    /* ── Emergency Bar ── */
-    .emergency-bar {
+    /* ── Emergency Box (unified coral) ── */
+    .emg-box {
+      background: #FF6B6B;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 16px 0;
+      color: white;
       width: 100%;
-      display: flex;
-      gap: 7px;
-      margin-bottom: 16px
     }
 
-    .emg-btn {
-      flex: 1;
+    .emg-box-header {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .emg-box-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .emg-item {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 16px 8px;
+      text-align: center;
+      text-decoration: none;
+      color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      padding: 10px 6px 9px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-family: inherit;
-      color: #fff;
-      transition: opacity .15s, transform .15s;
-      -webkit-tap-highlight-color: transparent;
-      overflow: hidden
+      gap: 4px;
+      transition: background 0.2s;
     }
 
-    .emg-btn:active {
-      transform: scale(.95);
-      opacity: .85
-    }
-
-    .emg-icon {
-      font-size: 1.25rem;
-      line-height: 1;
-      margin-bottom: 1px
+    .emg-item:hover {
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .emg-num {
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: .5px;
-      line-height: 1.1
+      font-size: 24px;
+      font-weight: 500;
     }
 
     .emg-label {
-      font-size: .62rem;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.2
+      font-size: 12px;
+      opacity: 0.9;
     }
 
-    .emg-sub {
-      font-size: .55rem;
-      font-weight: 400;
-      text-align: center;
-      opacity: .82;
-      line-height: 1.3
-    }
-
-    .emg-police {
-      background: linear-gradient(145deg, #b91c1c, #ef4444)
-    }
-
-    .emg-fire {
-      background: linear-gradient(145deg, #c2410c, #f97316)
-    }
-
-    .emg-tour {
-      background: linear-gradient(145deg, #1d4ed8, #3b82f6)
+    .emg-sub-hidden {
+      display: none;
     }
 
     /* ── Card 3 (accommodation - 딥 인디고) ── */
@@ -1502,28 +1487,26 @@
       <span id="toggleHint" style="display:none"></span>
     </div>
 
-    <section class="emergency-bar" aria-label="Emergency contacts">
-      <a class="emg-btn emg-police" href="tel:112">
-        <span class="emg-icon">🚔</span>
-        <span class="emg-num">112</span>
-        <span class="emg-label" id="emg-label-police">Police</span>
-        <span class="emg-sub" id="emg-sub-police">Crime &amp; Safety</span>
-      </a>
-      <a class="emg-btn emg-fire" href="tel:119">
-        <span class="emg-icon">🚑</span>
-        <span class="emg-num">119</span>
-        <span class="emg-label" id="emg-label-fire">Ambulance</span>
-        <span class="emg-sub" id="emg-sub-fire">Fire &amp; Medical</span>
-      </a>
-      <a class="emg-btn emg-tour" href="tel:1330">
-        <span class="emg-icon">📞</span>
-        <span class="emg-num">1330</span>
-        <span class="emg-label" id="emg-label-tour">Korea Travel Helpline</span>
-        <span class="emg-sub" id="emg-sub-tour">24h · EN / JA / ZH</span>
-      </a>
+    <section class="emg-box" aria-label="Emergency contacts">
+      <div class="emg-box-header">🆘 EMERGENCY · 24H</div>
+      <div class="emg-box-grid">
+        <a class="emg-item" href="tel:112">
+          <span class="emg-num">112</span>
+          <span class="emg-label" id="emg-label-police">Police</span>
+          <span class="emg-sub-hidden" id="emg-sub-police"></span>
+        </a>
+        <a class="emg-item" href="tel:119">
+          <span class="emg-num">119</span>
+          <span class="emg-label" id="emg-label-fire">Ambulance</span>
+          <span class="emg-sub-hidden" id="emg-sub-fire"></span>
+        </a>
+        <a class="emg-item" href="tel:1330">
+          <span class="emg-num">1330</span>
+          <span class="emg-label" id="emg-label-tour">Travel</span>
+          <span class="emg-sub-hidden" id="emg-sub-tour"></span>
+        </a>
+      </div>
     </section>
-
-    <!-- lang-bar moved to header -->
 
     <!-- ── How it works (토글) ── -->
     <div class="tip-wrap" id="tipWrap">
