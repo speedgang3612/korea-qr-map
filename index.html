@@ -1732,12 +1732,11 @@
     };
 
     const SPOTS = [
-      { emoji: '👑', searchKo: '경복궁', nameEn: 'Gyeongbokgung' },
-      { emoji: '💄', searchKo: '명동', nameEn: 'Myeongdong' },
-      { emoji: '🎸', searchKo: '홍대', nameEn: 'Hongdae' },
-      { emoji: '🏙️', searchKo: '강남역', nameEn: 'Gangnam' },
-      { emoji: '🍵', searchKo: '인사동', nameEn: 'Insadong' },
-      { emoji: '🌃', searchKo: '남산타워', nameEn: 'Namsan' },
+      { emoji: '👑', searchKo: '경복궁', nameEn: 'Gyeongbokgung', fixedQuery: '광화문' },
+      { emoji: '🏮', searchKo: '인사동', nameEn: 'Insadong', fixedQuery: '인사동문화의거리' },
+      { emoji: '💄', searchKo: '명동', nameEn: 'Myeongdong', fixedQuery: '명동역 6번출구' },
+      { emoji: '🎨', searchKo: '성수', nameEn: 'Seongsu', fixedQuery: '성수역 3번출구' },
+      { emoji: '🎸', searchKo: '홍대', nameEn: 'Hongdae', fixedQuery: '홍대걷고싶은거리' },
     ];
 
     // ── i18n ────────────────────────────────────────────────
@@ -1753,8 +1752,8 @@
         naverSub2: '⚙️ Set app to English in Settings',
         googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
-        spots: ['Gyeongbokgung', 'Myeongdong', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan'],
-        spotQueries: ['Gyeongbokgung Palace', 'Myeongdong Shopping Street', 'Hongdae', 'Gangnam', 'Insadong', 'Namsan Tower'],
+        spots: ['Gyeongbokgung', 'Insadong', 'Myeongdong', 'Seongsu', 'Hongdae'],
+        spotQueries: ['Gyeongbokgung Palace', 'Insadong', 'Myeongdong', 'Seongsu Popup Street', 'Hongdae'],
         emgPoliceLabel: 'Police', emgPoliceSub: 'Crime & Safety',
         emgFireLabel: 'Ambulance', emgFireSub: 'Fire & Medical',
         emgTourLabel: 'Korea Travel Helpline', emgTourSub: '24h · EN / JA / ZH',
@@ -1778,8 +1777,8 @@
         naverSub2: '⚙️ 設定で日本語に変更可能',
         googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
-        spots: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山'],
-        spotQueries: ['景福宮', '明洞', '弘大', '江南', '仁寺洞', '南山タワー'],
+        spots: ['景福宮', '仁寺洞', '明洞', '聖水', '弘大'],
+        spotQueries: ['景福宮', '仁寺洞', '明洞', '聖水ポップアップ通り', '弘大'],
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪・安全',
         emgFireLabel: '救急', emgFireSub: '火災・医療',
         emgTourLabel: '観光案内', emgTourSub: '24時間対応',
@@ -1803,8 +1802,8 @@
         naverSub2: '⚙️ 在设置中切换为中文',
         googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
         googleSub2: '⚠️ 在韩国路线可能不准确',
-        spots: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山'],
-        spotQueries: ['景福宫', '明洞', '弘大', '江南', '仁寺洞', '南山塔'],
+        spots: ['景福宫', '仁寺洞', '明洞', '圣水', '弘大'],
+        spotQueries: ['景福宫', '仁寺洞', '明洞', '圣水弹窗街', '弘大'],
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪与安全',
         emgFireLabel: '救护车', emgFireSub: '火灾与医疗',
         emgTourLabel: '旅游热线', emgTourSub: '24小时服务',
@@ -2523,15 +2522,53 @@
 
     function renderSpots() {
       const names = i18n[currentLang].spots;
-      const queries = i18n[currentLang].spotQueries;
       const html = SPOTS.map((s, i) =>
-        `<a class="spot-btn" href="${spotNaverUrl(queries[i])}" target="_blank" rel="noopener">
+        `<div class="spot-btn" onclick="searchSpot(${i})" role="button" tabindex="0">
           <span class="spot-emoji">${s.emoji}</span>
           <span class="spot-name">${names[i]}</span>
-        </a>`
+        </div>`
       ).join('');
       const ss = document.getElementById('spotsScroll');
       if (ss) ss.innerHTML = html;
+    }
+
+    async function searchSpot(index) {
+      const spot = SPOTS[index];
+      const cat = { label: i18n[currentLang].spots[index], icon: spot.emoji };
+      openPanel(cat);
+      showLoading();
+
+      try {
+        const raw = await naverSearch(spot.fixedQuery, 1);
+        if (!raw.length) { showEmpty(); return; }
+
+        const it = raw[0];
+        const item = {
+          nameKo: stripHtml(it.title),
+          addrKo: it.roadAddress || it.address || '',
+          mapx: parseInt(it.mapx) || 0,
+          mapy: parseInt(it.mapy) || 0,
+          dist: userLat ? haversine(parseFloat(userLat), parseFloat(userLng),
+            (parseInt(it.mapy) || 0) / 1e7, (parseInt(it.mapx) || 0) / 1e7) : 0,
+        };
+        lastItems = [item];
+
+        const toTranslate = [item.nameKo, item.addrKo];
+        let translated = toTranslate;
+        try { translated = await deepLTranslate(toTranslate); }
+        catch (e) { console.warn('DeepL failed:', e); }
+
+        const result = {
+          ...item,
+          nameEn: translated[0] || item.nameKo,
+          addrEn: translated[1] || item.addrKo,
+        };
+
+        renderResults([result]);
+      } catch (e) {
+        console.error(e);
+        showError(e.message || 'API error. Please try again.');
+      }
     }
 
     // ── Welcome Animation ─────────────────────────────────────
