@@ -1378,6 +1378,78 @@
       background: rgba(245, 158, 11, .15);
       color: var(--c8)
     }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 24px 0 16px;
+      width: 100%;
+    }
+
+    .section-bar {
+      width: 4px;
+      height: 24px;
+      background: #FF6B6B;
+      border-radius: 2px;
+    }
+
+    .section-header span {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1A1A1A;
+    }
+
+    /* ── K-Wave Card Grid ── */
+    .grid-new {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .kcard {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 24px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      border: none;
+    }
+
+    .kcard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .kcard-icon {
+      font-size: 48px;
+      line-height: 1;
+      z-index: 1;
+    }
+
+    .kcard-label {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1A1A1A;
+      z-index: 1;
+    }
+
+    .kcard-sub {
+      font-size: 14px;
+      color: #666666;
+      z-index: 1;
+    }
   </style>
 </head>
 
@@ -1470,56 +1542,52 @@
       <div class="spots-scroll" id="spotsScroll"></div>
     </section>
 
-    <main class="grid">
-      <div class="card card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0"
-        aria-label="Find Subway Station">
-        <span class="card-icon">🚇</span>
-        <span class="card-label" id="card-label-subway">Find Subway<br>Station</span>
-        <span class="card-pill" id="card-pill-subway">Nearest stations</span>
+    <div class="section-header">
+      <div class="section-bar"></div>
+      <span id="sectionTitle">What do you need?</span>
+    </div>
+    <div class="grid-new">
+      <div class="card kcard card-4" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0">
+        <span class="kcard-icon">🍜</span>
+        <span class="kcard-label" id="card-label-restaurant">Restaurant</span>
+        <span class="kcard-sub" id="card-pill-restaurant">Places to eat</span>
       </div>
-      <div class="card card-2" id="btn-bus" onclick="searchNearby('bus')" role="button" tabindex="0"
-        aria-label="Find Bus Stop">
-        <span class="card-icon">🚌</span>
-        <span class="card-label" id="card-label-bus">Find Bus<br>Stop</span>
-        <span class="card-pill" id="card-pill-bus">Nearby stops</span>
+      <div class="card kcard card-5" id="btn-cafe" onclick="searchNearby('cafe')" role="button" tabindex="0">
+        <span class="kcard-icon">☕</span>
+        <span class="kcard-label" id="card-label-cafe">Cafe</span>
+        <span class="kcard-sub" id="card-pill-cafe">Coffee &amp; drinks</span>
       </div>
-      <div class="card card-3" id="btn-accommodation" onclick="searchNearby('accommodation')" role="button" tabindex="0"
-        aria-label="Find Accommodation">
-        <span class="card-icon">🏨</span>
-        <span class="card-label" id="card-label-accommodation">Accommodation</span>
-        <span class="card-pill" id="card-pill-accommodation">Hotels &amp; Stays</span>
+      <div class="card kcard card-1" id="btn-subway" onclick="searchNearby('subway')" role="button" tabindex="0">
+        <span class="kcard-icon">🚇</span>
+        <span class="kcard-label" id="card-label-subway">Subway</span>
+        <span class="kcard-sub" id="card-pill-subway">Nearest stations</span>
       </div>
-      <div class="card card-4" id="btn-food" onclick="searchNearby('restaurant')" role="button" tabindex="0"
-        aria-label="Find Restaurant">
-        <span class="card-icon">🍜</span>
-        <span class="card-label" id="card-label-restaurant">Find<br>Restaurant</span>
-        <span class="card-pill" id="card-pill-restaurant">Places to eat</span>
+      <div class="card kcard card-2" id="btn-bus" onclick="searchNearby('bus')" role="button" tabindex="0">
+        <span class="kcard-icon">🚌</span>
+        <span class="kcard-label" id="card-label-bus">Bus Stop</span>
+        <span class="kcard-sub" id="card-pill-bus">Nearby stops</span>
       </div>
-      <div class="card card-5" id="btn-cafe" onclick="searchNearby('cafe')" role="button" tabindex="0"
-        aria-label="Find Cafe">
-        <span class="card-icon">☕</span>
-        <span class="card-label" id="card-label-cafe">Cafe</span>
-        <span class="card-pill" id="card-pill-cafe">Coffee &amp; Drinks</span>
+      <div class="card kcard card-3" id="btn-accommodation" onclick="searchNearby('accommodation')" role="button" tabindex="0">
+        <span class="kcard-icon">🏨</span>
+        <span class="kcard-label" id="card-label-accommodation">Hotel</span>
+        <span class="kcard-sub" id="card-pill-accommodation">Accommodation</span>
       </div>
-      <div class="card card-6" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0"
-        aria-label="Find Convenience Store">
-        <span class="card-icon">🏪</span>
-        <span class="card-label" id="card-label-convenience">Find Convenience<br>Store</span>
-        <span class="card-pill" id="card-pill-convenience">24H stores nearby</span>
+      <div class="card kcard card-8" id="btn-exchange" onclick="searchNearby('exchange')" role="button" tabindex="0">
+        <span class="kcard-icon">💱</span>
+        <span class="kcard-label" id="card-label-exchange">Exchange</span>
+        <span class="kcard-sub" id="card-pill-exchange">Currency</span>
       </div>
-      <div class="card card-7" id="btn-hospital" onclick="searchNearby('hospital')" role="button" tabindex="0"
-        aria-label="Medical / Pharmacy">
-        <span class="card-icon">⚕️</span>
-        <span class="card-label" id="card-label-hospital">Medical<br>Pharmacy</span>
-        <span class="card-pill" id="card-pill-hospital">Hospitals & Pharmacies</span>
+      <div class="card kcard card-6" id="btn-store" onclick="searchNearby('convenience')" role="button" tabindex="0">
+        <span class="kcard-icon">🏪</span>
+        <span class="kcard-label" id="card-label-convenience">Convenience</span>
+        <span class="kcard-sub" id="card-pill-convenience">24H stores</span>
       </div>
-      <div class="card card-8" id="btn-exchange" onclick="searchNearby('exchange')" role="button" tabindex="0"
-        aria-label="Find Currency Exchange">
-        <span class="card-icon">💱</span>
-        <span class="card-label" id="card-label-exchange">Currency<br>Exchange</span>
-        <span class="card-pill" id="card-pill-exchange">Nearby</span>
+      <div class="card kcard card-7" id="btn-hospital" onclick="searchNearby('hospital')" role="button" tabindex="0">
+        <span class="kcard-icon">⚕️</span>
+        <span class="kcard-label" id="card-label-hospital">Medical</span>
+        <span class="kcard-sub" id="card-pill-hospital">Hospitals &amp; pharmacies</span>
       </div>
-    </main>
+    </div>
 
     <footer class="footer">GPS required · Results via Naver · Translated by DeepL</footer>
     <div class="contact-section">
