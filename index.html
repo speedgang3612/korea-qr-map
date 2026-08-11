@@ -1545,27 +1545,6 @@
 
     .crowd-actions a { display: grid; place-items: center; }
 
-    .direction-choice {
-      display: none;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .direction-choice.show { display: grid; }
-
-    .direction-choice a {
-      min-height: 42px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .12);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-size: 12px;
-      font-weight: 800;
-      text-decoration: none;
-    }
-
     .crowd-error { color: #ffb4c0; }
 
     .live-spots {
@@ -1625,6 +1604,235 @@
       .header-flag { font-size: 1.9rem; }
       .header-center h1 { font-size: 1.08rem; }
       .header-sub { font-size: .7rem; }
+    }
+
+    /* ── 2026 mobile travel utility refresh ── */
+    .page {
+      padding: 22px 18px 44px;
+    }
+
+    .header-new {
+      margin-bottom: 16px;
+    }
+
+    .header-flag {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      font-size: 1.55rem;
+    }
+
+    #locationBar {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: none;
+    }
+
+    .live-spots {
+      margin: 6px 0 12px;
+    }
+
+    .live-spots-label {
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .live-spots-scroll {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      overflow: visible;
+      padding: 0;
+    }
+
+    .live-spot-btn {
+      justify-content: flex-start;
+      min-width: 0;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .live-spot-btn.active {
+      background: #E9F5FA;
+      border-color: var(--accent);
+      color: #163B65;
+      box-shadow: none;
+    }
+
+    .crowd-card {
+      margin: 0 0 12px;
+      border-radius: 22px;
+      background: #163B65;
+      border-color: rgba(255, 255, 255, .12);
+      box-shadow: 0 12px 28px rgba(22, 59, 101, .2);
+    }
+
+    .crowd-actions button {
+      min-height: 46px;
+      border-radius: 14px;
+    }
+
+    .kcard {
+      min-height: 128px;
+      padding: 18px 14px;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .kcard-icon { font-size: 36px; }
+    .kcard-label { font-size: 16px; }
+    .kcard-sub { font-size: 12px; }
+
+    .map-picker-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 450;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(8, 17, 31, .55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+    }
+
+    .map-picker-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.map-modal-open { overflow: hidden; }
+
+    .map-picker-sheet {
+      width: 100%;
+      max-width: 480px;
+      padding: 10px 18px 28px;
+      border: 1px solid var(--border);
+      border-bottom: 0;
+      border-radius: 26px 26px 0 0;
+      background: var(--card);
+      transform: translateY(100%);
+      transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .map-picker-overlay.show .map-picker-sheet { transform: translateY(0); }
+
+    .map-picker-handle {
+      width: 42px;
+      height: 4px;
+      margin: 0 auto 16px;
+      border-radius: 999px;
+      background: var(--border);
+    }
+
+    .map-picker-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .map-picker-head h2 {
+      margin: 0 0 4px;
+      font-size: 1.05rem;
+    }
+
+    .map-picker-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .map-picker-close {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .map-options {
+      display: grid;
+      gap: 9px;
+    }
+
+    .map-option {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 66px;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+      color: var(--text);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .map-option:active { background: var(--surface); }
+
+    .map-option-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .map-option-icon.naver { background: #03C75A; color: #fff; }
+    .map-option-icon.kakao { background: #FEE500; color: #191919; }
+    .map-option-icon.google { background: #E9F5FA; color: #1677A8; }
+
+    .map-option-copy strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: .88rem;
+    }
+
+    .map-option-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: .72rem;
+      line-height: 1.35;
+    }
+
+    .map-option-arrow { color: var(--muted); }
+
+    .rc-map-button {
+      width: 100%;
+      min-height: 44px;
+      margin-top: 6px;
+      border: 0;
+      border-radius: 12px;
+      background: #163B65;
+      color: #fff;
+      font: inherit;
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (min-width: 390px) {
+      .live-spots-scroll { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
   </style>
 </head>
@@ -1723,8 +1931,7 @@
         <span class="tip-tap">👆 TAP HERE</span>
       </button>
       <div class="tip-body" id="tipBody">
-        <p id="tipText">Tap any button to find nearby places using your GPS. Results are translated into your selected
-          language. For detailed navigation, download Naver Map — Korea's #1 map app.</p>
+        <p id="tipText">Use GPS to find nearby places, then choose Naver Map, KakaoMap, or Google Maps for directions.</p>
       </div>
     </div>
 
@@ -1779,7 +1986,7 @@
       </div>
     </div>
 
-    <footer class="footer">GPS required · Results via Naver · Translated by DeepL</footer>
+    <footer class="footer">GPS required · Data via Seoul, Naver &amp; Kakao · Translated by DeepL</footer>
     <div class="contact-section">
       <span class="contact-brand">Operated by SG Next</span>
       <span class="contact-label">Korea local guide service for travelers</span>
@@ -1802,35 +2009,56 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- ── Naver Map Modal ── -->
-  <div class="nm-overlay" id="nmOverlay" onclick="closeNaverModal(event)">
+  <!-- ── Map app chooser ── -->
+  <div class="map-picker-overlay" id="mapPickerOverlay" onclick="closeMapChooser(event)" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="mapPickerTitle">
+    <div class="map-picker-sheet">
+      <div class="map-picker-handle" aria-hidden="true"></div>
+      <div class="map-picker-head">
+        <div>
+          <h2 id="mapPickerTitle">Choose your map</h2>
+          <p id="mapPickerSubtitle">Select an app for directions</p>
+        </div>
+        <button class="map-picker-close" onclick="closeMapChooser()" aria-label="Close">✕</button>
+      </div>
+      <div class="map-options">
+        <button class="map-option" onclick="openSelectedMap('naver')">
+          <span class="map-option-icon naver">N</span>
+          <span class="map-option-copy"><strong>Naver Map</strong><span id="naverMapNote">Best multilingual option in Korea</span></span>
+          <span class="map-option-arrow">›</span>
+        </button>
+        <button class="map-option" onclick="openSelectedMap('kakao')">
+          <span class="map-option-icon kakao">K</span>
+          <span class="map-option-copy"><strong>KakaoMap</strong><span id="kakaoMapNote">Accurate local routes · English</span></span>
+          <span class="map-option-arrow">›</span>
+        </button>
+        <button class="map-option" onclick="openSelectedMap('google')">
+          <span class="map-option-icon google">G</span>
+          <span class="map-option-copy"><strong>Google Maps</strong><span id="googleMapNote">Familiar place preview</span></span>
+          <span class="map-option-arrow">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Map app install fallback ── -->
+  <div class="nm-overlay" id="appOverlay" onclick="closeAppModal(event)" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="appModalTitle">
     <div class="nm-modal">
-      <h2>📱 Get Naver Map for English Navigation</h2>
-      <p class="nm-desc">
-        Naver Map is Korea’s most accurate navigation app.<br>
-        Download it free — no account needed for basic use!
-      </p>
+      <h2 id="appModalTitle">📱 Get the map app</h2>
+      <p class="nm-desc" id="appModalDesc">Install the app for accurate directions in Korea.</p>
       <div class="nm-dl-btns">
-        <a class="nm-dl-btn" id="nmIosBtn" href="https://apps.apple.com/us/app/naver-maps-navigation/id311867728"
-          target="_blank" rel="noopener">
+        <a class="nm-dl-btn" id="appIosBtn" href="#" target="_blank" rel="noopener">
           🍎 Download for iPhone →
         </a>
-        <a class="nm-dl-btn android" id="nmAndroidBtn"
-          href="https://play.google.com/store/apps/details?id=com.nhn.android.nmap" target="_blank" rel="noopener">
+        <a class="nm-dl-btn android" id="appAndroidBtn" href="#" target="_blank" rel="noopener">
           🤖 Download for Android →
         </a>
       </div>
-      <div class="nm-steps">
-        <strong>How to switch to English:</strong>
-        1. Open Naver Map → tap ☰ (top left)<br>
-        2. Tap ⚙️ Settings<br>
-        3. Tap Language → Select English ✓
-      </div>
+      <div class="nm-steps" id="appModalSteps"></div>
       <div class="nm-bottom">
-        <a class="nm-web-btn" id="nmWebLink" href="#" target="_blank" rel="noopener">
-          Open in browser (Korean)
+        <a class="nm-web-btn" id="appWebLink" href="#" target="_blank" rel="noopener">
+          Continue in browser
         </a>
-        <button class="nm-close-btn" onclick="closeNaverModal()">Close</button>
+        <button class="nm-close-btn" onclick="closeAppModal()">Close</button>
       </div>
     </div>
   </div>
@@ -1981,6 +2209,11 @@
         naverSub2: '⚙️ Set app to English in Settings',
         googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
+        openMaps: '🧭 Choose map for directions', mapChooseTitle: 'Choose your map', mapChooseSubtitle: name => `Directions to ${name}`,
+        naverMapNote: 'Best multilingual option in Korea', kakaoMapNote: 'Accurate local routes · English', googleMapNote: 'Familiar place preview',
+        installTitle: app => `Get ${app}`, installDesc: app => `${app} was not detected. Install it for accurate directions in Korea.`,
+        continueWeb: 'Continue in browser', close: 'Close', iosDownload: '🍎 Download for iPhone →', androidDownload: '🤖 Download for Android →',
+        naverLanguage: '<strong>Language</strong>Open Naver Map → Settings → Language', kakaoLanguage: '<strong>Language</strong>KakaoMap supports English and Korean.',
         spots: ['Myeongdong', 'N Seoul Tower', 'Seongsu', 'COEX', 'Gangnam', 'Hongdae'],
         spotQueries: ['Myeongdong', 'N Seoul Tower', 'Seongsu Popup Street', 'COEX', 'Gangnam Station', 'Hongdae'],
         emgPoliceLabel: 'Police', emgPoliceSub: 'Crime & Safety',
@@ -1993,7 +2226,7 @@
         wdFeels: 'Feels like', wdHumidity: 'Humidity', wdWind: 'Wind',
         wdSunrise: 'Sunrise', wdSunset: 'Sunset',
         tipToggle: 'How it works?',
-        tipText: 'Tap any button to find nearby places using your GPS. Results are translated into your selected language. For detailed navigation, download Naver Map \u2014 Korea\'s #1 map app.',
+        tipText: 'Use GPS to find nearby places, then choose Naver Map, KakaoMap, or Google Maps for directions.',
       },
       JA: {
         subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
@@ -2006,6 +2239,11 @@
         naverSub2: '⚙️ 設定で日本語に変更可能',
         googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
+        openMaps: '🧭 地図を選んで経路案内', mapChooseTitle: '地図アプリを選択', mapChooseSubtitle: name => `${name}への経路`,
+        naverMapNote: '韓国で使いやすい多言語地図', kakaoMapNote: '韓国の正確な経路 · 英語対応', googleMapNote: '使い慣れた地図で場所を確認',
+        installTitle: app => `${app}を入手`, installDesc: app => `${app}が見つかりません。韓国で正確な経路案内を利用するにはインストールしてください。`,
+        continueWeb: 'ブラウザで続ける', close: '閉じる', iosDownload: '🍎 iPhone版をダウンロード →', androidDownload: '🤖 Android版をダウンロード →',
+        naverLanguage: '<strong>言語設定</strong>Naver Map → 設定 → 言語', kakaoLanguage: '<strong>言語</strong>KakaoMapは英語と韓国語に対応しています。',
         spots: ['明洞', 'Nソウルタワー', '聖水', 'COEX', '江南', '弘大'],
         spotQueries: ['明洞', 'Nソウルタワー', '聖水ポップアップ通り', 'COEX', '江南駅', '弘大'],
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪・安全',
@@ -2018,7 +2256,7 @@
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '風速',
         wdSunrise: '日の出', wdSunset: '日没',
         tipToggle: '使い方',
-        tipText: 'ボタンをタップして近くの場所をGPSで検索。結果は選択した言語に自動翻訳されます。詳細なナビには Naver Map アプリをどうぞ。',
+        tipText: 'GPSで近くの場所を検索し、Naver Map・KakaoMap・Google Mapsから経路案内を選べます。',
       },
       'ZH-HANS': {
         subtitle: '点击类别查找附近的地方 — 无需下载应用',
@@ -2031,6 +2269,11 @@
         naverSub2: '⚙️ 在设置中切换为中文',
         googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
         googleSub2: '⚠️ 在韩国路线可能不准确',
+        openMaps: '🧭 选择地图导航', mapChooseTitle: '选择地图应用', mapChooseSubtitle: name => `前往${name}`,
+        naverMapNote: '韩国实用的多语言地图', kakaoMapNote: '韩国本地路线准确 · 支持英语', googleMapNote: '使用熟悉的地图查看地点',
+        installTitle: app => `获取${app}`, installDesc: app => `未检测到${app}。安装后可在韩国使用更准确的路线导航。`,
+        continueWeb: '在浏览器中继续', close: '关闭', iosDownload: '🍎 下载iPhone版 →', androidDownload: '🤖 下载Android版 →',
+        naverLanguage: '<strong>语言设置</strong>Naver Map → 设置 → 语言', kakaoLanguage: '<strong>语言</strong>KakaoMap支持英语和韩语。',
         spots: ['明洞', 'N首尔塔', '圣水', 'COEX', '江南', '弘大'],
         spotQueries: ['明洞', 'N首尔塔', '圣水快闪街', 'COEX', '江南站', '弘大'],
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪与安全',
@@ -2043,7 +2286,7 @@
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '风速',
         wdSunrise: '日出', wdSunset: '日落',
         tipToggle: '使用方法',
-        tipText: '点击按钮使用GPS查找附近的地方。结果将自动翻译成您选择的语言。详细导航请下载 Naver Map — 韩国第一地图。',
+        tipText: '使用GPS查找附近地点，然后选择Naver Map、KakaoMap或Google Maps进行导航。',
       },
     };
 
@@ -2059,6 +2302,7 @@
     // ── Language ────────────────────────────────────────────
     function setLang(lang) {
       currentLang = lang;
+      document.documentElement.lang = lang === 'EN' ? 'en' : (lang === 'JA' ? 'ja' : 'zh-Hans');
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('lang-' + lang.toLowerCase().replace('-hans', ''))
         .classList.add('active');
@@ -2090,6 +2334,7 @@
       document.getElementById('emg-sub-tour').textContent = t.emgTourSub;
       document.getElementById('tipToggleText').textContent = t.tipToggle;
       document.getElementById('tipText').textContent = t.tipText;
+      updateMapPickerText();
       renderSpots();
       renderLiveSpots();
       if (document.getElementById('weatherDetail').dataset.feelsLike) {
@@ -2196,17 +2441,6 @@
       const d = await res.json();
       subwayStationsData = d.stations;
       return subwayStationsData;
-    }
-
-    function naverMapUrl(name, mapx, mapy) {
-      const lat = mapy / 1e7, lng = mapx / 1e7;
-      return `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(name)}&lat=${lat}&lng=${lng}&lang=en`;
-    }
-
-    function googleMapUrl(nameEn, mapx, mapy) {
-      const lat = mapy / 1e7, lng = mapx / 1e7;
-      return `https://www.google.com/maps/search/?api=1` +
-        `&query=${lat},${lng}&hl=en`;
     }
 
     // ── Naver Local Search ───────────────────────────────────
@@ -2331,61 +2565,132 @@
         <span class="rc-dist">${fmtDist(it.dist)}</span>
       </div>
       <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
-      <div class="rc-btns">
-        <div class="rc-btn-wrap">
-          <button class="rc-link" onclick="openNaverModal(decodeURIComponent('${encodeURIComponent(it.nameKo)}'), '${naverMapUrl(it.nameKo, it.mapx, it.mapy)}', ${it.mapx}, ${it.mapy})">
-            ${t.naverBtn}
-          </button>
-          <span class="rc-btn-sub">${t.naverSub1}<br>${t.naverSub2}</span>
-        </div>
-        <div class="rc-btn-wrap">
-          <a class="rc-link google"
-             href="${googleMapUrl(it.nameEn, it.mapx, it.mapy)}"
-             target="_blank" rel="noopener">
-            ${t.googleBtn}
-          </a>
-          <span class="rc-btn-sub">${t.googleSub1}</span>
-          <span style="font-size:.63rem;color:var(--muted);text-align:center;line-height:1.5">${t.googleSub2}</span>
-        </div>
-      </div>
+      <button class="rc-map-button" onclick="openMapChooser(decodeURIComponent('${encodeURIComponent(it.nameKo)}'), decodeURIComponent('${encodeURIComponent(it.nameEn)}'), ${it.mapx}, ${it.mapy}, '${it.kakaoId || ''}')">
+        ${t.openMaps}
+      </button>
     </div>`).join('');
       document.getElementById('rpBody').innerHTML = `<div class="result-list">${html}</div>`;
     }
 
-    // ── Naver Map Modal ─────────────────────────────────────
-    function openNaverModal(nameKo, webUrl, mapx, mapy) {
-      const lat = mapy / 1e7, lng = mapx / 1e7;
-      const deepLink = `nmap://place?lat=${lat}&lng=${lng}&name=${encodeURIComponent(nameKo)}&appname=kr.co.sgnext`;
+    // ── Unified map chooser & app fallback ──────────────────
+    let currentMapTarget = null;
+    let lastMapTrigger = null;
 
-      // 사용자 클릭 컨텍스트에서 직접 실행 (iOS Safari 호환)
-      window.location.href = deepLink;
-
-      // 1500ms 후에도 페이지가 visible이면 앱 미설치 → 모달 표시
-      const timer = setTimeout(() => {
-        if (document.visibilityState === 'visible') {
-          document.getElementById('nmWebLink').href = webUrl;
-          document.getElementById('nmOverlay').classList.add('show');
-        }
-      }, 1500);
-
-      // 앱이 열리면 페이지가 hidden → 타이머 취소
-      const onVisChange = () => {
-        if (document.visibilityState === 'hidden') {
-          clearTimeout(timer);
-          document.removeEventListener('visibilitychange', onVisChange);
-        }
+    function openMapChooser(nameKo, displayName, mapx, mapy, kakaoId = '') {
+      lastMapTrigger = document.activeElement;
+      currentMapTarget = {
+        nameKo,
+        displayName: displayName || nameKo,
+        lat: Number(mapy) / 1e7,
+        lng: Number(mapx) / 1e7,
+        kakaoId: String(kakaoId || ''),
       };
-      document.addEventListener('visibilitychange', onVisChange);
+      updateMapPickerText();
+      document.getElementById('mapPickerOverlay').classList.add('show');
+      document.getElementById('mapPickerOverlay').setAttribute('aria-hidden', 'false');
+      document.body.classList.add('map-modal-open');
+      requestAnimationFrame(() => document.querySelector('#mapPickerOverlay .map-option').focus());
+    }
 
-      // 정리: 3초 후 리스너 제거
+    function updateMapPickerText() {
+      const t = i18n[currentLang];
+      if (!t) return;
+      document.getElementById('mapPickerTitle').textContent = t.mapChooseTitle;
+      document.getElementById('mapPickerSubtitle').textContent = currentMapTarget
+        ? t.mapChooseSubtitle(currentMapTarget.displayName)
+        : t.mapChooseSubtitle('');
+      document.getElementById('naverMapNote').textContent = t.naverMapNote;
+      document.getElementById('kakaoMapNote').textContent = t.kakaoMapNote;
+      document.getElementById('googleMapNote').textContent = t.googleMapNote;
+      document.querySelector('.map-picker-close').setAttribute('aria-label', t.close);
+    }
+
+    function closeMapChooser(e) {
+      if (e && e.target !== document.getElementById('mapPickerOverlay')) return;
+      document.getElementById('mapPickerOverlay').classList.remove('show');
+      document.getElementById('mapPickerOverlay').setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('map-modal-open');
+      if (lastMapTrigger && typeof lastMapTrigger.focus === 'function') lastMapTrigger.focus();
+    }
+
+    function mapLinks(provider, target) {
+      const name = encodeURIComponent(target.nameKo);
+      if (provider === 'naver') {
+        return {
+          deep: `nmap://route/public?dlat=${target.lat}&dlng=${target.lng}&dname=${name}&appname=kr.co.sgnext`,
+          web: `https://m.map.naver.com/search2/search.nhn?query=${name}&lat=${target.lat}&lng=${target.lng}&lang=en`,
+        };
+      }
+      if (provider === 'kakao') {
+        const web = target.kakaoId
+          ? `https://map.kakao.com/link/to/${target.kakaoId}`
+          : `https://map.kakao.com/link/to/${name},${target.lat},${target.lng}`;
+        return {
+          deep: `kakaomap://route?ep=${target.lat},${target.lng}&by=publictransit`,
+          web,
+        };
+      }
+      return {
+        web: `https://www.google.com/maps/dir/?api=1&destination=${target.lat},${target.lng}`,
+      };
+    }
+
+    function openSelectedMap(provider) {
+      if (!currentMapTarget) return;
+      const links = mapLinks(provider, currentMapTarget);
+      closeMapChooser();
+      if (provider === 'google') {
+        window.open(links.web, '_blank', 'noopener');
+        return;
+      }
+      launchMapApp(provider, links);
+    }
+
+    function launchMapApp(provider, links) {
+      let appOpened = false;
+      const onVisChange = () => {
+        if (document.visibilityState === 'hidden') appOpened = true;
+      };
+      document.addEventListener('visibilitychange', onVisChange, { once: true });
+      window.location.href = links.deep;
       setTimeout(() => {
         document.removeEventListener('visibilitychange', onVisChange);
-      }, 3000);
+        if (!appOpened && document.visibilityState === 'visible') showAppModal(provider, links.web);
+      }, 1500);
     }
-    function closeNaverModal(e) {
-      // overlay 배경 클릭 시에만 닫힘 (모달 내부 클릭은 무시)
-      if (e && e.target !== document.getElementById('nmOverlay')) return;
-      document.getElementById('nmOverlay').classList.remove('show');
+
+    function showAppModal(provider, webUrl) {
+      const t = i18n[currentLang];
+      const isNaver = provider === 'naver';
+      const appName = isNaver ? 'Naver Map' : 'KakaoMap';
+      document.getElementById('appModalTitle').textContent = `📱 ${t.installTitle(appName)}`;
+      document.getElementById('appModalDesc').textContent = t.installDesc(appName);
+      document.getElementById('appIosBtn').href = isNaver
+        ? 'https://apps.apple.com/us/app/naver-maps-navigation/id311867728'
+        : 'https://apps.apple.com/us/app/kakaomap-korea-no-1-map/id304608425';
+      document.getElementById('appAndroidBtn').href = isNaver
+        ? 'https://play.google.com/store/apps/details?id=com.nhn.android.nmap'
+        : 'https://play.google.com/store/apps/details?id=net.daum.android.map';
+      document.getElementById('appModalSteps').innerHTML = isNaver
+        ? t.naverLanguage
+        : t.kakaoLanguage;
+      document.getElementById('appIosBtn').textContent = t.iosDownload;
+      document.getElementById('appAndroidBtn').textContent = t.androidDownload;
+      document.getElementById('appWebLink').href = webUrl;
+      document.getElementById('appWebLink').textContent = t.continueWeb;
+      document.querySelector('#appOverlay .nm-close-btn').textContent = t.close;
+      document.getElementById('appOverlay').classList.add('show');
+      document.getElementById('appOverlay').setAttribute('aria-hidden', 'false');
+      document.body.classList.add('map-modal-open');
+      requestAnimationFrame(() => document.getElementById('appIosBtn').focus());
+    }
+
+    function closeAppModal(e) {
+      if (e && e.target !== document.getElementById('appOverlay')) return;
+      document.getElementById('appOverlay').classList.remove('show');
+      document.getElementById('appOverlay').setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('map-modal-open');
+      if (lastMapTrigger && typeof lastMapTrigger.focus === 'function') lastMapTrigger.focus();
     }
 
     // ── Main Search Flow ─────────────────────────────────────
@@ -2438,6 +2743,7 @@
             addrKo: doc.road_address_name || doc.address_name || '',
             mapx: Math.round(parseFloat(doc.x) * 1e7),
             mapy: Math.round(parseFloat(doc.y) * 1e7),
+            kakaoId: doc.id,
             dist: parseInt(doc.distance) || 0,
           }));
           lastItems = items;
@@ -2488,6 +2794,7 @@
             addrKo: doc.road_address_name || doc.address_name || '',
             mapx: Math.round(parseFloat(doc.x) * 1e7),
             mapy: Math.round(parseFloat(doc.y) * 1e7),
+            kakaoId: doc.id,
             dist: parseInt(doc.distance) || 0,
           }));
           lastItems = items;
@@ -2535,6 +2842,7 @@
             addrKo: doc.road_address_name || doc.address_name || '',
             mapx: Math.round(parseFloat(doc.x) * 1e7),
             mapy: Math.round(parseFloat(doc.y) * 1e7),
+            kakaoId: doc.id,
             dist: parseInt(doc.distance) || 0,
           }));
           lastItems = items;
@@ -2584,6 +2892,7 @@
             addrKo: doc.road_address_name || doc.address_name || '',
             mapx: Math.round(parseFloat(doc.x) * 1e7),
             mapy: Math.round(parseFloat(doc.y) * 1e7),
+            kakaoId: doc.id,
             dist: parseInt(doc.distance) || 0,
           }));
           lastItems = items;
@@ -2849,11 +3158,6 @@
       document.getElementById('crowdTitle').textContent = localizedName || data.areaName;
       const min = Number(data.minPopulation).toLocaleString();
       const max = Number(data.maxPopulation).toLocaleString();
-      const googleMapUrl = spot
-        ? `https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}`
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.areaName)}`;
-      const naverMapUrl = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(data.areaName)}`;
-
       document.getElementById('crowdBody').innerHTML = `
         <div class="crowd-main">
           <div class="crowd-badge ${status.className}">${status.dot} ${status.label}</div>
@@ -2862,13 +3166,22 @@
         <p class="crowd-recommend">${bestVisitAdvice(data)}</p>
         <div class="crowd-meta">${lt.updated}: ${data.updatedAt || '-'}</div>
         <div class="crowd-actions">
-          <button onclick="document.getElementById('directionChoice').classList.toggle('show')">🧭 ${lt.directions}</button>
+          <button onclick="openCrowdMapChooser()">🧭 ${lt.directions}</button>
           <button onclick="shareCrowd()">↗ ${lt.share}</button>
-        </div>
-        <div class="direction-choice" id="directionChoice">
-          <a href="${naverMapUrl}" target="_blank" rel="noopener">Naver Map</a>
-          <a href="${googleMapUrl}" target="_blank" rel="noopener">Google Maps</a>
         </div>`;
+    }
+
+    function openCrowdMapChooser() {
+      if (!lastCrowdData) return;
+      const spot = SPOTS.find(item => item.areaCode === lastCrowdData.areaCode);
+      if (!spot) return;
+      const localizedName = i18n[currentLang].spots[SPOTS.indexOf(spot)] || lastCrowdData.areaName;
+      openMapChooser(
+        lastCrowdData.areaName,
+        localizedName,
+        Math.round(spot.lng * 1e7),
+        Math.round(spot.lat * 1e7)
+      );
     }
 
     function refreshCrowd() {
@@ -3210,7 +3523,12 @@
     document.querySelectorAll('.card').forEach(c => c.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }
     }));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResults(); });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      closeResults();
+      closeMapChooser();
+      closeAppModal();
+    });
 
     // ── Init ─────────────────────────────────────────────────
     typeText();
