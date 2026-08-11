@@ -1435,6 +1435,123 @@
       color: #666666;
       z-index: 1;
     }
+
+    /* ── Seoul real-time crowd card ── */
+    .crowd-card {
+      display: none;
+      margin: 14px 0;
+      padding: 18px;
+      border: 1px solid rgba(72, 187, 255, .35);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(15, 30, 58, .96), rgba(22, 45, 76, .94));
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .2);
+      color: #fff;
+    }
+
+    .crowd-card.show { display: block; }
+    .crowd-card.loading { opacity: .72; }
+
+    .crowd-head,
+    .crowd-main,
+    .crowd-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .crowd-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: #8ddcff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .crowd-title {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.25;
+    }
+
+    .crowd-refresh {
+      min-width: 42px;
+      min-height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .crowd-main {
+      margin: 16px 0 12px;
+      justify-content: flex-start;
+    }
+
+    .crowd-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(48, 211, 167, .16);
+      color: #70f0c8;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .crowd-badge.normal { background: rgba(255, 211, 77, .15); color: #ffd95f; }
+    .crowd-badge.busy { background: rgba(255, 145, 77, .16); color: #ffad73; }
+    .crowd-badge.very-busy { background: rgba(255, 75, 104, .17); color: #ff8297; }
+
+    .crowd-pop strong { display: block; font-size: 18px; }
+    .crowd-pop span { color: #aebbd0; font-size: 12px; }
+
+    .crowd-recommend {
+      margin: 0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .07);
+      color: #e9f2ff;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .crowd-meta {
+      margin: 10px 2px 14px;
+      color: #99a9c1;
+      font-size: 11px;
+    }
+
+    .crowd-actions a,
+    .crowd-actions button {
+      flex: 1;
+      min-height: 44px;
+      border: 0;
+      border-radius: 13px;
+      background: #fff;
+      color: #10213c;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .crowd-actions a { display: grid; place-items: center; }
+    .crowd-error { color: #ffb4c0; }
+
+    @media (max-width: 420px) {
+      .header-new { gap: 8px; }
+      .header-flag { font-size: 1.9rem; }
+      .header-center h1 { font-size: 1.08rem; }
+      .header-sub { font-size: .7rem; }
+    }
   </style>
 </head>
 
@@ -1475,6 +1592,17 @@
       <span id="tapHint" style="display:none"></span>
       <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
     </div>
+
+    <section class="crowd-card" id="crowdCard" aria-live="polite">
+      <div class="crowd-head">
+        <div>
+          <span class="crowd-kicker" id="crowdKicker">SEOUL LIVE</span>
+          <h2 class="crowd-title" id="crowdTitle">Real-time crowd</h2>
+        </div>
+        <button class="crowd-refresh" id="crowdRefresh" onclick="refreshCrowd()" aria-label="Refresh">↻</button>
+      </div>
+      <div id="crowdBody"></div>
+    </section>
 
     <!-- ── Live Map ── -->
     <div class="live-map-card" id="miniMapWrap" onclick="toggleMiniMap()">
@@ -1732,12 +1860,33 @@
     };
 
     const SPOTS = [
-      { emoji: '👑', searchKo: '경복궁', nameEn: 'Gyeongbokgung', fixedQuery: '광화문' },
-      { emoji: '🏮', searchKo: '인사동', nameEn: 'Insadong', fixedQuery: '인사동문화의거리' },
-      { emoji: '💄', searchKo: '명동', nameEn: 'Myeongdong', fixedQuery: '명동역 6번출구' },
-      { emoji: '🎨', searchKo: '성수', nameEn: 'Seongsu', fixedQuery: '성수역 3번출구' },
-      { emoji: '🎸', searchKo: '홍대', nameEn: 'Hongdae', fixedQuery: '홍대걷고싶은거리' },
+      { emoji: '👑', searchKo: '경복궁', nameEn: 'Gyeongbokgung', fixedQuery: '광화문', areaCode: 'POI008', lat: 37.5796, lng: 126.9770 },
+      { emoji: '🏮', searchKo: '인사동', nameEn: 'Insadong', fixedQuery: '인사동문화의거리', areaCode: 'POI078', lat: 37.5740, lng: 126.9850 },
+      { emoji: '💄', searchKo: '명동', nameEn: 'Myeongdong', fixedQuery: '명동역 6번출구', areaCode: 'POI003', lat: 37.5636, lng: 126.9869 },
+      { emoji: '🎨', searchKo: '성수', nameEn: 'Seongsu', fixedQuery: '성수역 3번출구', areaCode: 'POI068', lat: 37.5446, lng: 127.0559 },
+      { emoji: '🎸', searchKo: '홍대', nameEn: 'Hongdae', fixedQuery: '홍대걷고싶은거리', areaCode: 'POI007', lat: 37.5563, lng: 126.9236 },
     ];
+
+    const LIVE_I18N = {
+      EN: {
+        kicker: 'SEOUL LIVE', title: 'Real-time crowd', people: 'estimated people', updated: 'Updated',
+        relaxed: 'Relaxed', normal: 'Normal', busy: 'Crowded', veryBusy: 'Very crowded', unknown: 'Unknown',
+        visitNow: '✅ A good time to visit now.', quieter: (time, pct) => `🕒 Visit around ${time} — about ${pct}% quieter than now.`,
+        directions: 'Directions', share: 'Share', unavailable: 'Live crowd data is temporarily unavailable.', retry: 'Try again',
+      },
+      JA: {
+        kicker: 'ソウル・ライブ', title: 'リアルタイム混雑度', people: '推定人数', updated: '更新',
+        relaxed: '空いています', normal: '普通', busy: '混雑', veryBusy: '非常に混雑', unknown: '情報なし',
+        visitNow: '✅ 今は訪問しやすい時間です。', quieter: (time, pct) => `🕒 ${time}頃は今より約${pct}%空く予想です。`,
+        directions: '経路案内', share: '共有', unavailable: '混雑情報を取得できません。', retry: '再試行',
+      },
+      'ZH-HANS': {
+        kicker: '首尔实时', title: '实时拥挤程度', people: '预计人数', updated: '更新时间',
+        relaxed: '宽松', normal: '一般', busy: '拥挤', veryBusy: '非常拥挤', unknown: '暂无信息',
+        visitNow: '✅ 现在适合前往。', quieter: (time, pct) => `🕒 建议${time}左右前往，预计比现在少${pct}%的人。`,
+        directions: '路线', share: '分享', unavailable: '暂时无法获取拥挤信息。', retry: '重试',
+      },
+    };
 
     // ── i18n ────────────────────────────────────────────────
     const i18n = {
@@ -1824,6 +1973,8 @@
     const addrCache = {}; // 언어별 위치 주소 캐시 { EN: '..', JA: '..', 'ZH-HANS': '..' }
     let busStopsData = null; // 서울시 버스정류장 JSON 캐시
     let subwayStationsData = null; // 서울시 지하철역 JSON 캐시
+    let currentLiveArea = null;
+    let lastCrowdData = null;
 
     // ── Language ────────────────────────────────────────────
     function setLang(lang) {
@@ -1871,6 +2022,7 @@
       if (document.getElementById('rp').classList.contains('open')) {
         retranslate();
       }
+      if (lastCrowdData) renderCrowd(lastCrowdData);
       // 위치바 주소 언어 갱신 (캐시 우선)
       if (locationReady && userLat !== null) {
         if (addrCache[lang]) {
@@ -2520,6 +2672,122 @@
       return userLat ? base + `&lat=${userLat}&lng=${userLng}` : base;
     }
 
+    // ── Seoul real-time crowd ─────────────────────────────────
+    function getRequestedArea() {
+      const area = new URLSearchParams(location.search).get('spot');
+      return area && /^POI\d{3}$/i.test(area) ? area.toUpperCase() : null;
+    }
+
+    function nearestSupportedSpot(lat, lng) {
+      return SPOTS.reduce((nearest, spot) => {
+        const dist = haversine(Number(lat), Number(lng), spot.lat, spot.lng);
+        return !nearest || dist < nearest.dist ? { ...spot, dist } : nearest;
+      }, null);
+    }
+
+    async function loadCrowd(areaCode) {
+      if (!areaCode) return;
+      currentLiveArea = areaCode;
+      const card = document.getElementById('crowdCard');
+      const body = document.getElementById('crowdBody');
+      const lt = LIVE_I18N[currentLang];
+      card.classList.add('show', 'loading');
+      document.getElementById('crowdKicker').textContent = lt.kicker;
+      document.getElementById('crowdTitle').textContent = lt.title;
+      body.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+
+      try {
+        const res = await fetch(`${WORKER_BASE}/api/seoul-population?area=${encodeURIComponent(areaCode)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        lastCrowdData = data;
+        renderCrowd(data);
+      } catch (error) {
+        console.error('Seoul crowd data failed:', error);
+        body.innerHTML = `<p class="crowd-error">${lt.unavailable}</p>`;
+      } finally {
+        card.classList.remove('loading');
+      }
+    }
+
+    function congestionView(level) {
+      const lt = LIVE_I18N[currentLang];
+      const key = String(level || '');
+      if (key === '여유') return { label: lt.relaxed, className: '', dot: '🟢' };
+      if (key === '보통') return { label: lt.normal, className: 'normal', dot: '🟡' };
+      if (key.includes('약간')) return { label: lt.busy, className: 'busy', dot: '🟠' };
+      if (key.includes('붐빔')) return { label: lt.veryBusy, className: 'very-busy', dot: '🔴' };
+      return { label: lt.unknown, className: 'normal', dot: '⚪' };
+    }
+
+    function bestVisitAdvice(data) {
+      const lt = LIVE_I18N[currentLang];
+      const current = ((data.minPopulation || 0) + (data.maxPopulation || 0)) / 2;
+      const options = (data.forecast || []).filter(item => {
+        const hour = Number(String(item.time || '').slice(11, 13));
+        return item.minPopulation != null && item.maxPopulation != null && hour >= 9 && hour <= 22;
+      });
+      if (!current || !options.length) return lt.visitNow;
+      const best = options.reduce((a, b) =>
+        ((a.minPopulation + a.maxPopulation) <= (b.minPopulation + b.maxPopulation)) ? a : b);
+      const bestAverage = (best.minPopulation + best.maxPopulation) / 2;
+      const percent = Math.max(0, Math.round((1 - bestAverage / current) * 100));
+      if (percent < 15) return lt.visitNow;
+      const time = String(best.time || '').slice(11, 16) || best.time;
+      return lt.quieter(time, percent);
+    }
+
+    function renderCrowd(data) {
+      const lt = LIVE_I18N[currentLang];
+      const status = congestionView(data.congestion);
+      const spot = SPOTS.find(item => item.areaCode === data.areaCode);
+      const localizedName = spot ? i18n[currentLang].spots[SPOTS.indexOf(spot)] : data.areaName;
+      document.getElementById('crowdKicker').textContent = lt.kicker;
+      document.getElementById('crowdTitle').textContent = localizedName || data.areaName;
+      const min = Number(data.minPopulation).toLocaleString();
+      const max = Number(data.maxPopulation).toLocaleString();
+      const mapUrl = spot
+        ? `https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.areaName)}`;
+
+      document.getElementById('crowdBody').innerHTML = `
+        <div class="crowd-main">
+          <div class="crowd-badge ${status.className}">${status.dot} ${status.label}</div>
+          <div class="crowd-pop"><strong>${min}–${max}</strong><span>${lt.people}</span></div>
+        </div>
+        <p class="crowd-recommend">${bestVisitAdvice(data)}</p>
+        <div class="crowd-meta">${lt.updated}: ${data.updatedAt || '-'}</div>
+        <div class="crowd-actions">
+          <a href="${mapUrl}" target="_blank" rel="noopener">🧭 ${lt.directions}</a>
+          <button onclick="shareCrowd()">↗ ${lt.share}</button>
+        </div>`;
+    }
+
+    function refreshCrowd() {
+      if (currentLiveArea) loadCrowd(currentLiveArea);
+    }
+
+    async function shareCrowd() {
+      if (!lastCrowdData) return;
+      const status = congestionView(lastCrowdData.congestion).label;
+      const shareUrl = new URL(location.href);
+      shareUrl.searchParams.set('spot', lastCrowdData.areaCode);
+      const payload = {
+        title: lastCrowdData.areaName,
+        text: `${lastCrowdData.areaName} · ${status}`,
+        url: shareUrl.toString(),
+      };
+      try {
+        if (navigator.share) await navigator.share(payload);
+        else {
+          await navigator.clipboard.writeText(payload.url);
+          showToast('🔗 Link copied');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') console.warn('Share failed:', error);
+      }
+    }
+
     function renderSpots() {
       const names = i18n[currentLang].spots;
       const html = SPOTS.map((s, i) =>
@@ -2534,6 +2802,7 @@
 
     async function searchSpot(index) {
       const spot = SPOTS[index];
+      loadCrowd(spot.areaCode);
       const cat = { label: i18n[currentLang].spots[index], icon: spot.emoji };
       openPanel(cat);
       showLoading();
@@ -2751,6 +3020,10 @@
           userLat = pos.coords.latitude.toFixed(6);
           userLng = pos.coords.longitude.toFixed(6);
           locationReady = true;
+          if (!getRequestedArea() && !currentLiveArea) {
+            const nearest = nearestSupportedSpot(userLat, userLng);
+            if (nearest && nearest.dist <= 15) loadCrowd(nearest.areaCode);
+          }
           setBar('success', '📍 Location found!', 'Loading address…');
           showToast('✅ Location ready — tap a category!');
           // Auto-open Live Map after location is ready
@@ -2836,6 +3109,8 @@
     setGreeting();
     renderSpots();
     initStarfield();
+    const requestedArea = getRequestedArea();
+    if (requestedArea) loadCrowd(requestedArea);
     initLocation();
   </script>
 </body>

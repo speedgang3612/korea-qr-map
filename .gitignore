@@ -1,0 +1,14 @@
+# Local API responses and experiments
+api_result*.txt
+bdc_test.txt
+
+# Cloudflare Worker local files and secrets
+worker/node_modules/
+worker/.wrangler/
+worker/.dev.vars
+worker/.env
+worker/.env.*
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
