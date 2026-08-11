@@ -1546,6 +1546,58 @@
     .crowd-actions a { display: grid; place-items: center; }
     .crowd-error { color: #ffb4c0; }
 
+    .live-spots {
+      width: 100%;
+      margin: 2px 0 12px;
+    }
+
+    .live-spots-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 2px 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .live-spots-scroll {
+      display: flex;
+      gap: 8px;
+      padding: 1px 1px 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      scroll-snap-type: x proximity;
+    }
+
+    .live-spots-scroll::-webkit-scrollbar { display: none; }
+
+    .live-spot-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      scroll-snap-align: start;
+      cursor: pointer;
+    }
+
+    .live-spot-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 5px 14px rgba(22, 119, 168, .2);
+    }
+
     @media (max-width: 420px) {
       .header-new { gap: 8px; }
       .header-flag { font-size: 1.9rem; }
@@ -1592,6 +1644,11 @@
       <span id="tapHint" style="display:none"></span>
       <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
     </div>
+
+    <section class="live-spots" aria-label="Popular Seoul live spots">
+      <div class="live-spots-label" id="liveSpotsLabel">📊 POPULAR SEOUL LIVE</div>
+      <div class="live-spots-scroll" id="liveSpotsScroll"></div>
+    </section>
 
     <section class="crowd-card" id="crowdCard" aria-live="polite">
       <div class="crowd-head">
@@ -1860,28 +1917,29 @@
     };
 
     const SPOTS = [
-      { emoji: '👑', searchKo: '경복궁', nameEn: 'Gyeongbokgung', fixedQuery: '광화문', areaCode: 'POI008', lat: 37.5796, lng: 126.9770 },
-      { emoji: '🏮', searchKo: '인사동', nameEn: 'Insadong', fixedQuery: '인사동문화의거리', areaCode: 'POI078', lat: 37.5740, lng: 126.9850 },
       { emoji: '💄', searchKo: '명동', nameEn: 'Myeongdong', fixedQuery: '명동역 6번출구', areaCode: 'POI003', lat: 37.5636, lng: 126.9869 },
+      { emoji: '🗼', searchKo: 'N서울타워', nameEn: 'N Seoul Tower', fixedQuery: 'N서울타워', areaCode: 'POI091', lat: 37.5512, lng: 126.9882 },
       { emoji: '🎨', searchKo: '성수', nameEn: 'Seongsu', fixedQuery: '성수역 3번출구', areaCode: 'POI068', lat: 37.5446, lng: 127.0559 },
+      { emoji: '🏙️', searchKo: '코엑스', nameEn: 'COEX', fixedQuery: '코엑스', areaCode: 'POI001', lat: 37.5117, lng: 127.0592 },
+      { emoji: '🌆', searchKo: '강남역', nameEn: 'Gangnam', fixedQuery: '강남역 10번출구', areaCode: 'POI014', lat: 37.4979, lng: 127.0276 },
       { emoji: '🎸', searchKo: '홍대', nameEn: 'Hongdae', fixedQuery: '홍대걷고싶은거리', areaCode: 'POI007', lat: 37.5563, lng: 126.9236 },
     ];
 
     const LIVE_I18N = {
       EN: {
-        kicker: 'SEOUL LIVE', title: 'Real-time crowd', people: 'estimated people', updated: 'Updated',
+        kicker: 'SEOUL LIVE', title: 'Real-time crowd', top5: '📊 POPULAR SEOUL LIVE', people: 'estimated people', updated: 'Updated',
         relaxed: 'Relaxed', normal: 'Normal', busy: 'Crowded', veryBusy: 'Very crowded', unknown: 'Unknown',
         visitNow: '✅ A good time to visit now.', quieter: (time, pct) => `🕒 Visit around ${time} — about ${pct}% quieter than now.`,
         directions: 'Directions', share: 'Share', unavailable: 'Live crowd data is temporarily unavailable.', retry: 'Try again',
       },
       JA: {
-        kicker: 'ソウル・ライブ', title: 'リアルタイム混雑度', people: '推定人数', updated: '更新',
+        kicker: 'ソウル・ライブ', title: 'リアルタイム混雑度', top5: '📊 人気のソウル・ライブ', people: '推定人数', updated: '更新',
         relaxed: '空いています', normal: '普通', busy: '混雑', veryBusy: '非常に混雑', unknown: '情報なし',
         visitNow: '✅ 今は訪問しやすい時間です。', quieter: (time, pct) => `🕒 ${time}頃は今より約${pct}%空く予想です。`,
         directions: '経路案内', share: '共有', unavailable: '混雑情報を取得できません。', retry: '再試行',
       },
       'ZH-HANS': {
-        kicker: '首尔实时', title: '实时拥挤程度', people: '预计人数', updated: '更新时间',
+        kicker: '首尔实时', title: '实时拥挤程度', top5: '📊 首尔热门实时地点', people: '预计人数', updated: '更新时间',
         relaxed: '宽松', normal: '一般', busy: '拥挤', veryBusy: '非常拥挤', unknown: '暂无信息',
         visitNow: '✅ 现在适合前往。', quieter: (time, pct) => `🕒 建议${time}左右前往，预计比现在少${pct}%的人。`,
         directions: '路线', share: '分享', unavailable: '暂时无法获取拥挤信息。', retry: '重试',
@@ -1901,8 +1959,8 @@
         naverSub2: '⚙️ Set app to English in Settings',
         googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
-        spots: ['Gyeongbokgung', 'Insadong', 'Myeongdong', 'Seongsu', 'Hongdae'],
-        spotQueries: ['Gyeongbokgung Palace', 'Insadong', 'Myeongdong', 'Seongsu Popup Street', 'Hongdae'],
+        spots: ['Myeongdong', 'N Seoul Tower', 'Seongsu', 'COEX', 'Gangnam', 'Hongdae'],
+        spotQueries: ['Myeongdong', 'N Seoul Tower', 'Seongsu Popup Street', 'COEX', 'Gangnam Station', 'Hongdae'],
         emgPoliceLabel: 'Police', emgPoliceSub: 'Crime & Safety',
         emgFireLabel: 'Ambulance', emgFireSub: 'Fire & Medical',
         emgTourLabel: 'Korea Travel Helpline', emgTourSub: '24h · EN / JA / ZH',
@@ -1926,8 +1984,8 @@
         naverSub2: '⚙️ 設定で日本語に変更可能',
         googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
-        spots: ['景福宮', '仁寺洞', '明洞', '聖水', '弘大'],
-        spotQueries: ['景福宮', '仁寺洞', '明洞', '聖水ポップアップ通り', '弘大'],
+        spots: ['明洞', 'Nソウルタワー', '聖水', 'COEX', '江南', '弘大'],
+        spotQueries: ['明洞', 'Nソウルタワー', '聖水ポップアップ通り', 'COEX', '江南駅', '弘大'],
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪・安全',
         emgFireLabel: '救急', emgFireSub: '火災・医療',
         emgTourLabel: '観光案内', emgTourSub: '24時間対応',
@@ -1951,8 +2009,8 @@
         naverSub2: '⚙️ 在设置中切换为中文',
         googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
         googleSub2: '⚠️ 在韩国路线可能不准确',
-        spots: ['景福宫', '仁寺洞', '明洞', '圣水', '弘大'],
-        spotQueries: ['景福宫', '仁寺洞', '明洞', '圣水弹窗街', '弘大'],
+        spots: ['明洞', 'N首尔塔', '圣水', 'COEX', '江南', '弘大'],
+        spotQueries: ['明洞', 'N首尔塔', '圣水快闪街', 'COEX', '江南站', '弘大'],
         emgPoliceLabel: '警察', emgPoliceSub: '犯罪与安全',
         emgFireLabel: '救护车', emgFireSub: '火灾与医疗',
         emgTourLabel: '旅游热线', emgTourSub: '24小时服务',
@@ -2011,6 +2069,7 @@
       document.getElementById('tipToggleText').textContent = t.tipToggle;
       document.getElementById('tipText').textContent = t.tipText;
       renderSpots();
+      renderLiveSpots();
       if (document.getElementById('weatherDetail').dataset.feelsLike) {
         updateWeatherDetail();
         // 날씨 바 지역명도 현재 언어로 갱신
@@ -2673,6 +2732,27 @@
     }
 
     // ── Seoul real-time crowd ─────────────────────────────────
+    function renderLiveSpots() {
+      const names = i18n[currentLang].spots;
+      document.getElementById('liveSpotsLabel').textContent = LIVE_I18N[currentLang].top5;
+      document.getElementById('liveSpotsScroll').innerHTML = SPOTS.map((spot, index) => `
+        <button class="live-spot-btn ${spot.areaCode === currentLiveArea ? 'active' : ''}"
+                onclick="selectLiveSpot(${index})"
+                aria-pressed="${spot.areaCode === currentLiveArea}">
+          <span>${spot.emoji}</span><span>${names[index]}</span>
+        </button>`).join('');
+    }
+
+    function selectLiveSpot(index) {
+      const spot = SPOTS[index];
+      if (!spot) return;
+      loadCrowd(spot.areaCode);
+      if (naverMapInstance) {
+        naverMapInstance.setCenter(new naver.maps.LatLng(spot.lat, spot.lng));
+        naverMapInstance.setZoom(15);
+      }
+    }
+
     function getRequestedArea() {
       const area = new URLSearchParams(location.search).get('spot');
       return area && /^POI\d{3}$/i.test(area) ? area.toUpperCase() : null;
@@ -2688,6 +2768,7 @@
     async function loadCrowd(areaCode) {
       if (!areaCode) return;
       currentLiveArea = areaCode;
+      renderLiveSpots();
       const card = document.getElementById('crowdCard');
       const body = document.getElementById('crowdBody');
       const lt = LIVE_I18N[currentLang];
@@ -3108,6 +3189,7 @@
     typeText();
     setGreeting();
     renderSpots();
+    renderLiveSpots();
     initStarfield();
     const requestedArea = getRequestedArea();
     if (requestedArea) loadCrowd(requestedArea);
