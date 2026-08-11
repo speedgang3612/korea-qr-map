@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://oapi.map.naver.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests" />
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-800PGMFEHK"></script>
   <script>
@@ -10,8 +14,6 @@
     gtag('js', new Date());
     gtag('config', 'G-800PGMFEHK');
   </script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <meta name="description" content="Korea Travel Guide – Find nearby places in English using GPS." />
   <title>Korea Travel Guide 🇰🇷</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1857,12 +1859,12 @@
     </header>
 
     <!-- ── Info Card (location + weather) ── -->
-    <div class="location-bar loading" id="locationBar">
+    <div class="location-bar" id="locationBar">
       <div class="info-row">
         <div class="info-icon-box"><span>📍</span></div>
         <div class="info-text">
-          <strong id="locStatus">Detecting your location…</strong>
-          <span id="locDetail" class="info-sub">You are here</span>
+          <strong id="locStatus">Use your location</strong>
+          <span id="locDetail" class="info-sub">Shared with map and weather providers for nearby results</span>
         </div>
       </div>
       <div class="info-divider"></div>
@@ -1872,7 +1874,7 @@
       </div>
       <div id="weatherDetail" class="weather-detail"></div>
       <span id="tapHint" style="display:none"></span>
-      <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:none">Retry</button>
+      <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:block">Use my location</button>
     </div>
 
     <section class="live-spots" aria-label="Popular Seoul live spots">
@@ -2388,7 +2390,10 @@
     }
 
     // ── Helpers ─────────────────────────────────────────────
-    function stripHtml(s) { return s.replace(/<[^>]*>/g, ''); }
+    function stripHtml(s) {
+      const parsed = new DOMParser().parseFromString(String(s || ''), 'text/html');
+      return parsed.body.textContent || '';
+    }
 
     function haversine(lat1, lng1, lat2, lng2) {
       const R = 6371000, toR = Math.PI / 180;
@@ -2537,13 +2542,29 @@
     }
 
     function showError(msg, fallbackUrl) {
-      document.getElementById('rpBody').innerHTML = `
-    <div class="msg-state">
-      <div class="msg-icon">⚠️</div>
-      <h3>Something went wrong</h3>
-      <p>${msg}</p>
-      ${fallbackUrl ? `<a class="msg-btn" href="${fallbackUrl}" target="_blank">Open Naver Map instead</a>` : ''}
-    </div>`;
+      const body = document.getElementById('rpBody');
+      const state = document.createElement('div');
+      state.className = 'msg-state';
+
+      const icon = document.createElement('div');
+      icon.className = 'msg-icon';
+      icon.textContent = '⚠️';
+      const title = document.createElement('h3');
+      title.textContent = 'Something went wrong';
+      const message = document.createElement('p');
+      message.textContent = String(msg || 'Please try again.');
+      state.append(icon, title, message);
+
+      if (fallbackUrl) {
+        const fallback = document.createElement('a');
+        fallback.className = 'msg-btn';
+        fallback.href = fallbackUrl;
+        fallback.target = '_blank';
+        fallback.rel = 'noopener noreferrer';
+        fallback.textContent = 'Open Naver Map instead';
+        state.appendChild(fallback);
+      }
+      body.replaceChildren(state);
     }
 
     function showEmpty() {
@@ -2558,18 +2579,51 @@
     function renderResults(items) {
       document.getElementById('rpCount').textContent = `${items.length} found`;
       const t = i18n[currentLang];
-      const html = items.map(it => `
-    <div class="result-card">
-      <div class="rc-top">
-        <span class="rc-name">${it.nameEn}</span>
-        <span class="rc-dist">${fmtDist(it.dist)}</span>
-      </div>
-      <div class="rc-addr"><span class="rc-addr-icon">📍</span><span>${it.addrEn}</span></div>
-      <button class="rc-map-button" onclick="openMapChooser(decodeURIComponent('${encodeURIComponent(it.nameKo)}'), decodeURIComponent('${encodeURIComponent(it.nameEn)}'), ${it.mapx}, ${it.mapy}, '${it.kakaoId || ''}')">
-        ${t.openMaps}
-      </button>
-    </div>`).join('');
-      document.getElementById('rpBody').innerHTML = `<div class="result-list">${html}</div>`;
+      const list = document.createElement('div');
+      list.className = 'result-list';
+
+      items.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+
+        const top = document.createElement('div');
+        top.className = 'rc-top';
+        const name = document.createElement('span');
+        name.className = 'rc-name';
+        name.textContent = String(item.nameEn || item.nameKo || '');
+        const distance = document.createElement('span');
+        distance.className = 'rc-dist';
+        distance.textContent = fmtDist(item.dist);
+        top.append(name, distance);
+
+        const address = document.createElement('div');
+        address.className = 'rc-addr';
+        const pin = document.createElement('span');
+        pin.className = 'rc-addr-icon';
+        pin.textContent = '📍';
+        const addressText = document.createElement('span');
+        addressText.textContent = String(item.addrEn || item.addrKo || '');
+        address.append(pin, addressText);
+
+        const mapButton = document.createElement('button');
+        mapButton.className = 'rc-map-button';
+        mapButton.type = 'button';
+        mapButton.textContent = t.openMaps;
+        mapButton.addEventListener('click', () => {
+          openMapChooser(
+            String(item.nameKo || ''),
+            String(item.nameEn || item.nameKo || ''),
+            Number(item.mapx) || 0,
+            Number(item.mapy) || 0,
+            String(item.kakaoId || '')
+          );
+        });
+
+        card.append(top, address, mapButton);
+        list.appendChild(card);
+      });
+
+      document.getElementById('rpBody').replaceChildren(list);
     }
 
     // ── Unified map chooser & app fallback ──────────────────
@@ -3158,17 +3212,41 @@
       document.getElementById('crowdTitle').textContent = localizedName || data.areaName;
       const min = Number(data.minPopulation).toLocaleString();
       const max = Number(data.maxPopulation).toLocaleString();
-      document.getElementById('crowdBody').innerHTML = `
-        <div class="crowd-main">
-          <div class="crowd-badge ${status.className}">${status.dot} ${status.label}</div>
-          <div class="crowd-pop"><strong>${min}–${max}</strong><span>${lt.people}</span></div>
-        </div>
-        <p class="crowd-recommend">${bestVisitAdvice(data)}</p>
-        <div class="crowd-meta">${lt.updated}: ${data.updatedAt || '-'}</div>
-        <div class="crowd-actions">
-          <button onclick="openCrowdMapChooser()">🧭 ${lt.directions}</button>
-          <button onclick="shareCrowd()">↗ ${lt.share}</button>
-        </div>`;
+      const body = document.getElementById('crowdBody');
+      const main = document.createElement('div');
+      main.className = 'crowd-main';
+      const badge = document.createElement('div');
+      badge.className = `crowd-badge ${status.className}`.trim();
+      badge.textContent = `${status.dot} ${status.label}`;
+      const population = document.createElement('div');
+      population.className = 'crowd-pop';
+      const populationValue = document.createElement('strong');
+      populationValue.textContent = `${min}–${max}`;
+      const populationLabel = document.createElement('span');
+      populationLabel.textContent = lt.people;
+      population.append(populationValue, populationLabel);
+      main.append(badge, population);
+
+      const advice = document.createElement('p');
+      advice.className = 'crowd-recommend';
+      advice.textContent = bestVisitAdvice(data);
+      const meta = document.createElement('div');
+      meta.className = 'crowd-meta';
+      meta.textContent = `${lt.updated}: ${data.updatedAt || '-'}`;
+
+      const actions = document.createElement('div');
+      actions.className = 'crowd-actions';
+      const directions = document.createElement('button');
+      directions.type = 'button';
+      directions.textContent = `🧭 ${lt.directions}`;
+      directions.addEventListener('click', openCrowdMapChooser);
+      const share = document.createElement('button');
+      share.type = 'button';
+      share.textContent = `↗ ${lt.share}`;
+      share.addEventListener('click', shareCrowd);
+      actions.append(directions, share);
+
+      body.replaceChildren(main, advice, meta, actions);
     }
 
     function openCrowdMapChooser() {
@@ -3434,12 +3512,13 @@
     }
 
     function initLocation() {
+      document.getElementById('retryBtn').textContent = 'Retry';
       setBar('loading', 'Detecting your location…', 'Please allow location access');
       if (!navigator.geolocation) { setBar('error', 'GPS not supported', 'Please use a modern browser'); return; }
       navigator.geolocation.getCurrentPosition(
         pos => {
-          userLat = pos.coords.latitude.toFixed(6);
-          userLng = pos.coords.longitude.toFixed(6);
+          userLat = pos.coords.latitude.toFixed(4);
+          userLng = pos.coords.longitude.toFixed(4);
           locationReady = true;
           if (!getRequestedArea() && !currentLiveArea) {
             const nearest = nearestSupportedSpot(userLat, userLng);
@@ -3538,7 +3617,6 @@
     initStarfield();
     const requestedArea = getRequestedArea();
     if (requestedArea) loadCrowd(requestedArea);
-    initLocation();
   </script>
 </body>
 

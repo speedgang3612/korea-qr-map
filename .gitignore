@@ -9,6 +9,15 @@ worker/.dev.vars
 worker/.env
 worker/.env.*
 
+# Root-level local files and secrets
+node_modules/
+.wrangler/
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+
 # Editor / OS files
 .DS_Store
 Thumbs.db

@@ -21,16 +21,38 @@ const ALLOWED_ORIGINS = [
   'https://speedgang3612.github.io',
 ];
 
-function corsHeaders(origin) {
+const KAKAO_CATEGORY_CODES = new Set(['AD5', 'CS2', 'HP8', 'PM9']);
+const NAVER_SORT_OPTIONS = new Set(['random', 'comment']);
+const DEEPL_TARGET_LANGUAGES = new Set(['EN', 'JA', 'ZH-HANS']);
+const MAX_TRANSLATION_ITEMS = 24;
+const MAX_TRANSLATION_ITEM_LENGTH = 200;
+const MAX_TRANSLATION_TOTAL_LENGTH = 3000;
+const MAX_TRANSLATION_BODY_BYTES = 12000;
+
+const securityHeaders = {
+  'Cache-Control': 'no-store',
+  'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; sandbox",
+  'Referrer-Policy': 'no-referrer',
+  'X-Content-Type-Options': 'nosniff',
+};
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
   const isLocalDevelopment = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-  const allowed = ALLOWED_ORIGINS.includes(origin) || isLocalDevelopment ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowed,
+  return ALLOWED_ORIGINS.includes(origin) || isLocalDevelopment;
+}
+
+function corsHeaders(origin) {
+  const headers = {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
+  if (origin && isAllowedOrigin(origin)) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  }
+  return headers;
 }
 
 function jsonResponse(data, status, origin, extraHeaders = {}) {
@@ -38,20 +60,48 @@ function jsonResponse(data, status, origin, extraHeaders = {}) {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
+      ...securityHeaders,
       ...corsHeaders(origin),
       ...extraHeaders,
     },
   });
 }
 
-function errorResponse(message, status, origin) {
-  return jsonResponse({ error: message }, status, origin);
+function errorResponse(message, status, origin, extraHeaders = {}) {
+  return jsonResponse({ error: message }, status, origin, extraHeaders);
+}
+
+async function rateLimitResponse(request, env, path, origin) {
+  if (!path.startsWith('/api/')) return null;
+  const limiter = path === '/api/deepl'
+    ? env.TRANSLATE_RATE_LIMITER
+    : env.API_RATE_LIMITER;
+  if (!limiter || typeof limiter.limit !== 'function') return null;
+
+  const clientAddress = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const { success } = await limiter.limit({ key: `${clientAddress}:${path}` });
+  return success
+    ? null
+    : errorResponse('Too many requests. Please try again shortly.', 429, origin, {
+      'Retry-After': '60',
+    });
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const origin = request.headers.get('Origin') || '';
+
+    if (!isAllowedOrigin(origin)) {
+      return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          ...securityHeaders,
+          Vary: 'Origin',
+        },
+      });
+    }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
@@ -60,6 +110,9 @@ export default {
     const path = url.pathname;
 
     try {
+      const limited = await rateLimitResponse(request, env, path, origin);
+      if (limited) return limited;
+
       if (path === '/api/naver-search' && request.method === 'GET') {
         return await handleNaverSearch(url, env, origin);
       }
@@ -82,17 +135,24 @@ export default {
       return errorResponse('Not found', 404, origin);
     } catch (error) {
       console.error('Worker error:', error);
-      return errorResponse(error.message || 'Internal server error', 500, origin);
+      return errorResponse('Internal server error', 500, origin);
     }
   },
 };
 
 async function handleNaverSearch(url, env, origin) {
-  const query = url.searchParams.get('query');
-  const display = url.searchParams.get('display') || '10';
+  const query = (url.searchParams.get('query') || '').trim();
+  const display = Number(url.searchParams.get('display') || '10');
   const sort = url.searchParams.get('sort') || 'random';
 
   if (!query) return errorResponse('Missing "query" parameter', 400, origin);
+  if (query.length > 100) return errorResponse('"query" must be 100 characters or fewer', 400, origin);
+  if (!Number.isInteger(display) || display < 1 || display > 20) {
+    return errorResponse('"display" must be an integer between 1 and 20', 400, origin);
+  }
+  if (!NAVER_SORT_OPTIONS.has(sort)) {
+    return errorResponse('Unsupported "sort" value', 400, origin);
+  }
 
   const target = `https://openapi.naver.com/v1/search/local.json` +
     `?query=${encodeURIComponent(query)}&display=${display}&start=1&sort=${sort}`;
@@ -109,14 +169,22 @@ async function handleNaverSearch(url, env, origin) {
 }
 
 async function handleKakaoCategory(url, env, origin) {
-  const code = url.searchParams.get('code');
-  const x = url.searchParams.get('x');
-  const y = url.searchParams.get('y');
-  const radius = url.searchParams.get('radius') || '2000';
-  const size = url.searchParams.get('size') || '15';
+  const code = (url.searchParams.get('code') || '').trim().toUpperCase();
+  const x = Number(url.searchParams.get('x'));
+  const y = Number(url.searchParams.get('y'));
+  const radius = Number(url.searchParams.get('radius') || '2000');
+  const size = Number(url.searchParams.get('size') || '15');
 
-  if (!code || !x || !y) {
+  if (!code || !Number.isFinite(x) || !Number.isFinite(y)) {
     return errorResponse('Missing required parameters (code, x, y)', 400, origin);
+  }
+  if (!KAKAO_CATEGORY_CODES.has(code)) return errorResponse('Unsupported category code', 400, origin);
+  if (x < -180 || x > 180 || y < -90 || y > 90) return errorResponse('Invalid coordinates', 400, origin);
+  if (!Number.isInteger(radius) || radius < 1 || radius > 5000) {
+    return errorResponse('"radius" must be an integer between 1 and 5000', 400, origin);
+  }
+  if (!Number.isInteger(size) || size < 1 || size > 15) {
+    return errorResponse('"size" must be an integer between 1 and 15', 400, origin);
   }
 
   const target = `https://dapi.kakao.com/v2/local/search/category.json` +
@@ -131,14 +199,22 @@ async function handleKakaoCategory(url, env, origin) {
 }
 
 async function handleKakaoKeyword(url, env, origin) {
-  const query = url.searchParams.get('query');
-  const x = url.searchParams.get('x');
-  const y = url.searchParams.get('y');
-  const radius = url.searchParams.get('radius') || '2000';
-  const size = url.searchParams.get('size') || '15';
+  const query = (url.searchParams.get('query') || '').trim();
+  const x = Number(url.searchParams.get('x'));
+  const y = Number(url.searchParams.get('y'));
+  const radius = Number(url.searchParams.get('radius') || '2000');
+  const size = Number(url.searchParams.get('size') || '15');
 
-  if (!query || !x || !y) {
+  if (!query || !Number.isFinite(x) || !Number.isFinite(y)) {
     return errorResponse('Missing required parameters (query, x, y)', 400, origin);
+  }
+  if (query.length > 100) return errorResponse('"query" must be 100 characters or fewer', 400, origin);
+  if (x < -180 || x > 180 || y < -90 || y > 90) return errorResponse('Invalid coordinates', 400, origin);
+  if (!Number.isInteger(radius) || radius < 1 || radius > 5000) {
+    return errorResponse('"radius" must be an integer between 1 and 5000', 400, origin);
+  }
+  if (!Number.isInteger(size) || size < 1 || size > 15) {
+    return errorResponse('"size" must be an integer between 1 and 15', 400, origin);
   }
 
   const target = `https://dapi.kakao.com/v2/local/search/keyword.json` +
@@ -227,11 +303,38 @@ function toNumber(value) {
 }
 
 async function handleDeepL(request, env, origin) {
-  const body = await request.json();
+  const declaredLength = Number(request.headers.get('Content-Length') || '0');
+  if (declaredLength > MAX_TRANSLATION_BODY_BYTES) {
+    return errorResponse('Request body is too large', 413, origin);
+  }
+
+  const rawBody = await request.text();
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_TRANSLATION_BODY_BYTES) {
+    return errorResponse('Request body is too large', 413, origin);
+  }
+
+  let body;
+  try {
+    body = JSON.parse(rawBody);
+  } catch {
+    return errorResponse('Request body must be valid JSON', 400, origin);
+  }
   const { text, target_lang } = body;
 
-  if (!text || !target_lang) {
+  if (!Array.isArray(text) || !target_lang) {
     return errorResponse('Missing "text" or "target_lang" in body', 400, origin);
+  }
+  if (text.length < 1 || text.length > MAX_TRANSLATION_ITEMS) {
+    return errorResponse(`"text" must contain 1 to ${MAX_TRANSLATION_ITEMS} items`, 400, origin);
+  }
+  if (!text.every((item) => typeof item === 'string' && item.length <= MAX_TRANSLATION_ITEM_LENGTH)) {
+    return errorResponse(`Each translation item must be a string of ${MAX_TRANSLATION_ITEM_LENGTH} characters or fewer`, 400, origin);
+  }
+  if (text.reduce((sum, item) => sum + item.length, 0) > MAX_TRANSLATION_TOTAL_LENGTH) {
+    return errorResponse('Total translation text is too long', 400, origin);
+  }
+  if (!DEEPL_TARGET_LANGUAGES.has(target_lang)) {
+    return errorResponse('Unsupported target language', 400, origin);
   }
 
   const res = await fetch('https://api-free.deepl.com/v2/translate', {
