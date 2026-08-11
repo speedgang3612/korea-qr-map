@@ -1544,6 +1544,28 @@
     }
 
     .crowd-actions a { display: grid; place-items: center; }
+
+    .direction-choice {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .direction-choice.show { display: grid; }
+
+    .direction-choice a {
+      min-height: 42px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
     .crowd-error { color: #ffb4c0; }
 
     .live-spots {
@@ -2827,9 +2849,10 @@
       document.getElementById('crowdTitle').textContent = localizedName || data.areaName;
       const min = Number(data.minPopulation).toLocaleString();
       const max = Number(data.maxPopulation).toLocaleString();
-      const mapUrl = spot
+      const googleMapUrl = spot
         ? `https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}`
         : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.areaName)}`;
+      const naverMapUrl = `https://m.map.naver.com/search2/search.nhn?query=${encodeURIComponent(data.areaName)}`;
 
       document.getElementById('crowdBody').innerHTML = `
         <div class="crowd-main">
@@ -2839,8 +2862,12 @@
         <p class="crowd-recommend">${bestVisitAdvice(data)}</p>
         <div class="crowd-meta">${lt.updated}: ${data.updatedAt || '-'}</div>
         <div class="crowd-actions">
-          <a href="${mapUrl}" target="_blank" rel="noopener">🧭 ${lt.directions}</a>
+          <button onclick="document.getElementById('directionChoice').classList.toggle('show')">🧭 ${lt.directions}</button>
           <button onclick="shareCrowd()">↗ ${lt.share}</button>
+        </div>
+        <div class="direction-choice" id="directionChoice">
+          <a href="${naverMapUrl}" target="_blank" rel="noopener">Naver Map</a>
+          <a href="${googleMapUrl}" target="_blank" rel="noopener">Google Maps</a>
         </div>`;
     }
 
