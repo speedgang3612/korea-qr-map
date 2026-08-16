@@ -1803,6 +1803,44 @@
     .map-option-icon.naver { background: #03C75A; color: #fff; }
     .map-option-icon.kakao { background: #FEE500; color: #191919; }
     .map-option-icon.google { background: #E9F5FA; color: #1677A8; }
+    .map-option.route-primary {
+      border-color: rgba(254, 229, 0, .72);
+      background: linear-gradient(135deg, rgba(254, 229, 0, .16), var(--card));
+    }
+    .map-option-icon.walk { background: #E9F7EF; color: #147A43; font-size: 20px; }
+    .map-option-icon.transit { background: #EAF2FF; color: #235FAD; font-size: 20px; }
+
+    .map-option-copy .map-option-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 21px;
+      margin-top: 5px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(3, 199, 90, .12);
+      color: #16834A !important;
+      font-size: .65rem !important;
+      font-weight: 700;
+    }
+
+    .map-option-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 5px 2px 0;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .map-option-divider::before,
+    .map-option-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
     .map-option-copy strong {
       display: block;
@@ -1933,7 +1971,7 @@
         <span class="tip-tap">👆 TAP HERE</span>
       </button>
       <div class="tip-body" id="tipBody">
-        <p id="tipText">Use GPS to find nearby places, then choose Naver Map, KakaoMap, or Google Maps for directions.</p>
+        <p id="tipText">Use GPS to find nearby places, then get accurate walking or public transit directions in your browser.</p>
       </div>
     </div>
 
@@ -2011,18 +2049,37 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- ── Map app chooser ── -->
+  <!-- ── Directions chooser ── -->
   <div class="map-picker-overlay" id="mapPickerOverlay" onclick="closeMapChooser(event)" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="mapPickerTitle">
     <div class="map-picker-sheet">
       <div class="map-picker-handle" aria-hidden="true"></div>
       <div class="map-picker-head">
         <div>
-          <h2 id="mapPickerTitle">Choose your map</h2>
-          <p id="mapPickerSubtitle">Select an app for directions</p>
+          <h2 id="mapPickerTitle">How do you want to go?</h2>
+          <p id="mapPickerSubtitle">Accurate Korean routes in your browser</p>
         </div>
         <button class="map-picker-close" onclick="closeMapChooser()" aria-label="Close">✕</button>
       </div>
       <div class="map-options">
+        <button class="map-option route-primary" onclick="openKakaoWebRoute('walk')">
+          <span class="map-option-icon walk">🚶</span>
+          <span class="map-option-copy">
+            <strong id="walkRouteTitle">Walking</strong>
+            <span id="walkRouteNote">Accurate Korean walking route</span>
+            <span class="map-option-badge" id="walkRouteBadge">No download</span>
+          </span>
+          <span class="map-option-arrow">›</span>
+        </button>
+        <button class="map-option route-primary" onclick="openKakaoWebRoute('traffic')">
+          <span class="map-option-icon transit">🚌</span>
+          <span class="map-option-copy">
+            <strong id="transitRouteTitle">Public transit</strong>
+            <span id="transitRouteNote">Subway and bus routes</span>
+            <span class="map-option-badge" id="transitRouteBadge">No download</span>
+          </span>
+          <span class="map-option-arrow">›</span>
+        </button>
+        <div class="map-option-divider" id="mapAppDivider">Optional · Open an installed app</div>
         <button class="map-option" onclick="openSelectedMap('naver')">
           <span class="map-option-icon naver">N</span>
           <span class="map-option-copy"><strong>Naver Map</strong><span id="naverMapNote">Best multilingual option in Korea</span></span>
@@ -2031,11 +2088,6 @@
         <button class="map-option" onclick="openSelectedMap('kakao')">
           <span class="map-option-icon kakao">K</span>
           <span class="map-option-copy"><strong>KakaoMap</strong><span id="kakaoMapNote">Accurate local routes · English</span></span>
-          <span class="map-option-arrow">›</span>
-        </button>
-        <button class="map-option" onclick="openSelectedMap('google')">
-          <span class="map-option-icon google">G</span>
-          <span class="map-option-copy"><strong>Google Maps</strong><span id="googleMapNote">Familiar place preview</span></span>
           <span class="map-option-arrow">›</span>
         </button>
       </div>
@@ -2211,8 +2263,10 @@
         naverSub2: '⚙️ Set app to English in Settings',
         googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
-        openMaps: '🧭 Choose map for directions', mapChooseTitle: 'Choose your map', mapChooseSubtitle: name => `Directions to ${name}`,
-        naverMapNote: 'Best multilingual option in Korea', kakaoMapNote: 'Accurate local routes · English', googleMapNote: 'Familiar place preview',
+        openMaps: '🧭 Get directions', mapChooseTitle: 'How do you want to go?', mapChooseSubtitle: name => `${name} · Accurate Korean routes`,
+        walkRouteTitle: 'Walking', walkRouteNote: 'Accurate Korean walking route', transitRouteTitle: 'Public transit', transitRouteNote: 'Subway and bus routes',
+        noDownload: 'No download', appOptions: 'Optional · Open an installed app', routeLocationRequired: 'Allow location access to start directions.', routeUnavailable: 'Directions are unavailable for this place.',
+        naverMapNote: 'Open the installed app', kakaoMapNote: 'Open the installed app', googleMapNote: 'Familiar place preview',
         installTitle: app => `Get ${app}`, installDesc: app => `${app} was not detected. Install it for accurate directions in Korea.`,
         continueWeb: 'Continue in browser', close: 'Close', iosDownload: '🍎 Download for iPhone →', androidDownload: '🤖 Download for Android →',
         naverLanguage: '<strong>Language</strong>Open Naver Map → Settings → Language', kakaoLanguage: '<strong>Language</strong>KakaoMap supports English and Korean.',
@@ -2228,7 +2282,7 @@
         wdFeels: 'Feels like', wdHumidity: 'Humidity', wdWind: 'Wind',
         wdSunrise: 'Sunrise', wdSunset: 'Sunset',
         tipToggle: 'How it works?',
-        tipText: 'Use GPS to find nearby places, then choose Naver Map, KakaoMap, or Google Maps for directions.',
+        tipText: 'Use GPS to find nearby places, then get accurate walking or public transit directions in your browser.',
       },
       JA: {
         subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
@@ -2241,8 +2295,10 @@
         naverSub2: '⚙️ 設定で日本語に変更可能',
         googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
-        openMaps: '🧭 地図を選んで経路案内', mapChooseTitle: '地図アプリを選択', mapChooseSubtitle: name => `${name}への経路`,
-        naverMapNote: '韓国で使いやすい多言語地図', kakaoMapNote: '韓国の正確な経路 · 英語対応', googleMapNote: '使い慣れた地図で場所を確認',
+        openMaps: '🧭 経路を見る', mapChooseTitle: '移動方法を選択', mapChooseSubtitle: name => `${name}への韓国の正確な経路`,
+        walkRouteTitle: '徒歩', walkRouteNote: '韓国の正確な徒歩ルート', transitRouteTitle: '公共交通', transitRouteNote: '地下鉄・バスの経路',
+        noDownload: 'ダウンロード不要', appOptions: '任意 · インストール済みアプリで開く', routeLocationRequired: '経路案内には位置情報を許可してください。', routeUnavailable: 'この場所の経路を表示できません。',
+        naverMapNote: 'インストール済みアプリを開く', kakaoMapNote: 'インストール済みアプリを開く', googleMapNote: '使い慣れた地図で場所を確認',
         installTitle: app => `${app}を入手`, installDesc: app => `${app}が見つかりません。韓国で正確な経路案内を利用するにはインストールしてください。`,
         continueWeb: 'ブラウザで続ける', close: '閉じる', iosDownload: '🍎 iPhone版をダウンロード →', androidDownload: '🤖 Android版をダウンロード →',
         naverLanguage: '<strong>言語設定</strong>Naver Map → 設定 → 言語', kakaoLanguage: '<strong>言語</strong>KakaoMapは英語と韓国語に対応しています。',
@@ -2258,7 +2314,7 @@
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '風速',
         wdSunrise: '日の出', wdSunset: '日没',
         tipToggle: '使い方',
-        tipText: 'GPSで近くの場所を検索し、Naver Map・KakaoMap・Google Mapsから経路案内を選べます。',
+        tipText: 'GPSで近くの場所を探し、ブラウザで韓国の正確な徒歩・公共交通ルートを確認できます。',
       },
       'ZH-HANS': {
         subtitle: '点击类别查找附近的地方 — 无需下载应用',
@@ -2271,8 +2327,10 @@
         naverSub2: '⚙️ 在设置中切换为中文',
         googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
         googleSub2: '⚠️ 在韩国路线可能不准确',
-        openMaps: '🧭 选择地图导航', mapChooseTitle: '选择地图应用', mapChooseSubtitle: name => `前往${name}`,
-        naverMapNote: '韩国实用的多语言地图', kakaoMapNote: '韩国本地路线准确 · 支持英语', googleMapNote: '使用熟悉的地图查看地点',
+        openMaps: '🧭 查看路线', mapChooseTitle: '选择出行方式', mapChooseSubtitle: name => `前往${name} · 韩国准确路线`,
+        walkRouteTitle: '步行', walkRouteNote: '准确的韩国步行路线', transitRouteTitle: '公共交通', transitRouteNote: '地铁和公交路线',
+        noDownload: '无需下载', appOptions: '可选 · 使用已安装的地图应用', routeLocationRequired: '请允许访问位置以开始导航。', routeUnavailable: '无法显示前往此地点的路线。',
+        naverMapNote: '打开已安装的应用', kakaoMapNote: '打开已安装的应用', googleMapNote: '使用熟悉的地图查看地点',
         installTitle: app => `获取${app}`, installDesc: app => `未检测到${app}。安装后可在韩国使用更准确的路线导航。`,
         continueWeb: '在浏览器中继续', close: '关闭', iosDownload: '🍎 下载iPhone版 →', androidDownload: '🤖 下载Android版 →',
         naverLanguage: '<strong>语言设置</strong>Naver Map → 设置 → 语言', kakaoLanguage: '<strong>语言</strong>KakaoMap支持英语和韩语。',
@@ -2288,7 +2346,7 @@
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '风速',
         wdSunrise: '日出', wdSunset: '日落',
         tipToggle: '使用方法',
-        tipText: '使用GPS查找附近地点，然后选择Naver Map、KakaoMap或Google Maps进行导航。',
+        tipText: '使用GPS查找附近地点，并直接在浏览器中查看韩国准确的步行或公共交通路线。',
       },
     };
 
@@ -2653,9 +2711,15 @@
       document.getElementById('mapPickerSubtitle').textContent = currentMapTarget
         ? t.mapChooseSubtitle(currentMapTarget.displayName)
         : t.mapChooseSubtitle('');
+      document.getElementById('walkRouteTitle').textContent = t.walkRouteTitle;
+      document.getElementById('walkRouteNote').textContent = t.walkRouteNote;
+      document.getElementById('transitRouteTitle').textContent = t.transitRouteTitle;
+      document.getElementById('transitRouteNote').textContent = t.transitRouteNote;
+      document.getElementById('walkRouteBadge').textContent = t.noDownload;
+      document.getElementById('transitRouteBadge').textContent = t.noDownload;
+      document.getElementById('mapAppDivider').textContent = t.appOptions;
       document.getElementById('naverMapNote').textContent = t.naverMapNote;
       document.getElementById('kakaoMapNote').textContent = t.kakaoMapNote;
-      document.getElementById('googleMapNote').textContent = t.googleMapNote;
       document.querySelector('.map-picker-close').setAttribute('aria-label', t.close);
     }
 
@@ -2680,13 +2744,46 @@
           ? `https://map.kakao.com/link/to/${target.kakaoId}`
           : `https://map.kakao.com/link/to/${name},${target.lat},${target.lng}`;
         return {
-          deep: `kakaomap://route?ep=${target.lat},${target.lng}&by=publictransit`,
+          deep: `kakaomap://route?sp=${userLat},${userLng}&ep=${target.lat},${target.lng}&by=publictransit`,
           web,
         };
       }
       return {
         web: `https://www.google.com/maps/dir/?api=1&destination=${target.lat},${target.lng}`,
       };
+    }
+
+    function kakaoWebRouteUrl(mode, target, startLat, startLng) {
+      const routeMode = mode === 'traffic' ? 'traffic' : 'walk';
+      const startName = encodeURIComponent('Current location');
+      const destinationName = encodeURIComponent(target.nameKo || target.displayName || 'Destination');
+      return `https://map.kakao.com/link/by/${routeMode}/` +
+        `${startName},${startLat},${startLng}/` +
+        `${destinationName},${target.lat},${target.lng}`;
+    }
+
+    function openKakaoWebRoute(mode) {
+      const t = i18n[currentLang];
+      const startLat = Number(userLat);
+      const startLng = Number(userLng);
+      const targetLat = Number(currentMapTarget?.lat);
+      const targetLng = Number(currentMapTarget?.lng);
+
+      if (!locationReady || !Number.isFinite(startLat) || !Number.isFinite(startLng)) {
+        showToast(t.routeLocationRequired);
+        return;
+      }
+      if (!Number.isFinite(targetLat) || !Number.isFinite(targetLng) ||
+          (targetLat === 0 && targetLng === 0) ||
+          targetLat < -90 || targetLat > 90 || targetLng < -180 || targetLng > 180) {
+        showToast(t.routeUnavailable);
+        return;
+      }
+
+      const routeUrl = kakaoWebRouteUrl(mode, currentMapTarget, startLat, startLng);
+
+      window.open(routeUrl, '_blank', 'noopener,noreferrer');
+      closeMapChooser();
     }
 
     function openSelectedMap(provider) {
