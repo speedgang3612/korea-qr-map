@@ -40,6 +40,58 @@ async function call(path, init = {}, env = baseEnv) {
 }
 
 {
+  const response = await call('/api/kakao-route?mode=car&start_x=127&start_y=37&end_x=127.1&end_y=37.1');
+  assert.equal(response.status, 400);
+}
+
+{
+  const response = await call('/api/kakao-route?mode=walk&start_x=0&start_y=0&end_x=127.1&end_y=37.1');
+  assert.equal(response.status, 400);
+}
+
+{
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    status: 'OK',
+    route: {
+      properties: {
+        totalDistance: 820,
+        totalTime: 720,
+        landingUrl: 'https://map.kakao.com/link/by/walk/example',
+      },
+      legs: [{
+        steps: [{
+          properties: {
+            distance: 120,
+            time: 90,
+            guidance: '명동역 방향으로 직진',
+            x: 126.98,
+            y: 37.56,
+          },
+          path: { points: [[126.98, 37.56]] },
+        }],
+      }],
+    },
+  }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+
+  try {
+    const response = await call(
+      '/api/kakao-route?mode=walk&start_x=126.978&start_y=37.5665&end_x=126.9863&end_y=37.561&name=Myeongdong',
+      {},
+      { ...baseEnv, KAKAO_REST_KEY: 'test-key' },
+    );
+    assert.equal(response.status, 200);
+    const data = await response.json();
+    assert.equal(data.mode, 'walk');
+    assert.equal(data.summary.distance, 820);
+    assert.equal(data.steps[0].guidance, '명동역 방향으로 직진');
+    assert.equal('path' in data.steps[0], false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
+{
   const response = await call('/api/deepl', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

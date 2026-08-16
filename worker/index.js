@@ -5,6 +5,7 @@
  *   GET  /api/naver-search?query=...&display=10
  *   GET  /api/kakao-category?code=...&x=...&y=...&radius=...&size=15
  *   GET  /api/kakao-keyword?query=...&x=...&y=...&radius=...&size=15
+ *   GET  /api/kakao-route?mode=walk|traffic&start_x=...&start_y=...&end_x=...&end_y=...
  *   GET  /api/seoul-population?area=POI003
  *   POST /api/deepl          body: { text: [...], target_lang: "EN" }
  *
@@ -28,6 +29,8 @@ const MAX_TRANSLATION_ITEMS = 24;
 const MAX_TRANSLATION_ITEM_LENGTH = 200;
 const MAX_TRANSLATION_TOTAL_LENGTH = 3000;
 const MAX_TRANSLATION_BODY_BYTES = 12000;
+const KAKAO_ROUTE_MODES = new Set(['walk', 'traffic']);
+const MAX_ROUTE_STEPS = 24;
 
 const securityHeaders = {
   'Cache-Control': 'no-store',
@@ -121,6 +124,9 @@ export default {
       }
       if (path === '/api/kakao-keyword' && request.method === 'GET') {
         return await handleKakaoKeyword(url, env, origin);
+      }
+      if (path === '/api/kakao-route' && request.method === 'GET') {
+        return await handleKakaoRoute(url, env, origin);
       }
       if (path === '/api/seoul-population' && request.method === 'GET') {
         return await handleSeoulPopulation(url, env, origin);
@@ -226,6 +232,142 @@ async function handleKakaoKeyword(url, env, origin) {
 
   const data = await res.json();
   return jsonResponse(data, res.status, origin);
+}
+
+async function handleKakaoRoute(url, env, origin) {
+  const mode = (url.searchParams.get('mode') || '').trim().toLowerCase();
+  const startX = Number(url.searchParams.get('start_x'));
+  const startY = Number(url.searchParams.get('start_y'));
+  const endX = Number(url.searchParams.get('end_x'));
+  const endY = Number(url.searchParams.get('end_y'));
+  const destinationName = (url.searchParams.get('name') || 'Destination').trim();
+
+  if (!KAKAO_ROUTE_MODES.has(mode)) {
+    return errorResponse('Unsupported route mode', 400, origin);
+  }
+  if (![startX, startY, endX, endY].every(Number.isFinite)) {
+    return errorResponse('Missing or invalid route coordinates', 400, origin);
+  }
+  if (![ [startX, startY], [endX, endY] ].every(([x, y]) => isKoreanCoordinate(x, y))) {
+    return errorResponse('Route coordinates must be within Korea', 400, origin);
+  }
+  if (destinationName.length > 100) {
+    return errorResponse('Destination name must be 100 characters or fewer', 400, origin);
+  }
+  if (!env.KAKAO_REST_KEY) {
+    return errorResponse('KAKAO_REST_KEY is not configured', 503, origin);
+  }
+
+  const endpoint = mode === 'traffic' ? 'publictraffic' : 'walk';
+  const params = new URLSearchParams({
+    start_x: String(startX),
+    start_y: String(startY),
+    end_x: String(endX),
+    end_y: String(endY),
+    s_name: 'Current location',
+    e_name: destinationName || 'Destination',
+    input_coord: 'WGS84',
+    output_coord: 'WGS84',
+  });
+  if (mode === 'walk') params.set('route_mode', 'SHORTEST');
+
+  const target = `https://dapi.kakao.com/v2/routing/${endpoint}?${params}`;
+  const res = await fetch(target, {
+    headers: { Authorization: `KakaoAK ${env.KAKAO_REST_KEY}` },
+  });
+
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    return errorResponse('Kakao route service returned an invalid response', 502, origin);
+  }
+  if (!res.ok) {
+    return errorResponse(`Kakao route request failed (${res.status})`, 502, origin);
+  }
+  if (data.status !== 'OK') {
+    return jsonResponse({ status: data.status || 'NO_RESULTS', error: 'No route found' }, 404, origin);
+  }
+
+  const normalized = mode === 'traffic'
+    ? normalizeTransitRoute(data)
+    : normalizeWalkingRoute(data);
+  if (!normalized) {
+    return jsonResponse({ status: 'NO_RESULTS', error: 'No route found' }, 404, origin);
+  }
+
+  return jsonResponse({ status: 'OK', mode, ...normalized }, 200, origin);
+}
+
+function isKoreanCoordinate(x, y) {
+  return x >= 124 && x <= 132 && y >= 32 && y <= 39.5;
+}
+
+function normalizeWalkingRoute(data) {
+  const route = data.route;
+  if (!route?.properties || !Array.isArray(route.legs)) return null;
+  const allSteps = route.legs.flatMap(leg => Array.isArray(leg?.steps) ? leg.steps : []);
+  return {
+    summary: {
+      distance: safeNumber(route.properties.totalDistance),
+      duration: safeNumber(route.properties.totalTime),
+      transfers: 0,
+      fare: 0,
+      routeType: 'WALK',
+    },
+    steps: allSteps.slice(0, MAX_ROUTE_STEPS).map(step => normalizeRouteStep(step)),
+    truncated: allSteps.length > MAX_ROUTE_STEPS,
+    fallbackUrl: safeUrl(route.properties.landingUrl),
+  };
+}
+
+function normalizeTransitRoute(data) {
+  const routes = Array.isArray(data.routes) ? data.routes : [];
+  const route = routes
+    .filter(item => item?.properties)
+    .sort((a, b) => safeNumber(a.properties.totalTime) - safeNumber(b.properties.totalTime))[0];
+  if (!route) return null;
+
+  const allSteps = Array.isArray(route.steps) ? route.steps : [];
+  return {
+    summary: {
+      distance: safeNumber(route.properties.totalDistance),
+      duration: safeNumber(route.properties.totalTime),
+      transfers: safeNumber(route.properties.transfers),
+      fare: safeNumber(route.properties.fare?.value),
+      routeType: String(route.properties.type || 'TRANSIT').slice(0, 40),
+    },
+    steps: allSteps.slice(0, MAX_ROUTE_STEPS).map(step => normalizeRouteStep(step)),
+    truncated: allSteps.length > MAX_ROUTE_STEPS,
+    fallbackUrl: safeUrl(data.properties?.landingURL),
+  };
+}
+
+function normalizeRouteStep(step) {
+  const properties = step?.properties || {};
+  const stops = Array.isArray(properties.stops) ? properties.stops : [];
+  const vehicles = Array.isArray(properties.vehicles) ? properties.vehicles : [];
+  return {
+    type: String(properties.type || 'WALK').slice(0, 40),
+    guidance: String(properties.guidance || '').slice(0, MAX_TRANSLATION_ITEM_LENGTH),
+    distance: safeNumber(properties.distance),
+    duration: safeNumber(properties.time),
+    vehicle: String(vehicles[0]?.name || '').slice(0, 80),
+    vehicleType: String(vehicles[0]?.type || '').slice(0, 40),
+    startStop: String(stops[0]?.name || '').slice(0, 100),
+    endStop: String(stops.at(-1)?.name || '').slice(0, 100),
+    stopCount: stops.length,
+  };
+}
+
+function safeNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? Math.round(number) : 0;
+}
+
+function safeUrl(value) {
+  const url = String(value || '');
+  return url.startsWith('https://map.kakao.com/') ? url : '';
 }
 
 async function handleSeoulPopulation(url, env, origin) {

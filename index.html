@@ -1842,6 +1842,197 @@
       background: var(--border);
     }
 
+    .route-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+      transform: translateX(100%);
+      transition: transform .32s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .route-panel.open { transform: translateX(0); }
+
+    .route-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+
+    .route-panel-header strong {
+      flex: 1;
+      overflow: hidden;
+      font-size: .92rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .route-panel-langs {
+      display: flex;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+    }
+
+    .route-lang-btn {
+      min-width: 30px;
+      height: 28px;
+      padding: 0 6px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: .66rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .route-lang-btn.active { background: #163B65; color: #fff; }
+
+    .route-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .route-hero {
+      padding: 20px;
+      border: 1px solid rgba(254, 229, 0, .7);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(254, 229, 0, .18), var(--card));
+    }
+
+    .route-kicker {
+      display: block;
+      margin-bottom: 7px;
+      color: #7A6800;
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .route-hero h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+      line-height: 1.35;
+    }
+
+    .route-mode-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #191919;
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    .route-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .route-metric {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .74);
+    }
+
+    .route-metric strong,
+    .route-metric span { display: block; }
+    .route-metric strong { font-size: 1rem; }
+    .route-metric span { margin-top: 3px; color: var(--muted); font-size: .67rem; }
+
+    .route-section-title {
+      margin: 22px 2px 10px;
+      font-size: .85rem;
+      font-weight: 800;
+    }
+
+    .route-steps { display: grid; gap: 9px; }
+
+    .route-step {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 11px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--card);
+    }
+
+    .route-step-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--surface);
+      font-size: 18px;
+    }
+
+    .route-step-text {
+      font-size: .79rem;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .route-step-meta {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .67rem;
+    }
+
+    .route-notice {
+      margin: 14px 2px;
+      color: var(--muted);
+      font-size: .68rem;
+      line-height: 1.5;
+    }
+
+    .route-actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .route-action {
+      display: grid;
+      place-items: center;
+      min-height: 48px;
+      border: 0;
+      border-radius: 14px;
+      background: #FEE500;
+      color: #191919;
+      font: inherit;
+      font-size: .78rem;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .route-action.secondary {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+
     .map-option-copy strong {
       display: block;
       margin-bottom: 3px;
@@ -1873,6 +2064,15 @@
 
     @media (min-width: 390px) {
       .live-spots-scroll { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (min-width: 481px) {
+      .route-panel {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(calc(-50% + 100%));
+      }
+      .route-panel.open { transform: translateX(-50%); }
     }
   </style>
 </head>
@@ -2061,7 +2261,7 @@
         <button class="map-picker-close" onclick="closeMapChooser()" aria-label="Close">✕</button>
       </div>
       <div class="map-options">
-        <button class="map-option route-primary" onclick="openKakaoWebRoute('walk')">
+        <button class="map-option route-primary" onclick="loadInternalRoute('walk')">
           <span class="map-option-icon walk">🚶</span>
           <span class="map-option-copy">
             <strong id="walkRouteTitle">Walking</strong>
@@ -2070,7 +2270,7 @@
           </span>
           <span class="map-option-arrow">›</span>
         </button>
-        <button class="map-option route-primary" onclick="openKakaoWebRoute('traffic')">
+        <button class="map-option route-primary" onclick="loadInternalRoute('traffic')">
           <span class="map-option-icon transit">🚌</span>
           <span class="map-option-copy">
             <strong id="transitRouteTitle">Public transit</strong>
@@ -2092,6 +2292,20 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- ── In-site multilingual route ── -->
+  <div class="route-panel" id="routePanel" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="routePanelTitle">
+    <div class="route-panel-header">
+      <button class="rp-back" id="routeBackBtn" onclick="closeRoutePanel()" aria-label="Go back">← Back</button>
+      <strong id="routePanelTitle">Directions</strong>
+      <div class="route-panel-langs" aria-label="Route language">
+        <button class="route-lang-btn active" data-route-lang="EN" onclick="setLang('EN')">EN</button>
+        <button class="route-lang-btn" data-route-lang="JA" onclick="setLang('JA')">JA</button>
+        <button class="route-lang-btn" data-route-lang="ZH-HANS" onclick="setLang('ZH-HANS')">中</button>
+      </div>
+    </div>
+    <div class="route-panel-body" id="routePanelBody"></div>
   </div>
 
   <!-- ── Map app install fallback ── -->
@@ -2266,6 +2480,11 @@
         openMaps: '🧭 Get directions', mapChooseTitle: 'How do you want to go?', mapChooseSubtitle: name => `${name} · Accurate Korean routes`,
         walkRouteTitle: 'Walking', walkRouteNote: 'Accurate Korean walking route', transitRouteTitle: 'Public transit', transitRouteNote: 'Subway and bus routes',
         noDownload: 'No download', appOptions: 'Optional · Open an installed app', routeLocationRequired: 'Allow location access to start directions.', routeUnavailable: 'Directions are unavailable for this place.',
+        routeBack: '← Back', routePanelTitle: 'Directions', routeLoading: 'Finding an accurate Korean route…', routeKicker: 'KAKAO LOCAL ROUTE',
+        routeStepsTitle: 'Step-by-step directions', routeDistance: 'Distance', routeTime: 'Estimated time', routeTransfers: 'Transfers', routeFare: 'Fare',
+        routeMinutes: value => `${value} min`, routeHours: (hours, minutes) => `${hours} hr ${minutes} min`, routeTransferValue: value => `${value}`, routeFareValue: value => `₩${value.toLocaleString()}`,
+        routeTranslatedNotice: 'Route data by Kakao · Instructions translated automatically. Check signs and surroundings while moving.', routeTruncated: 'Only the first 24 guidance steps are shown.',
+        routeOpenKakao: 'Open detailed Kakao map (Korean)', routeTryWeb: 'Use Kakao web directions instead', routeErrorTitle: 'Could not load the route', routeErrorBody: 'Please try again or open the Kakao web route.', routeRetry: 'Try again',
         naverMapNote: 'Open the installed app', kakaoMapNote: 'Open the installed app', googleMapNote: 'Familiar place preview',
         installTitle: app => `Get ${app}`, installDesc: app => `${app} was not detected. Install it for accurate directions in Korea.`,
         continueWeb: 'Continue in browser', close: 'Close', iosDownload: '🍎 Download for iPhone →', androidDownload: '🤖 Download for Android →',
@@ -2298,6 +2517,11 @@
         openMaps: '🧭 経路を見る', mapChooseTitle: '移動方法を選択', mapChooseSubtitle: name => `${name}への韓国の正確な経路`,
         walkRouteTitle: '徒歩', walkRouteNote: '韓国の正確な徒歩ルート', transitRouteTitle: '公共交通', transitRouteNote: '地下鉄・バスの経路',
         noDownload: 'ダウンロード不要', appOptions: '任意 · インストール済みアプリで開く', routeLocationRequired: '経路案内には位置情報を許可してください。', routeUnavailable: 'この場所の経路を表示できません。',
+        routeBack: '← 戻る', routePanelTitle: '経路案内', routeLoading: '韓国の正確な経路を検索中…', routeKicker: 'KAKAO 韓国経路',
+        routeStepsTitle: '経路の詳細', routeDistance: '距離', routeTime: '予想時間', routeTransfers: '乗換', routeFare: '料金',
+        routeMinutes: value => `${value}分`, routeHours: (hours, minutes) => `${hours}時間${minutes}分`, routeTransferValue: value => `${value}回`, routeFareValue: value => `₩${value.toLocaleString()}`,
+        routeTranslatedNotice: '経路データ: Kakao · 案内文は自動翻訳です。移動中は標識と周囲を確認してください。', routeTruncated: '最初の24件の案内のみ表示しています。',
+        routeOpenKakao: 'Kakaoの詳細地図を開く（韓国語）', routeTryWeb: 'Kakaoウェブ経路を利用', routeErrorTitle: '経路を読み込めませんでした', routeErrorBody: 'もう一度試すか、Kakaoウェブ経路を開いてください。', routeRetry: '再試行',
         naverMapNote: 'インストール済みアプリを開く', kakaoMapNote: 'インストール済みアプリを開く', googleMapNote: '使い慣れた地図で場所を確認',
         installTitle: app => `${app}を入手`, installDesc: app => `${app}が見つかりません。韓国で正確な経路案内を利用するにはインストールしてください。`,
         continueWeb: 'ブラウザで続ける', close: '閉じる', iosDownload: '🍎 iPhone版をダウンロード →', androidDownload: '🤖 Android版をダウンロード →',
@@ -2330,6 +2554,11 @@
         openMaps: '🧭 查看路线', mapChooseTitle: '选择出行方式', mapChooseSubtitle: name => `前往${name} · 韩国准确路线`,
         walkRouteTitle: '步行', walkRouteNote: '准确的韩国步行路线', transitRouteTitle: '公共交通', transitRouteNote: '地铁和公交路线',
         noDownload: '无需下载', appOptions: '可选 · 使用已安装的地图应用', routeLocationRequired: '请允许访问位置以开始导航。', routeUnavailable: '无法显示前往此地点的路线。',
+        routeBack: '← 返回', routePanelTitle: '路线指南', routeLoading: '正在查找准确的韩国路线…', routeKicker: 'KAKAO 韩国路线',
+        routeStepsTitle: '分步路线', routeDistance: '距离', routeTime: '预计时间', routeTransfers: '换乘', routeFare: '费用',
+        routeMinutes: value => `${value}分钟`, routeHours: (hours, minutes) => `${hours}小时${minutes}分钟`, routeTransferValue: value => `${value}次`, routeFareValue: value => `₩${value.toLocaleString()}`,
+        routeTranslatedNotice: '路线数据来自Kakao · 路线说明为自动翻译。移动时请确认路标和周围环境。', routeTruncated: '仅显示前24个路线步骤。',
+        routeOpenKakao: '打开Kakao详细地图（韩语）', routeTryWeb: '改用Kakao网页版路线', routeErrorTitle: '无法加载路线', routeErrorBody: '请重试或打开Kakao网页版路线。', routeRetry: '重试',
         naverMapNote: '打开已安装的应用', kakaoMapNote: '打开已安装的应用', googleMapNote: '使用熟悉的地图查看地点',
         installTitle: app => `获取${app}`, installDesc: app => `未检测到${app}。安装后可在韩国使用更准确的路线导航。`,
         continueWeb: '在浏览器中继续', close: '关闭', iosDownload: '🍎 下载iPhone版 →', androidDownload: '🤖 下载Android版 →',
@@ -2358,6 +2587,11 @@
     let subwayStationsData = null; // 서울시 지하철역 JSON 캐시
     let currentLiveArea = null;
     let lastCrowdData = null;
+    let lastRouteData = null;
+    let lastRouteMode = null;
+    let lastRouteTarget = null;
+    let routeRequestToken = 0;
+    let routeRenderToken = 0;
 
     // ── Language ────────────────────────────────────────────
     function setLang(lang) {
@@ -2395,6 +2629,7 @@
       document.getElementById('tipToggleText').textContent = t.tipToggle;
       document.getElementById('tipText').textContent = t.tipText;
       updateMapPickerText();
+      updateRoutePanelText();
       renderSpots();
       renderLiveSpots();
       if (document.getElementById('weatherDetail').dataset.feelsLike) {
@@ -2405,10 +2640,14 @@
         document.getElementById('weatherText').textContent =
           `${det.dataset.emoji} ${locName} · ${det.dataset.temp}°C`;
       }
-      if (document.getElementById('rp').classList.contains('open')) {
+      const routePanelOpen = document.getElementById('routePanel').classList.contains('open');
+      if (document.getElementById('rp').classList.contains('open') && !routePanelOpen) {
         retranslate();
       }
       if (lastCrowdData) renderCrowd(lastCrowdData);
+      if (routePanelOpen && lastRouteData) {
+        translateAndRenderRoute(lastRouteData, lastRouteMode, lastRouteTarget);
+      }
       // 위치바 주소 언어 갱신 (캐시 우선)
       if (locationReady && userLat !== null) {
         if (addrCache[lang]) {
@@ -2784,6 +3023,257 @@
 
       window.open(routeUrl, '_blank', 'noopener,noreferrer');
       closeMapChooser();
+    }
+
+    function updateRoutePanelText() {
+      const t = i18n[currentLang];
+      if (!t) return;
+      document.getElementById('routeBackBtn').textContent = t.routeBack;
+      document.getElementById('routeBackBtn').setAttribute('aria-label', t.routeBack.replace('← ', ''));
+      document.getElementById('routePanelTitle').textContent = t.routePanelTitle;
+      document.querySelectorAll('.route-lang-btn').forEach(button => {
+        button.classList.toggle('active', button.dataset.routeLang === currentLang);
+      });
+    }
+
+    function openRoutePanel() {
+      updateRoutePanelText();
+      document.getElementById('routePanel').classList.add('open');
+      document.getElementById('routePanel').setAttribute('aria-hidden', 'false');
+    }
+
+    function closeRoutePanel() {
+      document.getElementById('routePanel').classList.remove('open');
+      document.getElementById('routePanel').setAttribute('aria-hidden', 'true');
+    }
+
+    function showRouteLoading() {
+      const t = i18n[currentLang];
+      const state = document.createElement('div');
+      state.className = 'loading-state';
+      const spinner = document.createElement('div');
+      spinner.className = 'spinner';
+      const message = document.createElement('p');
+      message.textContent = t.routeLoading;
+      state.append(spinner, message);
+      document.getElementById('routePanelBody').replaceChildren(state);
+    }
+
+    async function loadInternalRoute(mode) {
+      const t = i18n[currentLang];
+      const startLat = Number(userLat);
+      const startLng = Number(userLng);
+      const target = currentMapTarget;
+      const targetLat = Number(target?.lat);
+      const targetLng = Number(target?.lng);
+
+      if (!locationReady || !Number.isFinite(startLat) || !Number.isFinite(startLng)) {
+        showToast(t.routeLocationRequired);
+        return;
+      }
+      if (!target || !Number.isFinite(targetLat) || !Number.isFinite(targetLng) ||
+          (targetLat === 0 && targetLng === 0)) {
+        showToast(t.routeUnavailable);
+        return;
+      }
+
+      const routeMode = mode === 'traffic' ? 'traffic' : 'walk';
+      const requestToken = ++routeRequestToken;
+      lastRouteData = null;
+      lastRouteMode = routeMode;
+      lastRouteTarget = { ...target };
+      closeMapChooser();
+      openRoutePanel();
+      showRouteLoading();
+
+      const params = new URLSearchParams({
+        mode: routeMode,
+        start_x: String(startLng),
+        start_y: String(startLat),
+        end_x: String(targetLng),
+        end_y: String(targetLat),
+        name: target.nameKo || target.displayName || 'Destination',
+      });
+
+      try {
+        const response = await fetch(`${WORKER_BASE}/api/kakao-route?${params}`);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `Route API ${response.status}`);
+        if (requestToken !== routeRequestToken) return;
+        lastRouteData = data;
+        await translateAndRenderRoute(data, routeMode, lastRouteTarget);
+      } catch (error) {
+        if (requestToken !== routeRequestToken) return;
+        console.error('Route failed:', error);
+        showRouteError(routeMode, lastRouteTarget);
+      }
+    }
+
+    async function translateAndRenderRoute(data, mode, target) {
+      const renderToken = ++routeRenderToken;
+      const steps = Array.isArray(data?.steps) ? data.steps : [];
+      const guidance = steps.map(step => String(step.guidance || '')).filter(Boolean);
+      let translated = guidance;
+      if (guidance.length) {
+        try {
+          translated = await deepLTranslate(guidance);
+        } catch (error) {
+          console.warn('Route translation failed:', error);
+        }
+      }
+      if (renderToken !== routeRenderToken) return;
+
+      let translationIndex = 0;
+      const translatedSteps = steps.map(step => ({
+        ...step,
+        translatedGuidance: step.guidance
+          ? (translated[translationIndex++] || step.guidance)
+          : '',
+      }));
+      renderInternalRoute({ ...data, steps: translatedSteps }, mode, target);
+    }
+
+    function renderInternalRoute(data, mode, target) {
+      const t = i18n[currentLang];
+      const body = document.getElementById('routePanelBody');
+      const root = document.createElement('div');
+
+      const hero = document.createElement('section');
+      hero.className = 'route-hero';
+      const kicker = document.createElement('span');
+      kicker.className = 'route-kicker';
+      kicker.textContent = t.routeKicker;
+      const title = document.createElement('h2');
+      title.textContent = target.displayName || target.nameKo || 'Destination';
+      const modePill = document.createElement('span');
+      modePill.className = 'route-mode-pill';
+      modePill.textContent = mode === 'traffic'
+        ? `🚌 ${t.transitRouteTitle}`
+        : `🚶 ${t.walkRouteTitle}`;
+      hero.append(kicker, title, modePill);
+
+      const metrics = document.createElement('div');
+      metrics.className = 'route-metrics';
+      metrics.append(
+        createRouteMetric(formatRouteDuration(data.summary?.duration), t.routeTime),
+        createRouteMetric(fmtDist(Number(data.summary?.distance) || 0), t.routeDistance),
+      );
+      if (mode === 'traffic') {
+        metrics.append(
+          createRouteMetric(t.routeTransferValue(Number(data.summary?.transfers) || 0), t.routeTransfers),
+          createRouteMetric(t.routeFareValue(Number(data.summary?.fare) || 0), t.routeFare),
+        );
+      }
+      hero.appendChild(metrics);
+      root.appendChild(hero);
+
+      const stepsTitle = document.createElement('h3');
+      stepsTitle.className = 'route-section-title';
+      stepsTitle.textContent = t.routeStepsTitle;
+      root.appendChild(stepsTitle);
+
+      const stepsList = document.createElement('div');
+      stepsList.className = 'route-steps';
+      (data.steps || []).forEach((step, index) => {
+        const card = document.createElement('article');
+        card.className = 'route-step';
+        const icon = document.createElement('span');
+        icon.className = 'route-step-icon';
+        icon.textContent = routeStepIcon(step.type);
+        const copy = document.createElement('div');
+        const guidance = document.createElement('div');
+        guidance.className = 'route-step-text';
+        guidance.textContent = step.translatedGuidance || step.guidance || `${index + 1}`;
+        const meta = document.createElement('div');
+        meta.className = 'route-step-meta';
+        const metaItems = [];
+        if (step.vehicle) metaItems.push(step.vehicle);
+        if (Number(step.distance) > 0) metaItems.push(fmtDist(Number(step.distance)));
+        if (Number(step.duration) > 0) metaItems.push(formatRouteDuration(Number(step.duration)));
+        meta.textContent = metaItems.join(' · ');
+        copy.append(guidance, meta);
+        card.append(icon, copy);
+        stepsList.appendChild(card);
+      });
+      root.appendChild(stepsList);
+
+      if (data.truncated) {
+        const truncated = document.createElement('p');
+        truncated.className = 'route-notice';
+        truncated.textContent = t.routeTruncated;
+        root.appendChild(truncated);
+      }
+      const notice = document.createElement('p');
+      notice.className = 'route-notice';
+      notice.textContent = t.routeTranslatedNotice;
+      root.appendChild(notice);
+
+      const actions = document.createElement('div');
+      actions.className = 'route-actions';
+      const kakaoLink = document.createElement('a');
+      kakaoLink.className = 'route-action';
+      kakaoLink.href = data.fallbackUrl || kakaoWebRouteUrl(mode, target, Number(userLat), Number(userLng));
+      kakaoLink.target = '_blank';
+      kakaoLink.rel = 'noopener noreferrer';
+      kakaoLink.textContent = t.routeOpenKakao;
+      actions.appendChild(kakaoLink);
+      root.appendChild(actions);
+      body.replaceChildren(root);
+    }
+
+    function createRouteMetric(value, label) {
+      const metric = document.createElement('div');
+      metric.className = 'route-metric';
+      const strong = document.createElement('strong');
+      strong.textContent = value;
+      const span = document.createElement('span');
+      span.textContent = label;
+      metric.append(strong, span);
+      return metric;
+    }
+
+    function formatRouteDuration(seconds) {
+      const t = i18n[currentLang];
+      const totalMinutes = Math.max(1, Math.round((Number(seconds) || 0) / 60));
+      if (totalMinutes < 60) return t.routeMinutes(totalMinutes);
+      return t.routeHours(Math.floor(totalMinutes / 60), totalMinutes % 60);
+    }
+
+    function routeStepIcon(type) {
+      const normalized = String(type || '').toUpperCase();
+      if (normalized.includes('SUBWAY')) return '🚇';
+      if (normalized.includes('BUS')) return '🚌';
+      return '🚶';
+    }
+
+    function showRouteError(mode, target) {
+      const t = i18n[currentLang];
+      const body = document.getElementById('routePanelBody');
+      const state = document.createElement('div');
+      state.className = 'msg-state';
+      const icon = document.createElement('div');
+      icon.className = 'msg-icon';
+      icon.textContent = '🧭';
+      const title = document.createElement('h3');
+      title.textContent = t.routeErrorTitle;
+      const message = document.createElement('p');
+      message.textContent = t.routeErrorBody;
+      const actions = document.createElement('div');
+      actions.className = 'route-actions';
+      const retry = document.createElement('button');
+      retry.className = 'route-action';
+      retry.type = 'button';
+      retry.textContent = t.routeRetry;
+      retry.addEventListener('click', () => loadInternalRoute(mode));
+      const fallback = document.createElement('a');
+      fallback.className = 'route-action secondary';
+      fallback.href = kakaoWebRouteUrl(mode, target, Number(userLat), Number(userLng));
+      fallback.target = '_blank';
+      fallback.rel = 'noopener noreferrer';
+      fallback.textContent = t.routeTryWeb;
+      actions.append(retry, fallback);
+      state.append(icon, title, message, actions);
+      body.replaceChildren(state);
     }
 
     function openSelectedMap(provider) {
@@ -3704,6 +4194,7 @@
       closeResults();
       closeMapChooser();
       closeAppModal();
+      closeRoutePanel();
     });
 
     // ── Init ─────────────────────────────────────────────────
