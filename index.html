@@ -14,8 +14,8 @@
     gtag('js', new Date());
     gtag('config', 'G-800PGMFEHK');
   </script>
-  <meta name="description" content="Korea Travel Guide – Find nearby places in English using GPS." />
-  <title>Korea Travel Guide 🇰🇷</title>
+  <meta name="description" content="Korea Guide – Find nearby places and get walking or transit directions without installing another app." />
+  <title>Korea Guide · Local directions without an app</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -84,33 +84,64 @@
       overflow: hidden
     }
 
-    .page::after {
-      content: '';
-      position: absolute;
-      top: -60px;
-      right: -60px;
-      width: 180px;
-      height: 180px;
-      background: #16A6A1;
-      opacity: 0.06;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0
-    }
-
-    /* ── New Header (K-Wave) ── */
+    /* ── Brand header ── */
     .header-new {
       width: 100%;
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 20px
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2
     }
 
-    .header-flag {
-      font-size: 2.2rem;
-      line-height: 1;
-      flex-shrink: 0
+    .brand-mark {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border-radius: 14px;
+      border: 1px solid #CFE1E8;
+      background: #EAF4F6;
+      overflow: hidden
+    }
+
+    .brand-path {
+      position: absolute;
+      left: 12px;
+      top: 9px;
+      width: 18px;
+      height: 21px;
+      border-left: 2.5px solid #0B7A75;
+      border-bottom: 2.5px solid #0B7A75;
+      border-radius: 0 0 0 8px;
+      transform: skewY(-8deg)
+    }
+
+    .brand-path::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: -2px;
+      width: 7px;
+      height: 7px;
+      border: 2px solid #0B7A75;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 2px #EAF4F6
+    }
+
+    .brand-path::after {
+      content: '';
+      position: absolute;
+      right: -4px;
+      bottom: -5px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50% 50% 50% 0;
+      background: #1677A8;
+      transform: rotate(-45deg);
+      box-shadow: 0 0 0 2px #EAF4F6
     }
 
     .header-center {
@@ -119,23 +150,183 @@
     }
 
     .header-center h1 {
-      font-size: 1.25rem;
-      font-weight: 500;
+      font-size: 1.17rem;
+      font-weight: 700;
       color: var(--text);
       line-height: 1.2;
+      letter-spacing: -.025em;
       word-break: keep-all
     }
 
     .header-sub {
-      font-size: .78rem;
+      font-size: .72rem;
+      line-height: 1.35;
+      font-weight: 500;
       color: var(--muted);
       margin-top: 2px
     }
 
-    .header-lang {
-      display: flex;
-      gap: 4px;
+    .language-picker {
+      position: relative;
       flex-shrink: 0
+    }
+
+    .language-toggle {
+      min-width: 66px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .74);
+      color: #344054;
+      font: inherit;
+      font-size: .76rem;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease
+    }
+
+    .language-toggle:hover,
+    .language-toggle[aria-expanded="true"] {
+      border-color: #B8CFD8;
+      background: #EAF4F6
+    }
+
+    .language-toggle:focus-visible,
+    .language-option:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px
+    }
+
+    .language-globe {
+      position: relative;
+      width: 15px;
+      height: 15px;
+      border: 1.5px solid #526579;
+      border-radius: 50%
+    }
+
+    .language-globe::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: -1.5px;
+      width: 4px;
+      height: 14px;
+      border-left: 1px solid #526579;
+      border-right: 1px solid #526579;
+      border-radius: 50%
+    }
+
+    .language-globe::after {
+      content: '';
+      position: absolute;
+      left: 1px;
+      right: 1px;
+      top: 5px;
+      height: 3px;
+      border-top: 1px solid #526579;
+      border-bottom: 1px solid #526579
+    }
+
+    .language-chevron {
+      font-size: .65rem;
+      color: var(--muted);
+      transition: transform .15s ease
+    }
+
+    .language-toggle[aria-expanded="true"] .language-chevron {
+      transform: rotate(180deg)
+    }
+
+    .language-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 30;
+      min-width: 156px;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(23, 32, 51, .14)
+    }
+
+    .language-menu[hidden] { display: none }
+
+    .language-option {
+      width: 100%;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: .82rem;
+      font-weight: 550;
+      cursor: pointer;
+      text-align: left
+    }
+
+    .language-option:hover,
+    .language-option.active { background: #EAF4F6 }
+
+    /* ── Product promise ── */
+    .utility-hero {
+      width: 100%;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1
+    }
+
+    .utility-hero h2 {
+      max-width: 390px;
+      font-size: clamp(1.58rem, 7vw, 2rem);
+      line-height: 1.08;
+      letter-spacing: -.045em;
+      font-weight: 760;
+      color: var(--text)
+    }
+
+    .utility-hero p {
+      max-width: 410px;
+      margin-top: 9px;
+      font-size: .82rem;
+      line-height: 1.55;
+      color: var(--muted)
+    }
+
+    .trust-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 14px;
+      margin-top: 12px;
+      color: #526579;
+      font-size: .7rem;
+      font-weight: 600
+    }
+
+    .trust-line span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .trust-line span::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      flex: 0 0 5px;
+      border-radius: 50%;
+      background: #0B7A75
     }
 
     /* ── Info Card (location + weather) ── */
@@ -228,22 +419,55 @@
     }
 
     .retry-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-size: .78rem;
+      width: 100%;
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #163B65;
+      border: 1px solid #163B65;
+      border-radius: 13px;
+      color: #fff;
+      font-size: .82rem;
       font-family: inherit;
-      padding: 6px 10px;
+      font-weight: 700;
+      padding: 10px 14px;
       cursor: pointer;
-      transition: all .2s;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
       white-space: nowrap;
-      margin-top: 12px
+      margin-top: 14px
     }
 
     .retry-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent)
+      border-color: #204D7F;
+      background: #204D7F
+    }
+
+    .retry-btn:active { transform: translateY(1px) }
+
+    .retry-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px
+    }
+
+    .location-disclosure {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: .68rem;
+      line-height: 1.45
+    }
+
+    .location-disclosure::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      flex: 0 0 7px;
+      margin-top: 3px;
+      border: 1.5px solid #0B7A75;
+      border-radius: 50%
     }
 
     /* ── Live Map Card ── */
@@ -285,26 +509,6 @@
     .live-map-inner #miniMap {
       width: 100%;
       height: 130px
-    }
-
-    /* language toggle (header) */
-    .lang-btn {
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      color: var(--muted);
-      font-size: .75rem;
-      font-family: inherit;
-      padding: 6px 10px;
-      cursor: pointer;
-      transition: all .2s;
-      font-weight: 500
-    }
-
-    .lang-btn.active {
-      background: var(--text);
-      color: #FFFFFF;
-      font-weight: 600
     }
 
     /* category grid */
@@ -911,7 +1115,7 @@
       .rp {
         max-width: 480px;
         left: 50%;
-        transform: translateX(calc(-50% + 100%))
+        transform: translateX(calc(-50% + 100vw))
       }
 
       .rp.open {
@@ -1603,9 +1807,10 @@
 
     @media (max-width: 420px) {
       .header-new { gap: 8px; }
-      .header-flag { font-size: 1.9rem; }
-      .header-center h1 { font-size: 1.08rem; }
-      .header-sub { font-size: .7rem; }
+      .brand-mark { width: 40px; height: 40px; flex-basis: 40px; }
+      .header-center h1 { font-size: 1.04rem; }
+      .header-sub { font-size: .66rem; }
+      .language-toggle { min-width: 60px; padding: 0 8px; }
     }
 
     /* ── 2026 mobile travel utility refresh ── */
@@ -1615,17 +1820,6 @@
 
     .header-new {
       margin-bottom: 16px;
-    }
-
-    .header-flag {
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      font-size: 1.55rem;
     }
 
     #locationBar {
@@ -1993,6 +2187,14 @@
       line-height: 1.45;
     }
 
+    .route-step-original {
+      margin-top: 3px;
+      color: #667085;
+      font-size: .69rem;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
     .route-step-meta {
       margin-top: 5px;
       color: var(--muted);
@@ -2066,11 +2268,27 @@
       .live-spots-scroll { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
+    @media (max-width: 350px) {
+      .header-sub { max-width: 140px; }
+      .language-globe { display: none; }
+      .language-toggle { min-width: 50px; }
+      .utility-hero h2 { font-size: 1.45rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
     @media (min-width: 481px) {
       .route-panel {
         max-width: 480px;
         left: 50%;
-        transform: translateX(calc(-50% + 100%));
+        transform: translateX(calc(-50% + 100vw));
       }
       .route-panel.open { transform: translateX(-50%); }
     }
@@ -2084,17 +2302,34 @@
   <!-- ── Main Page ── -->
   <div class="page">
     <header class="header-new">
-      <div class="header-flag">🇰🇷</div>
+      <div class="brand-mark" aria-hidden="true"><span class="brand-path"></span></div>
       <div class="header-center">
-        <h1 id="mainTitle"></h1>
-        <p id="headerSubtitle" class="header-sub">For travelers · Free</p>
+        <h1 id="mainTitle">Korea Guide</h1>
+        <p id="headerSubtitle" class="header-sub">Local directions · No app needed</p>
       </div>
-      <div class="header-lang" id="langBar">
-        <button class="lang-btn active" id="lang-en" onclick="setLang('EN')">EN</button>
-        <button class="lang-btn" id="lang-ja" onclick="setLang('JA')">JA</button>
-        <button class="lang-btn" id="lang-zh" onclick="setLang('ZH-HANS')">中</button>
+      <div class="language-picker" id="languagePicker">
+        <button class="language-toggle" id="languageToggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu" aria-label="Choose language" onclick="toggleLanguageMenu()">
+          <span class="language-globe" aria-hidden="true"></span>
+          <span id="languageCurrent">EN</span>
+          <span class="language-chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="language-menu" id="languageMenu" role="menu" aria-label="Choose language" hidden>
+          <button class="language-option active" type="button" role="menuitemradio" aria-checked="true" data-lang="EN" onclick="chooseLanguage('EN')">English</button>
+          <button class="language-option" type="button" role="menuitemradio" aria-checked="false" data-lang="JA" onclick="chooseLanguage('JA')">日本語</button>
+          <button class="language-option" type="button" role="menuitemradio" aria-checked="false" data-lang="ZH-HANS" onclick="chooseLanguage('ZH-HANS')">简体中文</button>
+        </div>
       </div>
     </header>
+
+    <section class="utility-hero" aria-labelledby="heroTitle">
+      <h2 id="heroTitle">Get around Korea without another app.</h2>
+      <p id="heroBody">Find nearby places and get walking or transit directions from your current location.</p>
+      <div class="trust-line" aria-label="Service highlights">
+        <span id="trustLocal">Korean local route data</span>
+        <span id="trustModes">Walking &amp; transit</span>
+        <span id="trustSignup">No sign-up</span>
+      </div>
+    </section>
 
     <!-- ── Info Card (location + weather) ── -->
     <div class="location-bar" id="locationBar">
@@ -2113,6 +2348,7 @@
       <div id="weatherDetail" class="weather-detail"></div>
       <span id="tapHint" style="display:none"></span>
       <button class="retry-btn" id="retryBtn" onclick="event.stopPropagation();initLocation()" style="display:block">Use my location</button>
+      <p class="location-disclosure" id="locationDisclosure">Location is used to show nearby places, weather and calculate routes.</p>
     </div>
 
     <section class="live-spots" aria-label="Popular Seoul live spots">
@@ -2134,7 +2370,7 @@
     <!-- ── Live Map ── -->
     <div class="live-map-card" id="miniMapWrap" onclick="toggleMiniMap()">
       <div class="live-map-placeholder" id="liveMapPlaceholder">
-        <span>🗺️</span> Live Map
+        <span>🗺️</span><span id="liveMapLabel">Live Map</span>
       </div>
       <div class="live-map-inner">
         <div id="miniMap"></div>
@@ -2171,7 +2407,7 @@
         <span class="tip-tap">👆 TAP HERE</span>
       </button>
       <div class="tip-body" id="tipBody">
-        <p id="tipText">Use GPS to find nearby places, then get accurate walking or public transit directions in your browser.</p>
+        <p id="tipText">Use GPS to find nearby places, then get Korean local walking or public transit directions in your browser.</p>
       </div>
     </div>
 
@@ -2256,7 +2492,7 @@
       <div class="map-picker-head">
         <div>
           <h2 id="mapPickerTitle">How do you want to go?</h2>
-          <p id="mapPickerSubtitle">Accurate Korean routes in your browser</p>
+          <p id="mapPickerSubtitle">Korean local routes in your browser</p>
         </div>
         <button class="map-picker-close" onclick="closeMapChooser()" aria-label="Close">✕</button>
       </div>
@@ -2265,7 +2501,7 @@
           <span class="map-option-icon walk">🚶</span>
           <span class="map-option-copy">
             <strong id="walkRouteTitle">Walking</strong>
-            <span id="walkRouteNote">Accurate Korean walking route</span>
+            <span id="walkRouteNote">Walking route using Korean map data</span>
             <span class="map-option-badge" id="walkRouteBadge">No download</span>
           </span>
           <span class="map-option-arrow">›</span>
@@ -2287,7 +2523,7 @@
         </button>
         <button class="map-option" onclick="openSelectedMap('kakao')">
           <span class="map-option-icon kakao">K</span>
-          <span class="map-option-copy"><strong>KakaoMap</strong><span id="kakaoMapNote">Accurate local routes · English</span></span>
+          <span class="map-option-copy"><strong>KakaoMap</strong><span id="kakaoMapNote">Open the installed app</span></span>
           <span class="map-option-arrow">›</span>
         </button>
       </div>
@@ -2312,7 +2548,7 @@
   <div class="nm-overlay" id="appOverlay" onclick="closeAppModal(event)" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="appModalTitle">
     <div class="nm-modal">
       <h2 id="appModalTitle">📱 Get the map app</h2>
-      <p class="nm-desc" id="appModalDesc">Install the app for accurate directions in Korea.</p>
+      <p class="nm-desc" id="appModalDesc">Install the app to continue with its full map experience.</p>
       <div class="nm-dl-btns">
         <a class="nm-dl-btn" id="appIosBtn" href="#" target="_blank" rel="noopener">
           🍎 Download for iPhone →
@@ -2467,7 +2703,24 @@
     // ── i18n ────────────────────────────────────────────────
     const i18n = {
       EN: {
-        subtitle: 'Tap a category to find nearby places in English — no app needed',
+        subtitle: 'Local directions · No app needed',
+        heroTitle: 'Get around Korea without another app.',
+        heroBody: 'Find nearby places and get walking or transit directions from your current location.',
+        trustLocal: 'Korean local route data', trustModes: 'Walking & transit', trustSignup: 'No sign-up',
+        chooseLanguage: 'Choose language',
+        weatherLoading: '⏳ Loading weather…', weatherTap: 'Tap for details', weatherUnavailable: '🌐 Weather unavailable', liveMap: 'Live Map',
+        locationPrompt: 'Start from where you are', locationPromptDetail: 'Find nearby places and local directions.',
+        locationCta: 'Use my location', locationDisclosure: 'Location is used to show nearby places, weather and calculate routes.',
+        locationLoading: 'Detecting your location…', locationLoadingDetail: 'Please allow location access',
+        locationFound: '📍 Location found!', locationFoundDetail: 'Loading address…', locationReadyToast: '✅ Location ready — choose what you need!',
+        locationRetry: 'Try location again',
+        locationErrors: {
+          unsupported: ['GPS not supported', 'Please use a modern browser.'],
+          1: ['Location access denied', 'Enable location in browser settings, then try again.'],
+          2: ['Location unavailable', 'Move to an open area and try again.'],
+          3: ['Location timed out', 'GPS is slow. Try outside.'],
+          other: ['Location error', 'Please try again.'],
+        },
         tapHint: '👆 Tap to see your location on the map',
         subway: 'Find Subway<br>Station', subwaySub: 'Nearest stations',
         bus: 'Find Bus<br>Stop', busSub: 'Nearby stops',
@@ -2477,16 +2730,16 @@
         naverSub2: '⚙️ Set app to English in Settings',
         googleBtn: '🗺️ Google Maps', googleSub1: 'Faster · English',
         googleSub2: '⚠️ Directions may be inaccurate in Korea',
-        openMaps: '🧭 Get directions', mapChooseTitle: 'How do you want to go?', mapChooseSubtitle: name => `${name} · Accurate Korean routes`,
-        walkRouteTitle: 'Walking', walkRouteNote: 'Accurate Korean walking route', transitRouteTitle: 'Public transit', transitRouteNote: 'Subway and bus routes',
+        openMaps: '🧭 Get directions', mapChooseTitle: 'How do you want to go?', mapChooseSubtitle: name => `${name} · Korean local routes`,
+        walkRouteTitle: 'Walking', walkRouteNote: 'Walking route using Korean map data', transitRouteTitle: 'Public transit', transitRouteNote: 'Subway and bus routes',
         noDownload: 'No download', appOptions: 'Optional · Open an installed app', routeLocationRequired: 'Allow location access to start directions.', routeUnavailable: 'Directions are unavailable for this place.',
-        routeBack: '← Back', routePanelTitle: 'Directions', routeLoading: 'Finding an accurate Korean route…', routeKicker: 'KAKAO LOCAL ROUTE',
+        routeBack: '← Back', routePanelTitle: 'Directions', routeLoading: 'Finding a Korean local route…', routeKicker: 'KAKAO LOCAL ROUTE',
         routeStepsTitle: 'Step-by-step directions', routeDistance: 'Distance', routeTime: 'Estimated time', routeTransfers: 'Transfers', routeFare: 'Fare',
         routeMinutes: value => `${value} min`, routeHours: (hours, minutes) => `${hours} hr ${minutes} min`, routeTransferValue: value => `${value}`, routeFareValue: value => `₩${value.toLocaleString()}`,
         routeTranslatedNotice: 'Route data by Kakao · Instructions translated automatically. Check signs and surroundings while moving.', routeTruncated: 'Only the first 24 guidance steps are shown.',
         routeOpenKakao: 'Open detailed Kakao map (Korean)', routeTryWeb: 'Use Kakao web directions instead', routeErrorTitle: 'Could not load the route', routeErrorBody: 'Please try again or open the Kakao web route.', routeRetry: 'Try again',
         naverMapNote: 'Open the installed app', kakaoMapNote: 'Open the installed app', googleMapNote: 'Familiar place preview',
-        installTitle: app => `Get ${app}`, installDesc: app => `${app} was not detected. Install it for accurate directions in Korea.`,
+        installTitle: app => `Get ${app}`, installDesc: app => `${app} was not detected. Install it to continue with its full map experience.`,
         continueWeb: 'Continue in browser', close: 'Close', iosDownload: '🍎 Download for iPhone →', androidDownload: '🤖 Download for Android →',
         naverLanguage: '<strong>Language</strong>Open Naver Map → Settings → Language', kakaoLanguage: '<strong>Language</strong>KakaoMap supports English and Korean.',
         spots: ['Myeongdong', 'N Seoul Tower', 'Seongsu', 'COEX', 'Gangnam', 'Hongdae'],
@@ -2501,10 +2754,27 @@
         wdFeels: 'Feels like', wdHumidity: 'Humidity', wdWind: 'Wind',
         wdSunrise: 'Sunrise', wdSunset: 'Sunset',
         tipToggle: 'How it works?',
-        tipText: 'Use GPS to find nearby places, then get accurate walking or public transit directions in your browser.',
+        tipText: 'Use GPS to find nearby places, then get Korean local walking or public transit directions in your browser.',
       },
       JA: {
-        subtitle: 'カテゴリをタップして近くの場所を日本語で探す — アプリ不要',
+        subtitle: '韓国の現地ルート · アプリ不要',
+        heroTitle: 'アプリ不要で、韓国をスムーズに移動。',
+        heroBody: '現在地から、周辺スポットと徒歩・公共交通のルートを検索できます。',
+        trustLocal: '韓国の現地ルートデータ', trustModes: '徒歩・公共交通', trustSignup: '登録不要',
+        chooseLanguage: '言語を選択',
+        weatherLoading: '⏳ 天気を読み込み中…', weatherTap: '詳細を見る', weatherUnavailable: '🌐 天気情報を取得できません', liveMap: '現在地マップ',
+        locationPrompt: '現在地から探す', locationPromptDetail: '周辺スポットと現地ルートを検索します。',
+        locationCta: '現在地を使う', locationDisclosure: '位置情報は、周辺情報・天気の表示とルート検索に使用します。',
+        locationLoading: '現在地を確認中…', locationLoadingDetail: '位置情報の使用を許可してください',
+        locationFound: '📍 現在地を確認しました', locationFoundDetail: '住所を読み込んでいます…', locationReadyToast: '✅ 現在地を確認しました。必要な項目を選んでください。',
+        locationRetry: 'もう一度試す',
+        locationErrors: {
+          unsupported: ['GPSを利用できません', '新しいブラウザをご利用ください。'],
+          1: ['位置情報が許可されていません', 'ブラウザの設定で許可してから、もう一度お試しください。'],
+          2: ['現在地を取得できません', '屋外など開けた場所でもう一度お試しください。'],
+          3: ['位置情報の取得に時間がかかっています', '屋外でもう一度お試しください。'],
+          other: ['位置情報エラー', 'もう一度お試しください。'],
+        },
         tapHint: '👆 タップして現在地を地図で確認',
         subway: '地下鉄駅を探す', subwaySub: '最寄り駅',
         bus: 'バス停を探す', busSub: '近くのバス停',
@@ -2514,16 +2784,16 @@
         naverSub2: '⚙️ 設定で日本語に変更可能',
         googleBtn: '🗺️ Google Maps', googleSub1: '速い · 日本語',
         googleSub2: '⚠️ 韓国では経路が不正確な場合あり',
-        openMaps: '🧭 経路を見る', mapChooseTitle: '移動方法を選択', mapChooseSubtitle: name => `${name}への韓国の正確な経路`,
-        walkRouteTitle: '徒歩', walkRouteNote: '韓国の正確な徒歩ルート', transitRouteTitle: '公共交通', transitRouteNote: '地下鉄・バスの経路',
+        openMaps: '🧭 経路を見る', mapChooseTitle: '移動方法を選択', mapChooseSubtitle: name => `${name}への韓国現地ルート`,
+        walkRouteTitle: '徒歩', walkRouteNote: '韓国の地図データを使用した徒歩ルート', transitRouteTitle: '公共交通', transitRouteNote: '地下鉄・バスの経路',
         noDownload: 'ダウンロード不要', appOptions: '任意 · インストール済みアプリで開く', routeLocationRequired: '経路案内には位置情報を許可してください。', routeUnavailable: 'この場所の経路を表示できません。',
-        routeBack: '← 戻る', routePanelTitle: '経路案内', routeLoading: '韓国の正確な経路を検索中…', routeKicker: 'KAKAO 韓国経路',
+        routeBack: '← 戻る', routePanelTitle: '経路案内', routeLoading: '韓国の現地ルートを検索中…', routeKicker: 'KAKAO 韓国経路',
         routeStepsTitle: '経路の詳細', routeDistance: '距離', routeTime: '予想時間', routeTransfers: '乗換', routeFare: '料金',
         routeMinutes: value => `${value}分`, routeHours: (hours, minutes) => `${hours}時間${minutes}分`, routeTransferValue: value => `${value}回`, routeFareValue: value => `₩${value.toLocaleString()}`,
         routeTranslatedNotice: '経路データ: Kakao · 案内文は自動翻訳です。移動中は標識と周囲を確認してください。', routeTruncated: '最初の24件の案内のみ表示しています。',
         routeOpenKakao: 'Kakaoの詳細地図を開く（韓国語）', routeTryWeb: 'Kakaoウェブ経路を利用', routeErrorTitle: '経路を読み込めませんでした', routeErrorBody: 'もう一度試すか、Kakaoウェブ経路を開いてください。', routeRetry: '再試行',
         naverMapNote: 'インストール済みアプリを開く', kakaoMapNote: 'インストール済みアプリを開く', googleMapNote: '使い慣れた地図で場所を確認',
-        installTitle: app => `${app}を入手`, installDesc: app => `${app}が見つかりません。韓国で正確な経路案内を利用するにはインストールしてください。`,
+        installTitle: app => `${app}を入手`, installDesc: app => `${app}が見つかりません。アプリの地図機能を利用するにはインストールしてください。`,
         continueWeb: 'ブラウザで続ける', close: '閉じる', iosDownload: '🍎 iPhone版をダウンロード →', androidDownload: '🤖 Android版をダウンロード →',
         naverLanguage: '<strong>言語設定</strong>Naver Map → 設定 → 言語', kakaoLanguage: '<strong>言語</strong>KakaoMapは英語と韓国語に対応しています。',
         spots: ['明洞', 'Nソウルタワー', '聖水', 'COEX', '江南', '弘大'],
@@ -2538,10 +2808,27 @@
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '風速',
         wdSunrise: '日の出', wdSunset: '日没',
         tipToggle: '使い方',
-        tipText: 'GPSで近くの場所を探し、ブラウザで韓国の正確な徒歩・公共交通ルートを確認できます。',
+        tipText: 'GPSで近くの場所を探し、ブラウザで韓国現地の徒歩・公共交通ルートを確認できます。',
       },
       'ZH-HANS': {
-        subtitle: '点击类别查找附近的地方 — 无需下载应用',
+        subtitle: '韩国本地路线 · 无需安装App',
+        heroTitle: '无需安装App，轻松畅行韩国。',
+        heroBody: '根据当前位置，查找附近地点以及步行或公共交通路线。',
+        trustLocal: '韩国本地路线数据', trustModes: '步行与公共交通', trustSignup: '无需注册',
+        chooseLanguage: '选择语言',
+        weatherLoading: '⏳ 正在加载天气…', weatherTap: '查看详情', weatherUnavailable: '🌐 无法获取天气信息', liveMap: '当前位置地图',
+        locationPrompt: '从当前位置开始', locationPromptDetail: '查找附近地点和本地路线。',
+        locationCta: '使用当前位置', locationDisclosure: '位置信息用于显示附近地点、天气和规划路线。',
+        locationLoading: '正在获取当前位置…', locationLoadingDetail: '请允许使用位置信息',
+        locationFound: '📍 已获取当前位置', locationFoundDetail: '正在加载地址…', locationReadyToast: '✅ 已获取当前位置，请选择所需服务。',
+        locationRetry: '重新获取位置',
+        locationErrors: {
+          unsupported: ['不支持GPS', '请使用新版浏览器。'],
+          1: ['未允许访问位置', '请在浏览器设置中允许后重试。'],
+          2: ['无法获取当前位置', '请到开阔处后重试。'],
+          3: ['获取位置超时', 'GPS响应较慢，请在室外重试。'],
+          other: ['位置错误', '请重试。'],
+        },
         tapHint: '👆 点击查看当前位置地图',
         subway: '查找地铁站', subwaySub: '最近的地铁站',
         bus: '查找公交站', busSub: '附近的公交站',
@@ -2551,16 +2838,16 @@
         naverSub2: '⚙️ 在设置中切换为中文',
         googleBtn: '🗺️ Google Maps', googleSub1: '更快 · 中文',
         googleSub2: '⚠️ 在韩国路线可能不准确',
-        openMaps: '🧭 查看路线', mapChooseTitle: '选择出行方式', mapChooseSubtitle: name => `前往${name} · 韩国准确路线`,
-        walkRouteTitle: '步行', walkRouteNote: '准确的韩国步行路线', transitRouteTitle: '公共交通', transitRouteNote: '地铁和公交路线',
+        openMaps: '🧭 查看路线', mapChooseTitle: '选择出行方式', mapChooseSubtitle: name => `前往${name} · 韩国本地路线`,
+        walkRouteTitle: '步行', walkRouteNote: '基于韩国地图数据的步行路线', transitRouteTitle: '公共交通', transitRouteNote: '地铁和公交路线',
         noDownload: '无需下载', appOptions: '可选 · 使用已安装的地图应用', routeLocationRequired: '请允许访问位置以开始导航。', routeUnavailable: '无法显示前往此地点的路线。',
-        routeBack: '← 返回', routePanelTitle: '路线指南', routeLoading: '正在查找准确的韩国路线…', routeKicker: 'KAKAO 韩国路线',
+        routeBack: '← 返回', routePanelTitle: '路线指南', routeLoading: '正在查找韩国本地路线…', routeKicker: 'KAKAO 韩国路线',
         routeStepsTitle: '分步路线', routeDistance: '距离', routeTime: '预计时间', routeTransfers: '换乘', routeFare: '费用',
         routeMinutes: value => `${value}分钟`, routeHours: (hours, minutes) => `${hours}小时${minutes}分钟`, routeTransferValue: value => `${value}次`, routeFareValue: value => `₩${value.toLocaleString()}`,
         routeTranslatedNotice: '路线数据来自Kakao · 路线说明为自动翻译。移动时请确认路标和周围环境。', routeTruncated: '仅显示前24个路线步骤。',
         routeOpenKakao: '打开Kakao详细地图（韩语）', routeTryWeb: '改用Kakao网页版路线', routeErrorTitle: '无法加载路线', routeErrorBody: '请重试或打开Kakao网页版路线。', routeRetry: '重试',
         naverMapNote: '打开已安装的应用', kakaoMapNote: '打开已安装的应用', googleMapNote: '使用熟悉的地图查看地点',
-        installTitle: app => `获取${app}`, installDesc: app => `未检测到${app}。安装后可在韩国使用更准确的路线导航。`,
+        installTitle: app => `获取${app}`, installDesc: app => `未检测到${app}。安装后可使用该应用的完整地图功能。`,
         continueWeb: '在浏览器中继续', close: '关闭', iosDownload: '🍎 下载iPhone版 →', androidDownload: '🤖 下载Android版 →',
         naverLanguage: '<strong>语言设置</strong>Naver Map → 设置 → 语言', kakaoLanguage: '<strong>语言</strong>KakaoMap支持英语和韩语。',
         spots: ['明洞', 'N首尔塔', '圣水', 'COEX', '江南', '弘大'],
@@ -2575,7 +2862,7 @@
         wdFeels: '体感温度', wdHumidity: '湿度', wdWind: '风速',
         wdSunrise: '日出', wdSunset: '日落',
         tipToggle: '使用方法',
-        tipText: '使用GPS查找附近地点，并直接在浏览器中查看韩国准确的步行或公共交通路线。',
+        tipText: '使用GPS查找附近地点，并直接在浏览器中查看韩国本地的步行或公共交通路线。',
       },
     };
 
@@ -2592,17 +2879,92 @@
     let lastRouteTarget = null;
     let routeRequestToken = 0;
     let routeRenderToken = 0;
+    let locationUiState = 'idle';
+    let lastLocationErrorCode = null;
+    let weatherUiState = 'loading';
 
     // ── Language ────────────────────────────────────────────
+    const SUPPORTED_LANGS = ['EN', 'JA', 'ZH-HANS'];
+    const LANGUAGE_SHORT = { EN: 'EN', JA: 'JA', 'ZH-HANS': '中' };
+
+    function getPreferredLanguage() {
+      try {
+        const saved = localStorage.getItem('koreaGuideLanguage');
+        if (SUPPORTED_LANGS.includes(saved)) return saved;
+      } catch (_) { }
+      const browserLang = String(navigator.languages?.[0] || navigator.language || 'en').toLowerCase();
+      if (browserLang.startsWith('ja')) return 'JA';
+      if (browserLang.startsWith('zh')) return 'ZH-HANS';
+      return 'EN';
+    }
+
+    function toggleLanguageMenu() {
+      const toggle = document.getElementById('languageToggle');
+      const menu = document.getElementById('languageMenu');
+      const opening = menu.hidden;
+      menu.hidden = !opening;
+      toggle.setAttribute('aria-expanded', String(opening));
+      if (opening) {
+        requestAnimationFrame(() => menu.querySelector('.language-option.active')?.focus());
+      }
+    }
+
+    function closeLanguageMenu({ restoreFocus = false } = {}) {
+      const toggle = document.getElementById('languageToggle');
+      const menu = document.getElementById('languageMenu');
+      menu.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) toggle.focus();
+    }
+
+    function chooseLanguage(lang) {
+      setLang(lang);
+      closeLanguageMenu({ restoreFocus: true });
+    }
+
+    function syncLocationCopy() {
+      if (locationReady) return;
+      const t = i18n[currentLang];
+      document.getElementById('locationDisclosure').textContent = t.locationDisclosure;
+      const retryButton = document.getElementById('retryBtn');
+
+      if (locationUiState === 'loading') {
+        setBar('loading', t.locationLoading, t.locationLoadingDetail);
+        return;
+      }
+      if (locationUiState === 'error') {
+        const errorCopy = t.locationErrors[lastLocationErrorCode] || t.locationErrors.other;
+        setBar('error', errorCopy[0], errorCopy[1]);
+        retryButton.textContent = t.locationRetry;
+        return;
+      }
+      setBar('idle', t.locationPrompt, t.locationPromptDetail);
+      retryButton.textContent = t.locationCta;
+    }
+
     function setLang(lang) {
+      if (!SUPPORTED_LANGS.includes(lang)) lang = 'EN';
       currentLang = lang;
       document.documentElement.lang = lang === 'EN' ? 'en' : (lang === 'JA' ? 'ja' : 'zh-Hans');
-      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('lang-' + lang.toLowerCase().replace('-hans', ''))
-        .classList.add('active');
       // i18n 텍스트 교체
       const t = i18n[lang];
-      document.getElementById('headerSubtitle').innerHTML = t.subtitle;
+      document.getElementById('headerSubtitle').textContent = t.subtitle;
+      document.getElementById('heroTitle').textContent = t.heroTitle;
+      document.getElementById('heroBody').textContent = t.heroBody;
+      document.getElementById('trustLocal').textContent = t.trustLocal;
+      document.getElementById('trustModes').textContent = t.trustModes;
+      document.getElementById('trustSignup').textContent = t.trustSignup;
+      document.getElementById('liveMapLabel').textContent = t.liveMap;
+      document.getElementById('languageCurrent').textContent = LANGUAGE_SHORT[lang];
+      document.getElementById('languageToggle').setAttribute('aria-label', t.chooseLanguage);
+      document.getElementById('languageMenu').setAttribute('aria-label', t.chooseLanguage);
+      document.querySelectorAll('.language-option').forEach(option => {
+        const active = option.dataset.lang === lang;
+        option.classList.toggle('active', active);
+        option.setAttribute('aria-checked', String(active));
+      });
+      try { localStorage.setItem('koreaGuideLanguage', lang); } catch (_) { }
+      syncLocationCopy();
       document.getElementById('tapHint').textContent = t.tapHint;
       document.getElementById('card-label-subway').innerHTML = t.subway;
       document.getElementById('card-pill-subway').textContent = t.subwaySub;
@@ -2639,6 +3001,10 @@
         const locName = addrCache[lang] || userDistrict || 'My Location';
         document.getElementById('weatherText').textContent =
           `${det.dataset.emoji} ${locName} · ${det.dataset.temp}°C`;
+        document.getElementById('weatherArrow').textContent = '▾';
+      } else {
+        document.getElementById('weatherText').textContent = weatherUiState === 'error' ? t.weatherUnavailable : t.weatherLoading;
+        document.getElementById('weatherArrow').textContent = weatherUiState === 'error' ? '' : t.weatherTap;
       }
       const routePanelOpen = document.getElementById('routePanel').classList.contains('open');
       if (document.getElementById('rp').classList.contains('open') && !routePanelOpen) {
@@ -3184,6 +3550,10 @@
         const guidance = document.createElement('div');
         guidance.className = 'route-step-text';
         guidance.textContent = step.translatedGuidance || step.guidance || `${index + 1}`;
+        const original = document.createElement('div');
+        original.className = 'route-step-original';
+        original.lang = 'ko';
+        original.textContent = step.guidance || '';
         const meta = document.createElement('div');
         meta.className = 'route-step-meta';
         const metaItems = [];
@@ -3191,7 +3561,11 @@
         if (Number(step.distance) > 0) metaItems.push(fmtDist(Number(step.distance)));
         if (Number(step.duration) > 0) metaItems.push(formatRouteDuration(Number(step.duration)));
         meta.textContent = metaItems.join(' · ');
-        copy.append(guidance, meta);
+        copy.append(guidance);
+        if (step.guidance && step.translatedGuidance && step.translatedGuidance !== step.guidance) {
+          copy.append(original);
+        }
+        copy.append(meta);
         card.append(icon, copy);
         stepsList.appendChild(card);
       });
@@ -3926,21 +4300,6 @@
       }
     }
 
-    // ── Welcome Animation ─────────────────────────────────────
-    function typeText() {
-      const el = document.getElementById('mainTitle');
-      const text = 'Korea Travel Guide';
-      let i = 0;
-      el.textContent = '';
-      const iv = setInterval(() => {
-        el.textContent = text.slice(0, ++i) + '|';
-        if (i >= text.length) {
-          clearInterval(iv);
-          setTimeout(() => { el.textContent = text; }, 500);
-        }
-      }, 60);
-    }
-
     // ── Seoul Weather ─────────────────────────────────────────
     function weatherEmoji(code) {
       if (code === 0) return '☀️';
@@ -3981,6 +4340,7 @@
         const sunrise = d.daily.sunrise[0].slice(11, 16);
         const sunset = d.daily.sunset[0].slice(11, 16);
         const emoji = weatherEmoji(d.current.weathercode);
+        weatherUiState = 'ready';
         document.getElementById('weatherText').textContent = `${emoji} ${locName} · ${temp}°C`;
         document.getElementById('weatherArrow').textContent = '▾';
         const det = document.getElementById('weatherDetail');
@@ -3993,7 +4353,9 @@
         det.dataset.sunset = sunset;
         updateWeatherDetail();
       } catch (e) {
-        document.getElementById('weatherText').textContent = '🌐 Weather unavailable';
+        weatherUiState = 'error';
+        document.getElementById('weatherText').textContent = i18n[currentLang].weatherUnavailable;
+        document.getElementById('weatherArrow').textContent = '';
       }
     }
 
@@ -4093,26 +4455,34 @@
       bar.className = 'location-bar ' + state;
       document.getElementById('locStatus').textContent = strong;
       document.getElementById('locDetail').textContent = detail;
-      document.getElementById('retryBtn').style.display = state === 'error' ? 'block' : 'none';
+      document.getElementById('retryBtn').style.display = (state === 'idle' || state === 'error') ? 'flex' : 'none';
       document.getElementById('toggleHint').style.display = state === 'success' ? 'inline' : 'none';
       document.getElementById('tapHint').style.display = state === 'success' ? 'block' : 'none';
     }
 
     function initLocation() {
-      document.getElementById('retryBtn').textContent = 'Retry';
-      setBar('loading', 'Detecting your location…', 'Please allow location access');
-      if (!navigator.geolocation) { setBar('error', 'GPS not supported', 'Please use a modern browser'); return; }
+      if (locationUiState === 'loading') return;
+      locationUiState = 'loading';
+      lastLocationErrorCode = null;
+      syncLocationCopy();
+      if (!navigator.geolocation) {
+        locationUiState = 'error';
+        lastLocationErrorCode = 'unsupported';
+        syncLocationCopy();
+        return;
+      }
       navigator.geolocation.getCurrentPosition(
         pos => {
           userLat = pos.coords.latitude.toFixed(4);
           userLng = pos.coords.longitude.toFixed(4);
           locationReady = true;
+          locationUiState = 'success';
           if (!getRequestedArea() && !currentLiveArea) {
             const nearest = nearestSupportedSpot(userLat, userLng);
             if (nearest && nearest.dist <= 15) loadCrowd(nearest.areaCode);
           }
-          setBar('success', '📍 Location found!', 'Loading address…');
-          showToast('✅ Location ready — tap a category!');
+          setBar('success', i18n[currentLang].locationFound, i18n[currentLang].locationFoundDetail);
+          showToast(i18n[currentLang].locationReadyToast);
           // Auto-open Live Map after location is ready
           setTimeout(() => { if (!miniMapOpen) toggleMiniMap(); }, 500);
           reverseGeocodeLocalized(userLat, userLng, currentLang)
@@ -4123,22 +4493,28 @@
               fetchWeather(userLat, userLng, userDistrict);
             })
             .catch(() => {
-              setBar('success', '📍 Location found!', '');
+              setBar('success', i18n[currentLang].locationFound, '');
               fetchWeather(userLat, userLng, '');
             });
         },
         err => {
           locationReady = false;
-          const msgs = {
-            1: ['Location access denied', 'Enable location in browser settings, then retry.'],
-            2: ['Location unavailable', 'Move to an open area and tap Retry.'],
-            3: ['Location timed out', 'GPS is slow. Try outside.']
-          };
-          const [m, d] = msgs[err.code] || ['Location error', 'Tap Retry.'];
-          setBar('error', m, d);
+          locationUiState = 'error';
+          lastLocationErrorCode = err.code;
+          syncLocationCopy();
         },
         { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
       );
+    }
+
+    async function initPreviouslyGrantedLocation() {
+      if (!navigator.geolocation || !navigator.permissions?.query) return;
+      try {
+        const permission = await navigator.permissions.query({ name: 'geolocation' });
+        if (permission.state === 'granted') initLocation();
+      } catch (_) {
+        // Some browsers do not expose geolocation through the Permissions API.
+      }
     }
 
     // ── Toast ─────────────────────────────────────────────────
@@ -4189,8 +4565,15 @@
     document.querySelectorAll('.card').forEach(c => c.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }
     }));
+    document.addEventListener('click', e => {
+      if (!document.getElementById('languagePicker').contains(e.target)) closeLanguageMenu();
+    });
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
+      if (!document.getElementById('languageMenu').hidden) {
+        closeLanguageMenu({ restoreFocus: true });
+        return;
+      }
       closeResults();
       closeMapChooser();
       closeAppModal();
@@ -4198,13 +4581,12 @@
     });
 
     // ── Init ─────────────────────────────────────────────────
-    typeText();
     setGreeting();
-    renderSpots();
-    renderLiveSpots();
+    setLang(getPreferredLanguage());
     initStarfield();
     const requestedArea = getRequestedArea();
     if (requestedArea) loadCrowd(requestedArea);
+    initPreviouslyGrantedLocation();
   </script>
 </body>
 
